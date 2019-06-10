@@ -12,10 +12,10 @@ def json_receiver(uid):
     if request.method != 'POST':
         abort(405)
 
-    received_json = request.form['json']
-
     try:
-        json.loads(received_json)
+        received_json = request.get_json(force=True)
+        print(received_json)
+        #json.loads(received_json)
     except ValueError:
         abort(400)
 
