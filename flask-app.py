@@ -37,12 +37,16 @@ def get_json_from_container(uid):
     container_list = []
 
     for row in container:
-        temp = '{ "entry_uid": %s,' % row[1]
-        temp += '"public_body": %s,' % row[2]
-        temp += '"private_body": %s,' % row[3]  # TODO Auth only
-        temp += '"timestamp": %s' % row[4]
-        temp += '}'
-        container_list.append(temp)
+        container_list.append(
+            """
+                { 
+                    "entry_uid": %s,
+                    "public_body": %s,
+                    "private_body": %s,
+                    "timestamp": %s
+                }            
+            """ % (row[1], row[2], row[3], row[4])
+        )
 
     json_output = '{ "container": %s, "data":' % container[0][0]
     json_output += ', '.join(container_list)
