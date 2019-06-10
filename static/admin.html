@@ -1,12 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Flask: Admin Login</title>
+<meta charset="utf-8">
+<style>
+body {
+	width: 40em;
+	margin: 1em auto;
+}
+</style>
+<script>
+
+/*
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+*/
+
+async function status() {
+	const response = await fetch('/status');
+	const json = await response.json();
+	document.getElementById('status-output').innerText = JSON.stringify(json);
+}
+
+function xyz() {
+	console.log('xyz');
+}
+
+function main() {
+	document.getElementById('status').addEventListener('click', status);
+	document.getElementById('xyz').addEventListener('click', xyz);
+}
+
+window.addEventListener('load', main);
+
+</script>
 </head>
 <body>
-    serving html works!
+
+<h1>status</h1>
+
+<input id="status" type="button" value="status">
+
+<pre id="status-output"></pre>
+
+<h1>xyz</h1>
+
+<input id="xyz" type="button" value="xyz">
+
 </body>
 </html>
