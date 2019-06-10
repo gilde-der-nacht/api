@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-#import json
 import sqlite3
 import secrets
 import datetime
@@ -22,14 +21,8 @@ def verify_uid(container_uid):
         raise ValueError('Invalid Container ID')
 
 
-def verify_json(json_string):
-    json.loads(json_string)
-
-
 def write(container_uid, public_data, private_data):
     verify_uid(container_uid)
-    #verify_json(public_data)
-    #verify_json(private_data)
 
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
