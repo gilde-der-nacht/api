@@ -13,9 +13,9 @@ def json_receiver(uid):
         abort(405)
 
     try:
-        received_json = request.get_json(force=True)
-        print(received_json)
-        #json.loads(received_json)
+        received_data = request.get_data()
+        print(received_data)
+        json.loads(received_data)
     except ValueError:
         abort(400)
 
