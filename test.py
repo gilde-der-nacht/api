@@ -37,3 +37,6 @@ for entry in get_json:
 	assert 'private' in entry
 	assert 'entry_uid' in entry
 	assert 'container_uid' in entry
+
+# TODO test invalid id
+# TODO add api version to status, use semantic versioning

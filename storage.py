@@ -19,6 +19,7 @@ def generate_timestamp():
 def verify_uid(container_uid):
     if len(container_uid) != (2 * length_of_uid):
         raise ValueError('Invalid Container ID')
+    # TODO test if it a hexstring -> just do int(string, 16) -> gives also ValueError
 
 
 def write(container_uid, public_data, private_data):

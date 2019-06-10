@@ -1,3 +1,6 @@
+
+# TODO add description of the core ideas
+
 import datetime
 
 from flask import Flask, request, abort, json, send_from_directory
@@ -13,6 +16,8 @@ def server_status():
 
 @app.route('/post-json-to-container/uid/<uid>', methods=['POST'])
 def post_json_to_container(uid):
+    # naming, we do not return a container we actually return the entries, /container/.../<uid> may return some statistics about the container or nothing at all
+
     if request.method != 'POST':
         abort(405)
 
@@ -29,7 +34,7 @@ def post_json_to_container(uid):
     except ValueError:
         abort(400)
 
-    return ''
+    return '{}'
 
 
 
@@ -39,7 +44,10 @@ def get_json_from_container(uid):
     # TODO exception handling?
     # TODO use ''.format or f''
 
-    container = storage.read(uid)
+    try:
+        container = storage.read(uid)
+    except ValueError:
+        abort(400)
 
     container_list = []
 
@@ -70,7 +78,7 @@ def get_json_from_container(uid):
         container_list = map(convert, container)
         json_output = '[' + ', '.join(container_list) + ']';
 
-    # better? we donot assemble json ourself?
+    # better? we do not assemble json ourself ...
 
     if True:
         def convert(entry):
