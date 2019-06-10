@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, json
+from flask import Flask, request, abort, json, send_from_directory
 app = Flask(__name__)
 
 
@@ -19,6 +19,7 @@ def json_receiver(uid):
     except ValueError:
         abort(400)
 
+    print(uid)
     return uid
 
 
@@ -35,9 +36,10 @@ def json_sender(uid):
     except ValueError:
         abort(400)
 
+    print(uid)
     return json_as_string
 
 
 @app.route('/admin')
 def admin():
-    return 'I return a HTML file'
+    return send_from_directory('static', 'admin.html')
