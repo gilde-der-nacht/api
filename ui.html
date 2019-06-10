@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+	width: 40em;
+	margin: 1em auto;
+}
+</style>
+<script>
+
+/*
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+*/
+
+function abc() {
+	console.log('abc');
+}
+
+function xyz() {
+	console.log('xyz');
+}
+
+function main() {
+	document.getElementById('abc').addEventListener('click', abc);
+	document.getElementById('xyz').addEventListener('click', xyz);
+}
+
+window.addEventListener('load', main);
+
+</script>
+</head>
+<body>
+
+<h1>abc</h1>
+
+<input id="abc" type="button" value="abc">
+
+<h1>xyz</h1>
+
+<input id="xyz" type="button" value="xyz">
+
+</body>
+</html>
