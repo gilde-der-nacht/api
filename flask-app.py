@@ -1,3 +1,6 @@
+
+import datetime
+
 from flask import Flask, request, abort, json, send_from_directory
 app = Flask(__name__)
 
@@ -43,3 +46,8 @@ def json_sender(uid):
 @app.route('/admin')
 def admin():
     return send_from_directory('static', 'admin.html')
+
+
+@app.route('/status')
+def status():
+    return '{"time": "' + str(datetime.datetime.now()) + '"}'
