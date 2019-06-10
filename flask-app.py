@@ -11,46 +11,72 @@ def server_status():
     return '&#128154; Flask is running'
 
 
-@app.route('/post-json-to-container/id/<uid>', methods=['POST'])
+@app.route('/post-json-to-container/uid/<uid>', methods=['POST'])
 def post_json_to_container(uid):
     if request.method != 'POST':
         abort(405)
 
     try:
-        public_body = request.form['public']
-        json.loads(public_body)
+        # you used a "form" here, but this measn we have to generate a form with JS and inside the test, maybe this is the better idea, but client/server need to be both updated then, we can avoid the dumps so it may be worth to investigate
+        received_data = request.get_data()
+        received_json = json.loads(received_data)
 
-        private_body = request.form['private']
-        json.loads(private_body)
+        public_body = json.dumps(received_json['public'])
+        private_body = json.dumps(received_json['private'])
+
+        storage.write(uid, public_body, private_body)
 
     except ValueError:
         abort(400)
 
-    storage.write(uid, public_body, private_body)
-    return uid
+    return ''
 
 
-@app.route('/get-json-from-container/id/<uid>')
+
+@app.route('/get-json-from-container/uid/<uid>')
 def get_json_from_container(uid):
+
+    # TODO exception handling?
+    # TODO use ''.format or f''
+
     container = storage.read(uid)
 
     container_list = []
 
-    for row in container:
-        container_list.append(
-            """
-                { 
-                    "entry_uid": %s,
-                    "public_body": %s,
-                    "private_body": %s,
-                    "timestamp": %s
-                }            
-            """ % (row[1], row[2], row[3], row[4])
-        )
+    if False:
+        for row in container:
+            # I removed the logic to merge container, ... what if we later add another method to return all entries? maybe we like to use the same code to display then, but in this case we have to differentiate between two possible results
+            container_list.append(
+                """
+                    {
+                        "container_uid": "%s",
+                        "entry_uid": "%s",
+                        "public": "%s",
+                        "private": "%s",
+                        "timestamp": "%s"
+                    }
+                """ % (row[0], row[1], row[2], row[3], row[4])
 
-    json_output = '{ "container": %s, "data":' % container[0][0]
-    json_output += ', '.join(container_list)
-    json_output += '}'
+            )
+            print(row)
+
+        json_output = '[' + ', '.join(container_list) + ']';
+
+    # simpler?
+
+    if False:
+        def convert(entry):
+            return '{{"container_uid": "{0}", "entry_uid": "{1}", "public": "{2}", "private": "{3}", "timestamp": "{4}"}}'.format(*entry)
+        container_list = map(convert, container)
+        json_output = '[' + ', '.join(container_list) + ']';
+
+    # better? we donot assemble json ourself?
+
+    if True:
+        def convert(entry):
+            return { "container_uid": entry[0], "entry_uid": entry[1], "public": json.loads(entry[2]), "private": json.loads(entry[3]), "timestamp": entry[4] }
+        container_list = map(convert, container)
+        json_output = json.dumps(list(container_list))
 
     return json_output
 

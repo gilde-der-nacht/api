@@ -20,13 +20,26 @@
             document.getElementById('status-output').innerText = JSON.stringify(json);
         }
 
-        function xyz() {
-            console.log('xyz');
+        async function post() {
+            const uid = document.getElementById('post-container-uid').value;
+            const public = document.getElementById('post-public').value;
+            const private = document.getElementById('post-private').value;
+            // TODO unfinished
+            const response = await fetch('/status');
+            const json = await response.json();
+        }
+
+        async function get() {
+            const uid = document.getElementById('get-container-uid').value;
+            const response = await fetch('/get-json-from-container/uid/' + uid);
+            const json = await response.json();
+            document.getElementById('get-output').innerText = json.map(entry => entry['public'] + ' - ' + entry['private']).join('\n');
         }
 
         function main() {
             document.getElementById('status').addEventListener('click', status);
-            document.getElementById('xyz').addEventListener('click', xyz);
+            document.getElementById('post').addEventListener('click', post);
+            document.getElementById('get').addEventListener('click', get);
         }
 
         window.addEventListener('load', main);
@@ -35,15 +48,44 @@
 </head>
 <body>
 
-<h1>status</h1>
+    <h1>status</h1>
 
-<input id="status" type="button" value="status">
+    <input id="status" type="button" value="status">
 
-<pre id="status-output"></pre>
+    <pre id="status-output"></pre>
 
-<h1>xyz</h1>
+    <h1>post</h1>
 
-<input id="xyz" type="button" value="xyz">
+    <p>Container UID <input id="post-container-uid" type="text" value="0123456789012345678901234567890101234567890123456789012345678901"></p>
+    <p>Public <input id="post-public" type="text"></p>
+    <p>Private <input id="post-private" type="text"></p>
+
+    <input id="post" type="button" value="post">
+
+    <pre id="post-output"></pre>
+
+    <h1>get</h1>
+
+    <p>Container UID <input id="get-container-uid" type="text" value="0123456789012345678901234567890101234567890123456789012345678901"></p>
+
+    <input id="get" type="button" value="get">
+
+    <pre id="get-output"></pre>
+
+    <h1>form</h1>
+
+    <form action="/form/0123456789012345678901234567890101234567890123456789012345678901" method="POST">
+        <p>a <input name="a" type="text"></p>
+        <p>b <input name="b" type="text"></p>
+        <p>c <input name="c" type="text"></p>
+        <input name="d" type="hidden" value="ö">
+        <input name="e" type="hidden" value="ä">
+        <input name="f" type="hidden" value="ü">
+        <input type="submit">
+    </form>
+
+    <pre id="form-output"></pre>
+
 
 </body>
 </html>
