@@ -22,10 +22,7 @@ def verify_parameters(container_uid):
 
 
 def verify_json(json_string):
-    try:
-        json.loads(json_string)
-    except ValueError:
-        raise ValueError('Invalid JSON format')
+    json.loads(json_string)
 
 
 def write(container_uid, public_data, private_data):
@@ -42,6 +39,12 @@ def write(container_uid, public_data, private_data):
         INSERT INTO gdn_database (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ? , ?, ?)
     """
     db.execute(insert_entry_sql, (container_uid, entry_uid, public_data, private_data, timestamp))
+    print("written")
+    print(container_uid)
+    print(entry_uid)
+    print(public_data)
+    print(private_data)
+    print(timestamp)
 
 
 def read(container_uid):
@@ -53,9 +56,10 @@ def read(container_uid):
         SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM gdn_database WHERE container_uid = ?
     """
 
-    db.execute(select_container_sql, container_uid)
+    db.execute(select_container_sql, [container_uid])
     results = db.fetchall()
 
+    print(results)
     for row in results:
         print(row)
 
@@ -70,7 +74,7 @@ def read(container_uid):
 
 def db_connect(db_file):
     conn = sqlite3.connect(db_file)
-    conn.row_factory = sqlite3.Row
+    # conn.row_factory = sqlite3.Row
     return conn.cursor()
 
 

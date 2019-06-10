@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<style>
-body {
-	width: 40em;
-	margin: 1em auto;
-}
-</style>
-<script>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 40em;
+            margin: 1em auto;
+        }
+    </style>
+    <script>
 
-/*
-https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-*/
+        /*
+        https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        */
 
-async function status() {
-	const response = await fetch('/status');
-	const json = await response.json();
-	document.getElementById('status-output').innerText = JSON.stringify(json);
-}
+        async function status() {
+            const response = await fetch('/status');
+            const json = await response.json();
+            document.getElementById('status-output').innerText = JSON.stringify(json);
+        }
 
-function xyz() {
-	console.log('xyz');
-}
+        function xyz() {
+            console.log('xyz');
+        }
 
-function main() {
-	document.getElementById('status').addEventListener('click', status);
-	document.getElementById('xyz').addEventListener('click', xyz);
-}
+        function main() {
+            document.getElementById('status').addEventListener('click', status);
+            document.getElementById('xyz').addEventListener('click', xyz);
+        }
 
-window.addEventListener('load', main);
+        window.addEventListener('load', main);
 
-</script>
+    </script>
 </head>
 <body>
 
