@@ -85,3 +85,5 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+database\.sqlite3
