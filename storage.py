@@ -33,56 +33,44 @@ def write(container_uid, public_data, private_data):
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
 
-    db = db_connect(database_path)
+    conn, cur = db_connect(database_path)
 
     insert_entry_sql = """
         INSERT INTO gdn_database (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ? , ?, ?)
     """
-    db.execute(insert_entry_sql, (container_uid, entry_uid, public_data, private_data, timestamp))
-    print("written")
-    print(container_uid)
-    print(entry_uid)
-    print(public_data)
-    print(private_data)
-    print(timestamp)
+    cur.execute(insert_entry_sql, (container_uid, entry_uid, public_data, private_data, timestamp))
+
+    conn.commit()
+    conn.close()
 
 
 def read(container_uid):
     verify_parameters(container_uid)
 
-    db = db_connect(database_path)
+    conn, cur = db_connect(database_path)
 
     select_container_sql = """
         SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM gdn_database WHERE container_uid = ?
     """
 
-    db.execute(select_container_sql, [container_uid])
-    results = db.fetchall()
+    cur.execute(select_container_sql, [container_uid])
+    results = cur.fetchall()
 
-    print(results)
-    for row in results:
-        print(row)
+    return results
 
-    # TODO: Create one JSON to return
-
-    # timestamp = ''
-    # entry_uid = ''
-    # public = ''
-    # private = ''
-    # return entry_uid, timestamp, public, private
+    conn.close()
 
 
 def db_connect(db_file):
     conn = sqlite3.connect(db_file)
-    # conn.row_factory = sqlite3.Row
-    return conn.cursor()
+    return conn, conn.cursor()
 
 
 def setup():
-    db = db_connect(database_path)
+    conn, cur = db_connect(database_path)
 
     reset_tables_sql = 'DROP TABLE IF EXISTS gdn_database;'
-    db.execute(reset_tables_sql)
+    cur.execute(reset_tables_sql)
 
     create_tables_sql = """
         CREATE TABLE gdn_database (
@@ -93,7 +81,8 @@ def setup():
             timestamp TEXT NOT NULL
         )
     """
-    db.execute(create_tables_sql)
+    cur.execute(create_tables_sql)
+    conn.close()
 
 
 if __name__ == '__main__':
@@ -109,7 +98,7 @@ if __name__ == '__main__':
     private_write = '{"b": 2}'
 
     write(uid1, public_write, private_write)
-    read(uid1)
+    uid1, entry_uid1, public_read, private_read, timestamp = read(uid1)[0]
 
-    # assert (public_write == public_read)
-    # assert (private_write == private_read)
+    assert (public_write == public_read)
+    assert (private_write == private_read)
