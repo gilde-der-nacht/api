@@ -2,6 +2,7 @@ import datetime
 
 from flask import Flask, request, abort, json, send_from_directory
 import storage
+
 app = Flask(__name__)
 
 
@@ -10,37 +11,44 @@ def server_status():
     return '&#128154; Flask is running'
 
 
-@app.route('/json-receiver/<uid>', methods=['POST'])
-def json_receiver(uid):
+@app.route('/post-json-to-container/id/<uid>', methods=['POST'])
+def post_json_to_container(uid):
     if request.method != 'POST':
         abort(405)
 
     try:
-        received_data = request.get_data()
-        print(received_data)
-        json.loads(received_data)
+        public_body = request.form['public']
+        json.loads(public_body)
+
+        private_body = request.form['private']
+        json.loads(private_body)
+
     except ValueError:
         abort(400)
 
-    print(uid)
+    storage.write(uid, public_body, private_body)
     return uid
 
 
-@app.route('/json-sender/<uid>')
-def json_sender(uid):
+@app.route('/get-json-from-container/id/<uid>')
+def get_json_from_container(uid):
+    container = storage.read(uid)
 
-    json_as_string = '{' \
-                         '"uid": 5351, ' \
-                         '"public": "here are some public infos"' \
-                     '}'
+    container_list = []
 
-    try:
-        json.loads(json_as_string)
-    except ValueError:
-        abort(400)
+    for row in container:
+        temp = '{ "entry_uid": %s,' % row[1]
+        temp += '"public_body": %s,' % row[2]
+        temp += '"private_body": %s,' % row[3]  # TODO Auth only
+        temp += '"timestamp": %s' % row[4]
+        temp += '}'
+        container_list.append(temp)
 
-    print(uid)
-    return json_as_string
+    json_output = '{ "container": %s, "data":' % container[0][0]
+    json_output += ', '.join(container_list)
+    json_output += '}'
+
+    return json_output
 
 
 @app.route('/admin')

@@ -17,8 +17,9 @@ def generate_timestamp():
 
 
 def verify_uid(container_uid):
-    if len(container_uid) != (2 * length_of_uid):
-        raise ValueError('Invalid Container ID')
+    pass
+    # if len(container_uid) != (2 * length_of_uid):
+    #     raise ValueError('Invalid Container ID')
 
 
 def write(container_uid, public_data, private_data):
