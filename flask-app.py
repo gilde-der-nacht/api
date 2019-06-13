@@ -2,6 +2,28 @@
 
 # TODO add description of the core ideas
 
+# This flask microservice accepts REST requests as follows:
+#
+# storage:
+#   there are two kinds of data
+#       resources   -> buckets for entries of the same kind, enriched with a email address
+#       entries     -> saved data (eg. form data or registrations for events),
+#           two main data sets (JSON format):
+#               public  -> public data, everybody can read
+#               private -> only access with authentication
+#
+# domain: api.gildedernacht.ch/v1/
+#   '/resources'                    -> interact with ALL the resources
+#   '/resources/{uid}'              -> interact with ONE resource
+#   '/resources/{uid}/entries'      -> interact with ALL entries of one resource
+#   '/resource/{uid}/entries/{uid}' -> interact with ONE entry
+#
+# methods:
+#   GET     -> read all public data
+#   POST    -> write new data
+#   PUT     -> write a copied entry which does update some data (doesn't override anything)
+#   DELETE  -> write a copied entry with the status 'deleted' (doesn't override anything)
+
 import datetime
 
 from flask import Flask, request, abort, json, send_from_directory
