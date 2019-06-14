@@ -51,9 +51,9 @@ def read(container_uid):
     cur.execute(select_container_sql, [container_uid])
     results = cur.fetchall()
 
-    return results
-
     conn.close()
+
+    return results
 
 
 def db_connect(db_file):
@@ -83,7 +83,7 @@ def setup():
             public_body TEXT NOT NULL,
             private_body TEXT NOT NULL
         )
-    """
+        """
     cur.execute(create_resources_tables_sql)
 
     create_entries_tables_sql = """
@@ -97,7 +97,7 @@ def setup():
             private_body TEXT NOT NULL,
             FOREIGN KEY (resource_uid) REFERENCES resources (resource_uid)
         )
-    """
+        """
     cur.execute(create_entries_tables_sql)
 
     conn.close()
