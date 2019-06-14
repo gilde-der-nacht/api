@@ -5,7 +5,7 @@ import secrets
 import datetime
 
 length_of_uid = 32
-database_path = 'database.sqlite3'
+database_path = 'storage/database.sqlite3'
 
 
 def generate_uid():
@@ -22,7 +22,7 @@ def verify_uid(container_uid):
     # TODO test if it a hexstring -> just do int(string, 16) -> gives also ValueError
 
 
-def write(container_uid, public_data, private_data):
+def write(public_data, private_data, container_uid=None):
     verify_uid(container_uid)
 
     entry_uid = generate_uid()
@@ -31,7 +31,7 @@ def write(container_uid, public_data, private_data):
     conn, cur = db_connect(database_path)
 
     insert_entry_sql = """
-        INSERT INTO gdn_database (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
+        INSERT INTO entries (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
     """
     cur.execute(insert_entry_sql, (container_uid, entry_uid, public_data, private_data, timestamp))
 
@@ -45,7 +45,7 @@ def read(container_uid):
     conn, cur = db_connect(database_path)
 
     select_container_sql = """
-        SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM gdn_database WHERE container_uid = ?
+        SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM entries WHERE container_uid = ?
     """
 
     cur.execute(select_container_sql, [container_uid])
@@ -64,19 +64,42 @@ def db_connect(db_file):
 def setup():
     conn, cur = db_connect(database_path)
 
-    reset_tables_sql = """DROP TABLE IF EXISTS gdn_database"""
-    cur.execute(reset_tables_sql)
+    reset_resources_tables_sql = """
+        DROP TABLE IF EXISTS resources;
+        """
+    cur.execute(reset_resources_tables_sql)
 
-    create_tables_sql = """
-        CREATE TABLE gdn_database (
-            container_uid TEXT NOT NULL,
-            entry_uid TEXT NOT NULL,
+    reset_entries_tables_sql = """
+        DROP TABLE IF EXISTS entries;
+        """
+    cur.execute(reset_entries_tables_sql)
+
+    create_resources_tables_sql = """
+        CREATE TABLE resources (
+            resource_uid TEXT UNIQUE NOT NULL,
+            timestamp TEXT NOT NULL,
+            url TEXT NOT NULL,
+            user_agent TEXT NOT NULL,
             public_body TEXT NOT NULL,
-            private_body TEXT NOT NULL,
-            timestamp TEXT NOT NULL
+            private_body TEXT NOT NULL
         )
     """
-    cur.execute(create_tables_sql)
+    cur.execute(create_resources_tables_sql)
+
+    create_entries_tables_sql = """
+        CREATE TABLE entries (
+            resource_uid TEXT NOT NULL,
+            entry_uid TEXT UNIQUE NOT NULL,
+            timestamp TEXT NOT NULL,
+            url TEXT NOT NULL,
+            user_agent TEXT NOT NULL,
+            public_body TEXT NOT NULL,
+            private_body TEXT NOT NULL,
+            FOREIGN KEY (resource_uid) REFERENCES resources (resource_uid)
+        )
+    """
+    cur.execute(create_entries_tables_sql)
+
     conn.close()
 
 
