@@ -13,10 +13,10 @@
 #               private -> only access with authentication
 #
 # domain: api.gildedernacht.ch/v1/
-#   '/resources'                    -> interact with ALL the resources
-#   '/resources/{uid}'              -> interact with ONE resource
-#   '/resources/{uid}/entries'      -> interact with ALL entries of one resource
-#   '/resource/{uid}/entries/{uid}' -> interact with ONE entry   TODO i assume this is wrong
+#   '/resources'                     -> interact with ALL the resources
+#   '/resources/{uid}'               -> interact with ONE resource
+#   '/resources/{uid}/entries'       -> interact with ALL entries of one resource
+#   '/resources/{uid}/entries/{uid}' -> interact with ONE entry
 #
 # methods:
 #   GET     -> read all data (if not authenticated, only public data)
