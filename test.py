@@ -30,7 +30,7 @@ def delete(path):
 
 assert get('/') == (b'&#128154; Flask is running', status_codes.StatusCode.HTTP_200_OK)
 
-# assert 'time' in json.loads(get('/status')) -> doesn't work for me
+# assert 'time' in json.loads(get('/status')) -> doesn't work for me -> Thomas now i cannot work anymore because get returns a tuple
 
 new_resource_data = '''
     {
