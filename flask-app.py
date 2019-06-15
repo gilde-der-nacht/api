@@ -16,7 +16,7 @@
 #   '/resources'                    -> interact with ALL the resources
 #   '/resources/{uid}'              -> interact with ONE resource
 #   '/resources/{uid}/entries'      -> interact with ALL entries of one resource
-#   '/resource/{uid}/entries/{uid}' -> interact with ONE entry
+#   '/resource/{uid}/entries/{uid}' -> interact with ONE entry   TODO i assume this is wrong
 #
 # methods:
 #   GET     -> read all data (if not authenticated, only public data)
@@ -27,7 +27,7 @@
 import datetime
 
 from flask import Flask, request, abort, json, send_from_directory
-from utility import status_codes
+from utility import status_codes # TODO is there really no module in flask which offers this?
 from storage import storage
 
 app = Flask(__name__)
@@ -42,6 +42,7 @@ def server_status():
 # POST: add new resource    -> public (description), private (email address), only if authenticated
 # PUT: not allowed
 # DELETE: not allowed
+# TODO comment partially repeats the code, is obvious from the following line, which methods are supported
 @app.route('/resources', methods=['GET', 'POST'])
 def resources():
     if request.method != 'GET' and request.method != 'POST':
@@ -51,6 +52,7 @@ def resources():
         return 'check'
         # all_resources = storage.read_all('resources')
 
+    # TODO use an elif, if it was a GET it is impossible to be a POST
     if request.method == 'POST':
         # public_body = request.data.get('public_body')
         # private_body = request.data.get('private_body')
@@ -142,6 +144,7 @@ def admin():
     return send_from_directory('static', 'admin.html')
 
 
+# TODO add api version so clients can test for an API and there may also be backward compatbilit for the future
 @app.route('/status')
 def status():
     return '{"time": "' + str(datetime.datetime.now()) + '"}'

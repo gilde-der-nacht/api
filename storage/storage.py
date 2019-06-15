@@ -30,6 +30,8 @@ def write(public_data, private_data, container_uid=None):
 
     conn, cur = db_connect(database_path)
 
+    # TODO still a mix of body/data
+
     insert_entry_sql = """
         INSERT INTO entries (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
     """
@@ -57,6 +59,10 @@ def read(container_uid):
 
 
 def db_connect(db_file):
+    # TODO sometimes called file, sometimes called path, what is it?
+    # TODO why has this method a prefix, the other ones not?
+    # TODO even if it is called db_connect, why is the parameter has a prefix?
+
     conn = sqlite3.connect(db_file)
     return conn, conn.cursor()
 
@@ -99,6 +105,8 @@ def setup():
         )
         """
     cur.execute(create_entries_tables_sql)
+
+    # TODO all this command can be merged into one command and sent to the database at once
 
     conn.close()
 
