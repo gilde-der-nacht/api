@@ -67,7 +67,7 @@ assert delete('/resources')[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_AL
 # GET
 get_existing_resource = get('/resources/{0}'.format(created_resource_uid))
 assert get_existing_resource[0] == created_resource_uid
-assert get_existing_resource[1] == {"name": "Anmeldungen Rollenspieltage 2019"}
+assert get_existing_resource[1] == {"name": "Anmeldungen Rollenspieltage 2019"} # TODO decide for " or ', ' has the advantage that it interrupts less if HTML is written inside strings
 assert get_existing_resource[2] == {"email": "mail@abc.ch"}
 assert get_existing_resource[3] == status_codes.StatusCode.HTTP_200_OK
 
@@ -99,7 +99,7 @@ updated_entry_data = {
 # GET
 assert get('/resources/{0}/entries'.format(created_resource_uid)) == (b'check', status_codes.StatusCode.HTTP_200_OK)
 
-# POST
+# POST TODO do this comments POST, PUT, DELETE, ... really add something useful? what about using unittest (https://docs.python.org/3/library/unittest.html) and give the class a name which describes what you want to do, get TestAllowedMethods
 new_entry = post('/resources/{0}/entries'.format(created_resource_uid), new_entry_data)
 created_entry_uid = new_entry[0]
 assert len(created_entry_uid) == 64
@@ -126,7 +126,7 @@ assert get_non_existing_entry[2] == status_codes.StatusCode.HTTP_204_NO_CONTENT
 
 # POST
 assert post('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), new_entry_data)[
-           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
+           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED # TODO does breaking the line here really makes the code more readable?
 
 # PUT
 assert put('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), updated_entry_data)[

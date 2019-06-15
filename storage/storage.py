@@ -4,6 +4,7 @@ import sqlite3
 import secrets
 import datetime
 
+# the status code constants are all uppercase, this are lowercase, just decide for one
 length_of_uid = 32
 database_path = 'storage/database.sqlite3'
 
@@ -13,7 +14,7 @@ def generate_uid():
 
 
 def generate_timestamp():
-    return str(datetime.datetime.now())  # TODO is the format guaranteed? or is better to explicitly specify it?
+    return str(datetime.datetime.now())  # TODO is the format guaranteed? or is better to explicitly specify it? now().isoformat?
 
 
 def verify_uid(container_uid):
