@@ -139,12 +139,28 @@ def resources():
 #     return json_output
 
 
+# TODO authentication
 @app.route('/admin')
 def admin():
     return send_from_directory('static', 'admin.html')
 
 
+# TODO authentication
+@app.route('/test')
+def test():
+    return send_from_directory('static', 'test.html')
+
+
+# TODO use the name of the application here
+@app.route('/app.js')
+def js():
+        return send_from_directory('static', 'app.js')
+
+
 # TODO add api version so clients can test for an API and there may also be backward compatbilit for the future
 @app.route('/status')
 def status():
-    return '{"time": "' + str(datetime.datetime.now()) + '"}'
+    return json.dumps({
+        'version': '0.0.0',
+        'time': datetime.datetime.now().isoformat(),
+    })

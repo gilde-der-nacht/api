@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    width: 40em;
+    margin: 1em auto;
+}
+</style>
+<script src="app.js"></script>
+<script>
+'use strict';
+
+async function http_get(path) {
+    const response = await fetch(path);
+    const text = await response.text();
+    return [text, response.status]
+}
+
+async function http_post(path, data) {
+    const response = await fetch(path, {
+        method: 'POST',
+        body: data,
+    });
+    const text = await response.text();
+    return [text, response.status]
+}
+
+async function http_put(path, data) {
+    const response = await fetch(path, {
+        method: 'PUT',
+        body: data,
+    });
+    const text = await response.text();
+    return [text, response.status]
+}
+
+async function http_delete(path) {
+    const response = await fetch(path, {
+        method: 'DELETE',
+    });
+    const text = await response.text();
+    return [text, response.status]
+}
+
+async function main() {
+    console.info('tests started');
+
+    // TODO create status codes
+
+    // test the service with raw get/post/put/delete methods
+
+    {
+        const [_, status] = await http_get('/invalid-url');
+        console.assert(status === 404);
+
+        console.assert((await http_get('/invalid-url'))[1] === 404);
+    }
+
+    {
+        console.assert((await http_get('/resources'))[1] === 200);
+        console.assert((await http_post('/resources', '{}'))[1] === 201);
+        console.assert((await http_put('/resources', '{}'))[1] === 405);
+        console.assert((await http_delete('/resources'))[1] === 405);
+    }
+
+    // test the service with library the client uses itself
+
+    {
+        const status = await app_status();
+        console.assert('version' in status);
+        console.assert('time' in status);
+        console.assert(status.version === '0.0.0');
+    }
+
+    console.info('tests finished');
+}
+
+window.addEventListener('load', main);
+
+</script>
+</head>
+<body>
+
+<h1>Test</h1>
+
+<p>open developer tools for results</p>
+
+</body>
+</html>
