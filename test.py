@@ -32,19 +32,15 @@ assert get('/') == (b'&#128154; Flask is running', status_codes.StatusCode.HTTP_
 
 # assert 'time' in json.loads(get('/status')) -> doesn't work for me -> Thomas now i cannot work anymore because get returns a tuple
 
-new_resource_data = '''
-    {
-        "public_body": {"name": "Anmeldungen Rollenspieltage 2019"},
-        "private_body": {"email": "mail@abc.ch"}
-    }
-'''
+new_resource_data = '''{
+    'public_body': {'name': 'Anmeldungen Rollenspieltage 2019'},
+    'private_body': {'email': 'mail@abc.ch'}
+}'''
 
-updated_resource_data = '''
-    {
-        "public_body": {"name": "Anmeldungen Rollenspieltage 2019 UPDATED"},
-        "private_body": {"email": "mail@xyz.ch"}
-    }
-'''
+updated_resource_data = '''{
+    'public_body': {'name': 'Anmeldungen Rollenspieltage 2019 UPDATED'},
+    'private_body': {'email': 'mail@xyz.ch'}
+}'''
 
 # route '/resources'
 # GET
@@ -67,8 +63,8 @@ assert delete('/resources')[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_AL
 # GET
 get_existing_resource = get('/resources/{0}'.format(created_resource_uid))
 assert get_existing_resource[0] == created_resource_uid
-assert get_existing_resource[1] == {"name": "Anmeldungen Rollenspieltage 2019"}  # TODO decide for " or ', ' has the advantage that it interrupts less if HTML is written inside strings
-assert get_existing_resource[2] == {"email": "mail@abc.ch"}
+assert get_existing_resource[1] == {'name': 'Anmeldungen Rollenspieltage 2019'}
+assert get_existing_resource[2] == {'email': 'mail@abc.ch'}
 assert get_existing_resource[3] == status_codes.StatusCode.HTTP_200_OK
 
 get_non_existing_resource = get('/resources/{0}'.format('not_a_correct_uid'))
@@ -84,13 +80,13 @@ assert put('/resources/{0}'.format(created_resource_uid), updated_resource_data)
 assert delete('/resources/{0}'.format(created_resource_uid))[1] == status_codes.StatusCode.HTTP_201_CREATED
 
 new_entry_data = {
-    "public_body": {"events": ["Workshop: Unicorns in Gaming", "D&D: But with Lightsaber"]},
-    "private_body": {"name": "Hans Muster", "email": "mail@abc.ch"}
+    'public_body': {'events': ['Workshop: Unicorns in Gaming', 'D&D: But with Lightsaber']},
+    'private_body': {'name': 'Hans Muster', 'email': 'mail@abc.ch'}
 }
 
 updated_entry_data = {
-    "public_body": {"events": ["Workshop: Unicorns in Gaming"]},
-    "private_body": {"name": "Hans Muster-Update", "email": "mail@xyz.ch"}
+    'public_body': {'events': ['Workshop: Unicorns in Gaming']},
+    'private_body': {'name': 'Hans Muster-Update', 'email': 'mail@xyz.ch'}
 }
 
 # route '/resources/<uid>/entries'
@@ -113,8 +109,8 @@ assert delete('/resources/{0}/entries'.format(created_resource_uid))[1] == statu
 # GET
 get_existing_entry = get('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid))
 assert get_existing_entry[0] == created_entry_uid
-assert get_existing_entry[1] == {"events": ["Workshop: Unicorns in Gaming", "D&D: But with Lightsaber"]}
-assert get_existing_entry[2] == {"name": "Hans Muster", "email": "mail@abc.ch"}
+assert get_existing_entry[1] == {'events': ['Workshop: Unicorns in Gaming', 'D&D: But with Lightsaber']}
+assert get_existing_entry[2] == {'name': 'Hans Muster', 'email': 'mail@abc.ch'}
 assert get_existing_entry[3] == status_codes.StatusCode.HTTP_200_OK
 
 get_non_existing_entry = get('/resources/{0}/entries/{1}'.format(created_resource_uid, 'not_a_correct_uid'))
