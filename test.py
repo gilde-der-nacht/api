@@ -67,7 +67,7 @@ assert delete('/resources')[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_AL
 # GET
 get_existing_resource = get('/resources/{0}'.format(created_resource_uid))
 assert get_existing_resource[0] == created_resource_uid
-assert get_existing_resource[1] == {"name": "Anmeldungen Rollenspieltage 2019"} # TODO decide for " or ', ' has the advantage that it interrupts less if HTML is written inside strings
+assert get_existing_resource[1] == {"name": "Anmeldungen Rollenspieltage 2019"}  # TODO decide for " or ', ' has the advantage that it interrupts less if HTML is written inside strings
 assert get_existing_resource[2] == {"email": "mail@abc.ch"}
 assert get_existing_resource[3] == status_codes.StatusCode.HTTP_200_OK
 
@@ -75,12 +75,10 @@ get_non_existing_resource = get('/resources/{0}'.format('not_a_correct_uid'))
 assert get_non_existing_resource[2] == status_codes.StatusCode.HTTP_204_NO_CONTENT
 
 # POST
-assert post('/resources/{0}'.format(created_resource_uid), new_resource_data)[
-           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
+assert post('/resources/{0}'.format(created_resource_uid), new_resource_data)[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
 
 # PUT
-assert put('/resources/{0}'.format(created_resource_uid), updated_resource_data)[
-           1] == status_codes.StatusCode.HTTP_201_CREATED
+assert put('/resources/{0}'.format(created_resource_uid), updated_resource_data)[1] == status_codes.StatusCode.HTTP_201_CREATED
 
 # DELETE
 assert delete('/resources/{0}'.format(created_resource_uid))[1] == status_codes.StatusCode.HTTP_201_CREATED
@@ -106,12 +104,10 @@ assert len(created_entry_uid) == 64
 assert new_entry[1] == status_codes.StatusCode.HTTP_201_CREATED
 
 # PUT
-assert put('/resources/{0}/entries'.format(created_resource_uid), updated_entry_data)[
-           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
+assert put('/resources/{0}/entries'.format(created_resource_uid), updated_entry_data)[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
 
 # DELETE
-assert delete('/resources/{0}/entries'.format(created_resource_uid))[
-           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
+assert delete('/resources/{0}/entries'.format(created_resource_uid))[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED
 
 # route '/resources/<uid>/entries/<uid>'
 # GET
@@ -125,16 +121,13 @@ get_non_existing_entry = get('/resources/{0}/entries/{1}'.format(created_resourc
 assert get_non_existing_entry[2] == status_codes.StatusCode.HTTP_204_NO_CONTENT
 
 # POST
-assert post('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), new_entry_data)[
-           1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED # TODO does breaking the line here really makes the code more readable?
+assert post('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), new_entry_data)[1] == status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED  # TODO does breaking the line here really makes the code more readable?
 
 # PUT
-assert put('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), updated_entry_data)[
-           1] == status_codes.StatusCode.HTTP_201_CREATED
+assert put('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid), updated_entry_data)[1] == status_codes.StatusCode.HTTP_201_CREATED
 
 # DELETE
-assert delete('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid))[
-           1] == status_codes.StatusCode.HTTP_201_CREATED
+assert delete('/resources/{0}/entries/{1}'.format(created_resource_uid, created_entry_uid))[1] == status_codes.StatusCode.HTTP_201_CREATED
 
 # TODO test invalid id
 # TODO add api version to status, use semantic versioning
