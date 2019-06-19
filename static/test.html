@@ -12,73 +12,58 @@ body {
 <script>
 'use strict';
 
-async function http_get(path) {
-    const response = await fetch(path);
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_post(path, data) {
-    const response = await fetch(path, {
-        method: 'POST',
-        body: data,
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_put(path, data) {
-    const response = await fetch(path, {
-        method: 'PUT',
-        body: data,
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_delete(path) {
-    const response = await fetch(path, {
-        method: 'DELETE',
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
 async function main() {
     console.info('tests started');
 
-    // TODO create status codes
+    const app = new App();
 
     // test the service with raw get/post/put/delete methods
 
     {
         const [_, status] = await http_get('/invalid-url');
-        console.assert(status === 404);
+        console.assert(status === HTTP_404_NOT_FOUND);
 
-        console.assert((await http_get('/invalid-url'))[1] === 404);
+        console.assert((await http_get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
     }
 
     {
-        console.assert((await http_get('/resources'))[1] === 200);
-        console.assert((await http_post('/resources', '{}'))[1] === 201);
-        console.assert((await http_put('/resources', '{}'))[1] === 405);
-        console.assert((await http_delete('/resources'))[1] === 405);
+        console.assert((await http_get('/resources'))[1] === HTTP_200_OK);
+        console.assert((await http_post('/resources', '{}'))[1] === HTTP_201_CREATED);
+        console.assert((await http_put('/resources', '{}'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        console.assert((await http_delete('/resources'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
     }
 
-    // test the service with library the client uses itself
+    // test the service with the library the client uses
 
     {
-        const status = await app_status();
+        const status = await app.status();
         console.assert('version' in status);
         console.assert('time' in status);
         console.assert(status.version === '0.0.0');
+    }
+
+    {
+        console.assert(!App._verifyBody('{}'));
+        console.assert(App._verifyBody({}));
+
+        console.assert(!App._verifyUid(''));
+        console.assert(!App._verifyUid('0'));
+        console.assert(!App._verifyUid('01234567890123456789012345678901234567890123456789012345678901234'));
+        console.assert(App._verifyUid('0123456789012345678901234567890123456789012345678901234567890123'));
+    }
+
+    {
+        const uid = '0123456789012345678901234567890123456789012345678901234567890123';
+
+        app.ressourcelistAll(uid);
+        app.ressourcelistAll(uid);
+        app.ressourceAdd(uid, {}, {});
     }
 
     console.info('tests finished');
 }
 
 window.addEventListener('load', main);
-
 </script>
 </head>
 <body>
