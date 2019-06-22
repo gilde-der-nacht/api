@@ -115,15 +115,15 @@ class App {
         return json;
     }
 
-    async ressourceAdd(ressourceUid, publicBody, privateBody) {
-        App._verify(App._verifyUid(ressourceUid));
+    async resourceAdd(resourceUid, publicBody, privateBody) {
+        App._verify(App._verifyUid(resourceUid));
         App._verify(App._verifyBody(publicBody));
         App._verify(App._verifyBody(privateBody));
     }
 
-    async ressourcelistAll(ressourceUid) {
-        App._verify(App._verifyUid(ressourceUid));
-        const path = `/ressource/${ressourceUid}`;
+    async resourcelistAll(resourceUid) {
+        App._verify(App._verifyUid(resourceUid));
+        const path = `/resource/${resourceUid}`;
         return [];
     }
 }
