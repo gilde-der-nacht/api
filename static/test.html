@@ -26,12 +26,12 @@ async function main() {
         console.assert((await http_get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
     }
 
-    {
+    /*{
         console.assert((await http_get('/resources'))[1] === HTTP_200_OK);
         console.assert((await http_post('/resources', '{}'))[1] === HTTP_201_CREATED);
         console.assert((await http_put('/resources', '{}'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
         console.assert((await http_delete('/resources'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
-    }
+    }*/
 
     // test the service with the library the client uses
 
