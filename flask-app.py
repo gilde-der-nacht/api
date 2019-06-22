@@ -64,6 +64,30 @@ def resources():
         return 'b3e35dfa2cd27cd385f08c246b6d49cf2e991c894d96828ba355063e77723fc0', requests.codes.CREATED
 
 
+# GET: get all entries of this resource -> UIDs, meta info, public_body, private_body
+# POST: add new entry                   -> public_body, private_body
+# PUT: not allowed
+# DELETE: not allowed
+@app.route('/resources/<res_uid>/entries')
+def entries(res_uid):
+    if request.method != 'GET' and request.method != 'POST':
+        abort(requests.codes.METHOD_NOT_ALLOWED)
+
+    if request.method == 'GET':
+        all_entries = storage.read(res_uid)
+        return all_entries
+
+    # TODO use an elif, if it was a GET it is impossible to be a POST
+    if request.method == 'POST':
+        public_body = request.data.get('public_body')
+        private_body = request.data.get('private_body')
+
+        entry = storage.write(res_uid, public_body, private_body)
+        entry_uid = entry.get('uid')
+
+        return entry_uid, requests.codes.CREATED
+
+
 # @app.route('/post-json-to-container/uid/<uid>', methods=['POST'])
 # def post_json_to_container(uid):
 #     # naming, we do not return a container we actually return the entries, /container/.../<uid> may return some statistics about the container or nothing at all
