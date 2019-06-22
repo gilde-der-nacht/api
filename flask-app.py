@@ -155,7 +155,7 @@ def js():
         return send_from_directory('static', 'app.js')
 
 
-# TODO add api version so clients can test for an API and there may also be backward compatbilit for the future
+# TODO add api version so clients can test for an API and there may also be backward compatbility for the future
 @app.route('/status')
 def status():
     return json.dumps({
