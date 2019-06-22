@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-
+import os
 import sqlite3
 import secrets
 import datetime
 
 LENGTH_OF_UID = 32
-DB_PATH = 'database.sqlite3'
+STORAGE_PATH = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = STORAGE_PATH + '/database.sqlite3'
 
 
 def generate_uid():
@@ -106,6 +107,21 @@ def generate_test_resource():
     cur.execute(insert_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
 
     conn.close()
+
+
+def read_test_resource(resource_uid):
+    conn, cur = connect(DB_PATH)
+
+    select_resource_sql = """
+        SELECT resource_uid, timestamp, url, user_agent, public_body, private_body FROM resources WHERE resource_uid = ?
+    """
+
+    cur.execute(select_resource_sql, [resource_uid])
+    results = cur.fetchall()
+
+    conn.close()
+
+    return results
 
 
 if __name__ == '__main__':
