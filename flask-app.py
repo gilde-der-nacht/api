@@ -68,13 +68,13 @@ def resources():
 # POST: add new entry                   -> public_body, private_body
 # PUT: not allowed
 # DELETE: not allowed
-@app.route('/resources/<res_uid>/entries')
-def entries(res_uid):
+@app.route('/resources/<resource_uid>/entries')
+def entries(resource_uid):
     if request.method != 'GET' and request.method != 'POST':
         abort(requests.codes.METHOD_NOT_ALLOWED)
 
     if request.method == 'GET':
-        all_entries = storage.read(res_uid)
+        all_entries = storage.read(resource_uid)
         return all_entries
 
     # TODO use an elif, if it was a GET it is impossible to be a POST
@@ -82,7 +82,7 @@ def entries(res_uid):
         public_body = request.data.get('public_body')
         private_body = request.data.get('private_body')
 
-        entry = storage.write(res_uid, public_body, private_body)
+        entry = storage.write(resource_uid, public_body, private_body)
         entry_uid = entry.get('uid')
 
         return entry_uid, requests.codes.CREATED

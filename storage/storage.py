@@ -4,9 +4,8 @@ import sqlite3
 import secrets
 import datetime
 
-# the status code constants are all uppercase, this are lowercase, just decide for one
 LENGTH_OF_UID = 32
-DB_PATH = 'storage/database.sqlite3'
+DB_PATH = 'database.sqlite3'
 
 
 def generate_uid():
@@ -14,44 +13,44 @@ def generate_uid():
 
 
 def generate_timestamp():
-    return str(datetime.datetime.now())  # TODO is the format guaranteed? or is better to explicitly specify it? now().isoformat?
+    return str(datetime.datetime.now().isoformat())
 
 
-def verify_uid(container_uid):
-    if len(container_uid) != (2 * LENGTH_OF_UID):
+def verify_uid(uid):
+    if len(uid) != (2 * LENGTH_OF_UID):
         raise ValueError('Invalid Container ID')
-    # TODO test if it a hexstring -> just do int(string, 16) -> gives also ValueError
+    return int(uid, 16)
 
 
-def write(public_data, private_data, container_uid=None):
-    verify_uid(container_uid)
+def write(resource_uid, public_body, private_body):
+    verify_uid(resource_uid)
 
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
 
     conn, cur = connect(DB_PATH)
 
-    # TODO still a mix of body/data
-
     insert_entry_sql = """
-        INSERT INTO entries (container_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
+        INSERT INTO entries (resource_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
     """
-    cur.execute(insert_entry_sql, (container_uid, entry_uid, public_data, private_data, timestamp))
+    cur.execute(insert_entry_sql, (resource_uid, entry_uid, public_body, private_body, timestamp))
 
     conn.commit()
     conn.close()
 
+    return {'uid': entry_uid, 'timestamp': timestamp}
 
-def read(container_uid):
-    verify_uid(container_uid)
+
+def read(resource_uid):
+    verify_uid(resource_uid)
 
     conn, cur = connect(DB_PATH)
 
     select_container_sql = """
-        SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM entries WHERE container_uid = ?
+        SELECT resource_uid, entry_uid, public_body, private_body, timestamp FROM entries WHERE resource_uid = ?
     """
 
-    cur.execute(select_container_sql, [container_uid])
+    cur.execute(select_container_sql, [resource_uid])
     results = cur.fetchall()
 
     conn.close()
@@ -60,24 +59,19 @@ def read(container_uid):
 
 
 def connect(path):
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, isolation_level=None)
     return conn, conn.cursor()
 
 
 def setup():
     conn, cur = connect(DB_PATH)
 
-    reset_resources_tables_sql = """
+    reset_tables_sql = """
         DROP TABLE IF EXISTS resources;
-        """
-    cur.execute(reset_resources_tables_sql)
-
-    reset_entries_tables_sql = """
         DROP TABLE IF EXISTS entries;
-        """
-    cur.execute(reset_entries_tables_sql)
+    """
 
-    create_resources_tables_sql = """
+    create_tables_sql = """
         CREATE TABLE resources (
             resource_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
@@ -85,12 +79,8 @@ def setup():
             user_agent TEXT NOT NULL,
             public_body TEXT NOT NULL,
             private_body TEXT NOT NULL
-        )
-        """
-    cur.execute(create_resources_tables_sql)
-
-    create_entries_tables_sql = """
-        CREATE TABLE entries (
+        );
+            CREATE TABLE entries (
             resource_uid TEXT NOT NULL,
             entry_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
@@ -99,30 +89,41 @@ def setup():
             public_body TEXT NOT NULL,
             private_body TEXT NOT NULL,
             FOREIGN KEY (resource_uid) REFERENCES resources (resource_uid)
-        )
-        """
-    cur.execute(create_entries_tables_sql)
+        );
+    """
 
-    # TODO all this command can be merged into one command and sent to the database at once
+    cur.executescript(reset_tables_sql + create_tables_sql)
+    conn.close()
 
+
+def generate_test_resource():
+    conn, cur = connect(DB_PATH)
+
+    create_test_resource_sql = """
+        INSERT INTO resources (resource_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?)
+    """
+
+    cur.execute(create_test_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
+    conn.commit()
     conn.close()
 
 
 if __name__ == '__main__':
     setup()
+    generate_test_resource()
 
-    uid1 = generate_uid()
-    print(uid1)
-
-    timestamp = generate_timestamp()
-    print(timestamp)
-
-    public_write = '{"a": 1}'
-    private_write = '{"b": 2}'
-
-    write(uid1, public_write, private_write)
-    uid1_read, entry_uid1, public_read, private_read, timestamp = read(uid1)[0]
-
-    assert uid1_read == uid1
-    assert public_write == public_read
-    assert private_write == private_read
+    # uid1 = generate_uid()
+    # print(uid1)
+    #
+    # timestamp = generate_timestamp()
+    # print(timestamp)
+    #
+    # public_write = '{"a": 1}'
+    # private_write = '{"b": 2}'
+    #
+    # write(uid1, public_write, private_write)
+    # uid1_read, entry_uid1, public_read, private_read, timestamp = read(uid1)[0]
+    #
+    # assert uid1_read == uid1
+    # assert public_write == public_read
+    # assert private_write == private_read
