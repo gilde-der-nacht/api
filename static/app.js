@@ -91,7 +91,7 @@ const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
 const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
 class App {
-    // verify functions are not here to protect against mailicous intent (which is impossible), but to give the user of this class an early feedback if a paramter is invalid
+    // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
     static _verify(condition) {
         if(!condition) {
             throw 'Invalid Parameter';
