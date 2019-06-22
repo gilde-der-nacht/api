@@ -5,12 +5,12 @@ import secrets
 import datetime
 
 # the status code constants are all uppercase, this are lowercase, just decide for one
-length_of_uid = 32
-database_path = 'storage/database.sqlite3'
+LENGTH_OF_UID = 32
+DB_PATH = 'storage/database.sqlite3'
 
 
 def generate_uid():
-    return secrets.token_hex(length_of_uid)
+    return secrets.token_hex(LENGTH_OF_UID)
 
 
 def generate_timestamp():
@@ -18,7 +18,7 @@ def generate_timestamp():
 
 
 def verify_uid(container_uid):
-    if len(container_uid) != (2 * length_of_uid):
+    if len(container_uid) != (2 * LENGTH_OF_UID):
         raise ValueError('Invalid Container ID')
     # TODO test if it a hexstring -> just do int(string, 16) -> gives also ValueError
 
@@ -29,7 +29,7 @@ def write(public_data, private_data, container_uid=None):
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
 
-    conn, cur = db_connect(database_path)
+    conn, cur = connect(DB_PATH)
 
     # TODO still a mix of body/data
 
@@ -45,7 +45,7 @@ def write(public_data, private_data, container_uid=None):
 def read(container_uid):
     verify_uid(container_uid)
 
-    conn, cur = db_connect(database_path)
+    conn, cur = connect(DB_PATH)
 
     select_container_sql = """
         SELECT container_uid, entry_uid, public_body, private_body, timestamp FROM entries WHERE container_uid = ?
@@ -59,17 +59,13 @@ def read(container_uid):
     return results
 
 
-def db_connect(db_file):
-    # TODO sometimes called file, sometimes called path, what is it?
-    # TODO why has this method a prefix, the other ones not?
-    # TODO even if it is called db_connect, why is the parameter has a prefix?
-
-    conn = sqlite3.connect(db_file)
+def connect(path):
+    conn = sqlite3.connect(path)
     return conn, conn.cursor()
 
 
 def setup():
-    conn, cur = db_connect(database_path)
+    conn, cur = connect(DB_PATH)
 
     reset_resources_tables_sql = """
         DROP TABLE IF EXISTS resources;
