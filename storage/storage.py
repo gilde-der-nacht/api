@@ -19,7 +19,7 @@ def generate_timestamp():
 
 def verify_uid(uid):
     if len(uid) != (2 * LENGTH_OF_UID):
-        raise ValueError('Invalid resource ID')
+        raise ValueError('Invalid Resource ID')
     return int(uid, 16)
 
 
