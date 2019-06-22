@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# export FLASK_APP=flask-app.py
+# export FLASK_ENV=development
+# flask run
+
 # This flask microservice accepts REST requests as follows:
 #
 # storage:
@@ -24,8 +28,8 @@
 
 import datetime
 
+import requests
 from flask import Flask, request, abort, json, send_from_directory
-from utility import status_codes # TODO is there really no module in flask which offers this?
 from storage import storage
 
 app = Flask(__name__)
@@ -33,7 +37,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def server_status():
-    return '&#128154; Flask is running'
+    return '&#128154; Flask is running', requests.codes.OK
 
 
 # GET: get all resources    -> UID, public (description), private (email address)
@@ -44,7 +48,7 @@ def server_status():
 @app.route('/resources', methods=['GET', 'POST'])
 def resources():
     if request.method != 'GET' and request.method != 'POST':
-        abort(status_codes.StatusCode.HTTP_405_METHOD_NOT_ALLOWED)
+        abort(requests.codes.METHOD_NOT_ALLOWED)
 
     if request.method == 'GET':
         return 'check'
@@ -57,7 +61,7 @@ def resources():
         data = request.data
         # return str(json.loads(request.get_json()))
         # storage.write(public_body, private_body)
-        return 'b3e35dfa2cd27cd385f08c246b6d49cf2e991c894d96828ba355063e77723fc0', status_codes.StatusCode.HTTP_201_CREATED
+        return 'b3e35dfa2cd27cd385f08c246b6d49cf2e991c894d96828ba355063e77723fc0', requests.codes.CREATED
 
 
 # @app.route('/post-json-to-container/uid/<uid>', methods=['POST'])
@@ -152,7 +156,7 @@ def test():
 # TODO use the name of the application here
 @app.route('/app.js')
 def js():
-        return send_from_directory('static', 'app.js')
+    return send_from_directory('static', 'app.js')
 
 
 # TODO add api version so clients can test for an API and there may also be backward compatbility for the future
