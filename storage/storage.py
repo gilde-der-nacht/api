@@ -19,7 +19,7 @@ def generate_timestamp():
 
 def verify_uid(uid):
     if len(uid) != (2 * LENGTH_OF_UID):
-        raise ValueError('Invalid Container ID')
+        raise ValueError('Invalid resource ID')
     return int(uid, 16)
 
 
@@ -32,9 +32,9 @@ def write(resource_uid, public_body, private_body):
     conn, cur = connect(DB_PATH)
 
     insert_entry_sql = """
-        INSERT INTO entries (resource_uid, entry_uid, public_body, private_body, timestamp) VALUES (?, ?, ?, ?, ?)
+        INSERT INTO entries (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?, ?)
     """
-    cur.execute(insert_entry_sql, (resource_uid, entry_uid, public_body, private_body, timestamp))
+    cur.execute(insert_entry_sql, (resource_uid, entry_uid, timestamp, '', '', public_body, private_body))
 
     conn.commit()
     conn.close()
@@ -47,11 +47,11 @@ def read(resource_uid):
 
     conn, cur = connect(DB_PATH)
 
-    select_container_sql = """
-        SELECT resource_uid, entry_uid, public_body, private_body, timestamp FROM entries WHERE resource_uid = ?
+    select_resource_sql = """
+        SELECT resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body FROM entries WHERE resource_uid = ?
     """
 
-    cur.execute(select_container_sql, [resource_uid])
+    cur.execute(select_resource_sql, [resource_uid])
     results = cur.fetchall()
 
     conn.close()
@@ -105,7 +105,6 @@ def generate_test_resource():
     """
 
     cur.execute(insert_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
-
     conn.close()
 
 
