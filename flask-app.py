@@ -40,31 +40,6 @@ def server_status():
     return '&#128154; Flask is running', requests.codes.OK
 
 
-# GET: get all resources    -> UID, public (description), private (email address)
-# POST: add new resource    -> public (description), private (email address), only if authenticated
-# PUT: not allowed
-# DELETE: not allowed
-# TODO comment partially repeats the code, is obvious from the following line, which methods are supported
-# TODO /resources isnt working yet
-@app.route('/resources', methods=['GET', 'POST'])
-def resources():
-    if request.method != 'GET' and request.method != 'POST':
-        abort(requests.codes.METHOD_NOT_ALLOWED)
-
-    if request.method == 'GET':
-        return storage.read_test_resource(
-            '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b'), requests.codes.OK
-
-    # TODO use an elif, if it was a GET it is impossible to be a POST
-    if request.method == 'POST':
-        # public_body = request.data.get('public_body')
-        # private_body = request.data.get('private_body')
-        data = request.data
-        # return str(json.loads(request.get_json()))
-        # storage.write(public_body, private_body)
-        return 'b3e35dfa2cd27cd385f08c246b6d49cf2e991c894d96828ba355063e77723fc0', requests.codes.CREATED
-
-
 # POST: Example JSON {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}
 @app.route('/resources/<resource_uid>/entries', methods=['GET', 'POST'])
 def entries(resource_uid):
