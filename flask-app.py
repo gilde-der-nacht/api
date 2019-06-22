@@ -52,7 +52,8 @@ def resources():
         abort(requests.codes.METHOD_NOT_ALLOWED)
 
     if request.method == 'GET':
-        return storage.read_test_resource('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b'), requests.codes.OK
+        return storage.read_test_resource(
+            '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b'), requests.codes.OK
 
     # TODO use an elif, if it was a GET it is impossible to be a POST
     if request.method == 'POST':
@@ -64,10 +65,7 @@ def resources():
         return 'b3e35dfa2cd27cd385f08c246b6d49cf2e991c894d96828ba355063e77723fc0', requests.codes.CREATED
 
 
-# GET: get all entries of this resource -> UIDs, meta info, public_body, private_body
-# POST: add new entry                   -> public_body, private_body
-# PUT: not allowed
-# DELETE: not allowed
+# POST: Example JSON {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}
 @app.route('/resources/<resource_uid>/entries', methods=['GET', 'POST'])
 def entries(resource_uid):
     if request.method != 'GET' and request.method != 'POST':
@@ -109,7 +107,7 @@ def js():
     return send_from_directory('static', 'app.js')
 
 
-# TODO add api version so clients can test for an API and there may also be backward compatbility for the future
+# TODO add api version so clients can test for an API and there may also be backward compatibility for the future
 @app.route('/status')
 def status():
     return json.dumps({
