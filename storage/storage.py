@@ -99,12 +99,12 @@ def setup():
 def generate_test_resource():
     conn, cur = connect(DB_PATH)
 
-    create_test_resource_sql = """
+    insert_resource_sql = """
         INSERT INTO resources (resource_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?)
     """
 
-    cur.execute(create_test_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
-    conn.commit()
+    cur.execute(insert_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
+
     conn.close()
 
 
