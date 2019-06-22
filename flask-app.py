@@ -1,6 +1,4 @@
-# Do we need `#!/usr/bin/env python3` here as well?
-
-# TODO add description of the core ideas
+#!/usr/bin/env python3
 
 # This flask microservice accepts REST requests as follows:
 #
