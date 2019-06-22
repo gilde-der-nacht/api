@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import sqlite3
 import secrets
@@ -23,7 +24,7 @@ def verify_uid(uid):
     return int(uid, 16)
 
 
-def write(resource_uid, public_body, private_body):
+def write(resource_uid, public_body, private_body, url, user_agent):
     verify_uid(resource_uid)
 
     entry_uid = generate_uid()
@@ -34,7 +35,7 @@ def write(resource_uid, public_body, private_body):
     insert_entry_sql = """
         INSERT INTO entries (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?, ?)
     """
-    cur.execute(insert_entry_sql, (resource_uid, entry_uid, timestamp, '', '', public_body, private_body))
+    cur.execute(insert_entry_sql, (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body))
 
     conn.commit()
     conn.close()
@@ -56,7 +57,7 @@ def read(resource_uid):
 
     conn.close()
 
-    return results
+    return json.dumps(results)
 
 
 def connect(path):
