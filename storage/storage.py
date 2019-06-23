@@ -57,7 +57,7 @@ def read(resource_uid):
 
     conn.close()
 
-    return json.dumps(results)
+    return results
 
 
 def connect(path):
