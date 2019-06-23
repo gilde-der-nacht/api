@@ -19,6 +19,17 @@ async function main() {
 
     // test the service with raw get/post/put/delete methods
 
+    // this ressource is empty forever
+    const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
+
+    // this ressource is just to add anything you like, entries may be deleted occasionally by an administrator
+    const UID_TEST = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b';
+    const PATH_TEST = '/resources/' + UID_TEST + '/entries';
+
+    const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
+    const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
+
     {
         const [_, status] = await http_get('/invalid-url');
         console.assert(status === HTTP_404_NOT_FOUND);
@@ -26,12 +37,15 @@ async function main() {
         console.assert((await http_get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
     }
 
-    /*{
-        console.assert((await http_get('/resources'))[1] === HTTP_200_OK);
-        console.assert((await http_post('/resources', '{}'))[1] === HTTP_201_CREATED);
-        console.assert((await http_put('/resources', '{}'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
-        console.assert((await http_delete('/resources'))[1] === HTTP_405_METHOD_NOT_ALLOWED);
-    }*/
+    {
+        console.assert((await http_put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+
+        console.assert((await http_delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+
+        console.assert((await http_post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
+
+        console.assert((await http_get(PATH_TEST))[1] === HTTP_200_OK);
+    }
 
     // test the service with the library the client uses
 
@@ -53,11 +67,11 @@ async function main() {
     }
 
     {
-        const uid = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b';
-
-        app.resourcelistAll(uid);
-        app.resourcelistAll(uid);
-        app.resourceAdd(uid, {}, {});
+        // add one element
+        const length1 = (await app.resourcelistAll(UID_TEST)).length;
+        await app.resourceAdd(UID_TEST, JSON_EMPTY, JSON_EMPTY);
+        const length2 = (await app.resourcelistAll(UID_TEST)).length;
+        console.assert((length1 + 1) == length2);
     }
 
     console.info('tests finished');

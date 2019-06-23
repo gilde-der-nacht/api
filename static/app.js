@@ -119,11 +119,18 @@ class App {
         App._verify(App._verifyUid(resourceUid));
         App._verify(App._verifyBody(publicBody));
         App._verify(App._verifyBody(privateBody));
+        const path = `/resources/${resourceUid}/entries`;
+        const data = {
+            'publicBody': publicBody,
+            'privateBody': privateBody,
+        };
+        await http_post(path, JSON.stringify(data));
     }
 
     async resourcelistAll(resourceUid) {
         App._verify(App._verifyUid(resourceUid));
-        const path = `/resource/${resourceUid}`;
-        return [];
+        const path = `/resources/${resourceUid}/entries`;
+        const result = await http_get(path);
+        return JSON.parse(result[0]);
     }
 }
