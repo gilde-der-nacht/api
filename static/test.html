@@ -15,42 +15,41 @@ body {
 async function main() {
     console.info('tests started');
 
-    const app = new App();
-
     // test the service with raw get/post/put/delete methods
 
     // this ressource is empty forever
     const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-    const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
 
     // this ressource is just to add anything you like, entries may be deleted occasionally by an administrator
     const UID_TEST = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b';
-    const PATH_TEST = '/resources/' + UID_TEST + '/entries';
 
     const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
-    const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
 
     {
-        const [_, status] = await http_get('/invalid-url');
+        const [_, status] = await HTTP.get('/invalid-url');
         console.assert(status === HTTP_404_NOT_FOUND);
 
-        console.assert((await http_get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
+        console.assert((await HTTP.get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
     }
 
     {
-        console.assert((await http_put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
+        const PATH_TEST = '/resources/' + UID_TEST + '/entries';
+        const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
 
-        console.assert((await http_delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        console.assert((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
 
-        console.assert((await http_post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
+        console.assert((await HTTP.delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
 
-        console.assert((await http_get(PATH_TEST))[1] === HTTP_200_OK);
+        console.assert((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
+
+        console.assert((await HTTP.get(PATH_TEST))[1] === HTTP_200_OK);
     }
 
     // test the service with the library the client uses
 
     {
-        const status = await app.status();
+        const status = await App.status();
         console.assert('version' in status);
         console.assert('time' in status);
         console.assert(status.version === '0.0.0');
@@ -62,15 +61,16 @@ async function main() {
 
         console.assert(!App._verifyUid(''));
         console.assert(!App._verifyUid('0'));
-        console.assert(!App._verifyUid('01234567890123456789012345678901234567890123456789012345678901234'));
-        console.assert(App._verifyUid('0123456789012345678901234567890123456789012345678901234567890123'));
+        console.assert(App._verifyUid(UID_EMPTY));
+        console.assert(App._verifyUid(UID_TEST));
+        console.assert(!App._verifyUid(UID_TEST + '0'));
     }
 
     {
         // add one element
-        const length1 = (await app.resourcelistAll(UID_TEST)).length;
-        await app.resourceAdd(UID_TEST, JSON_EMPTY, JSON_EMPTY);
-        const length2 = (await app.resourcelistAll(UID_TEST)).length;
+        const length1 = (await App.resourcelistAll(UID_TEST)).length;
+        await App.resourceAdd(UID_TEST, JSON_EMPTY, JSON_EMPTY);
+        const length2 = (await App.resourcelistAll(UID_TEST)).length;
         console.assert((length1 + 1) == length2);
     }
 

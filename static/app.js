@@ -1,49 +1,14 @@
 'use strict';
 
-// TODO is async, fetch, class to new? recompile it automatically?
-
 /*
+async, fetch, class, ... may be too new, babel can be used to convert the scripts
+
 sudo npm install @babel/core @babel/cli @babel/preset-env
 
 babel app.js
-
 */
 
-// TODO app.js/App are awfull names
-// TODO this codes and functions here belong in another file
-
-async function http_get(path) {
-    const response = await fetch(path);
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_post(path, data) {
-    const response = await fetch(path, {
-        method: 'POST',
-        body: data,
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_put(path, data) {
-    const response = await fetch(path, {
-        method: 'PUT',
-        body: data,
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
-async function http_delete(path) {
-    const response = await fetch(path, {
-        method: 'DELETE',
-    });
-    const text = await response.text();
-    return [text, response.status]
-}
-
+// TODO class does not support "static const", any idea?
 const HTTP_100_CONTINUE = 100;
 const HTTP_101_SWITCHING_PROTOCOLS = 101;
 const HTTP_200_OK = 200;
@@ -90,8 +55,44 @@ const HTTP_504_GATEWAY_TIMEOUT = 504;
 const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
 const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+class HTTP {
+    static async get(path) {
+        const response = await fetch(path);
+        const text = await response.text();
+        return [text, response.status]
+    }
+
+    static async post(path, data) {
+        const response = await fetch(path, {
+            method: 'POST',
+            body: data,
+        });
+        const text = await response.text();
+        return [text, response.status]
+    }
+
+    static async put(path, data) {
+        const response = await fetch(path, {
+            method: 'PUT',
+            body: data,
+        });
+        const text = await response.text();
+        return [text, response.status]
+    }
+
+    static async delete(path) {
+        const response = await fetch(path, {
+            method: 'DELETE',
+        });
+        const text = await response.text();
+        return [text, response.status]
+    }
+}
+
+// TODO app.js/App are awfull names
 class App {
     // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
+
     static _verify(condition) {
         if(!condition) {
             throw 'Invalid Parameter';
@@ -106,7 +107,7 @@ class App {
         return (typeof body) === 'object';
     }
 
-    async status() {
+    static async status() {
         const response = await fetch('/status');
         if(response.status !== HTTP_200_OK) {
             throw 'Invalid Response';
@@ -115,7 +116,7 @@ class App {
         return json;
     }
 
-    async resourceAdd(resourceUid, publicBody, privateBody) {
+    static async resourceAdd(resourceUid, publicBody, privateBody) {
         App._verify(App._verifyUid(resourceUid));
         App._verify(App._verifyBody(publicBody));
         App._verify(App._verifyBody(privateBody));
@@ -124,13 +125,13 @@ class App {
             'publicBody': publicBody,
             'privateBody': privateBody,
         };
-        await http_post(path, JSON.stringify(data));
+        await HTTP.post(path, JSON.stringify(data));
     }
 
-    async resourcelistAll(resourceUid) {
+    static async resourcelistAll(resourceUid) {
         App._verify(App._verifyUid(resourceUid));
         const path = `/resources/${resourceUid}/entries`;
-        const result = await http_get(path);
-        return JSON.parse(result[0]);
+        const [text, status] = await HTTP.get(path);
+        return JSON.parse(text);
     }
 }
