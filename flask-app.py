@@ -52,9 +52,12 @@ app = Flask(__name__)
 
 
 def auth_is_valid():
-    return request.authorization and (request.authorization.username == 'gdn') and (request.authorization.password == 'gdn2')
+    return request.authorization and (request.authorization.username == 'gdn') and (request.authorization.password == 'gdn')
 
 def auth_required(fun):
+    '''
+    decorator checks/handles if a page/ressource should require authentication
+    '''
     @wraps(fun)
     def decorator(*args, **kwargs):
         if not auth_is_valid():
@@ -95,7 +98,7 @@ def entries_post(resource_uid):
     url = request.url
     user_agent = request.headers.get('User-Agent')
 
-    entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent) # TODO write/read have different order of parmeteres
+    entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
 
     return entry_uid, requests.codes.CREATED
