@@ -12,8 +12,20 @@ body {
 <script>
 'use strict';
 
+function logAdd(message) {
+    document.getElementById('log').innerText += message;
+}
+
+function expect(condition) {
+    if(!condition) {
+        let stack = '';
+        try { new {}; } catch(exception) { stack = exception.stack }
+        logAdd(stack);
+    }
+}
+
 async function main() {
-    console.info('tests started');
+    logAdd('tests started\n');
 
     // test the service with raw get/post/put/delete methods
 
@@ -21,15 +33,15 @@ async function main() {
     const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
     // this ressource is just to add anything you like, entries may be deleted occasionally by an administrator
-    const UID_TEST = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b';
+    const UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000';
 
     const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
 
     {
         const [_, status] = await HTTP.get('/invalid-url');
-        console.assert(status === HTTP_404_NOT_FOUND);
+        expect(status === HTTP_404_NOT_FOUND);
 
-        console.assert((await HTTP.get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
+        expect((await HTTP.get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
     }
 
     {
@@ -37,33 +49,33 @@ async function main() {
         const PATH_TEST = '/resources/' + UID_TEST + '/entries';
         const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
 
-        console.assert((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        expect((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
 
-        console.assert((await HTTP.delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        expect((await HTTP.delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
 
-        console.assert((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
+        expect((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
 
-        console.assert((await HTTP.get(PATH_TEST))[1] === HTTP_200_OK);
+        expect((await HTTP.get(PATH_TEST))[1] === HTTP_200_OK);
     }
 
     // test the service with the library the client uses
 
     {
         const status = await App.status();
-        console.assert('version' in status);
-        console.assert('time' in status);
-        console.assert(status.version === '0.0.0');
+        expect('version' in status);
+        expect('time' in status);
+        expect(status.version === '0.0.0');
     }
 
     {
-        console.assert(!App._verifyBody('{}'));
-        console.assert(App._verifyBody({}));
+        expect(!App._verifyBody('{}'));
+        expect(App._verifyBody({}));
 
-        console.assert(!App._verifyUid(''));
-        console.assert(!App._verifyUid('0'));
-        console.assert(App._verifyUid(UID_EMPTY));
-        console.assert(App._verifyUid(UID_TEST));
-        console.assert(!App._verifyUid(UID_TEST + '0'));
+        expect(!App._verifyUid(''));
+        expect(!App._verifyUid('0'));
+        expect(App._verifyUid(UID_EMPTY));
+        expect(App._verifyUid(UID_TEST));
+        expect(!App._verifyUid(UID_TEST + '0'));
     }
 
     {
@@ -71,10 +83,10 @@ async function main() {
         const length1 = (await App.resourcelistAll(UID_TEST)).length;
         await App.resourceAdd(UID_TEST, JSON_EMPTY, JSON_EMPTY);
         const length2 = (await App.resourcelistAll(UID_TEST)).length;
-        console.assert((length1 + 1) == length2);
+        expect((length1 + 1) == length2);
     }
 
-    console.info('tests finished');
+    logAdd('tests finished\n');
 }
 
 window.addEventListener('load', main);
@@ -84,7 +96,7 @@ window.addEventListener('load', main);
 
 <h1>Test</h1>
 
-<p>open developer tools for results</p>
+<pre id="log"></pre>
 
 </body>
 </html>
