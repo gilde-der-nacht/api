@@ -44,8 +44,16 @@ def server_status():
 def entries_get(resource_uid):
     all_raw_entries = storage.entries_list(resource_uid)
     all_entries = []
-    for (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body) in all_raw_entries:
-        all_entries += [[resource_uid, entry_uid, timestamp, json.loads(public_body), json.loads(private_body), url, user_agent]]
+    for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
+        all_entries += [{
+            'resourceUid': resource_uid,
+            'entryUid': entry_uid,
+            'timestamp': timestamp,
+            'publicBody': public_body,
+            'privateBody': private_body, # TODO only auth
+            'url': url, # TODO only auth
+            'userAgent': user_agent, # TODO only auth
+        }]
     return json.dumps(all_entries), requests.codes.OK
 
 # POST: Example JSON {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}

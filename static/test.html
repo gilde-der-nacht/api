@@ -80,9 +80,9 @@ async function main() {
 
     {
         // add one element
-        const length1 = (await App.resourcelistAll(UID_TEST)).length;
-        await App.resourceAdd(UID_TEST, JSON_EMPTY, JSON_EMPTY);
-        const length2 = (await App.resourcelistAll(UID_TEST)).length;
+        const length1 = (await App.entriesList(UID_TEST)).length;
+        await App.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
+        const length2 = (await App.entriesList(UID_TEST)).length;
         expect((length1 + 1) == length2);
     }
 

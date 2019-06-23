@@ -55,6 +55,9 @@ const HTTP_504_GATEWAY_TIMEOUT = 504;
 const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
 const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+/*
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+*/
 class HTTP {
     static async get(path) {
         const response = await fetch(path);
@@ -116,7 +119,7 @@ class App {
         return json;
     }
 
-    static async resourceAdd(resourceUid, publicBody, privateBody) {
+    static async entriesAdd(resourceUid, publicBody, privateBody) {
         App._verify(App._verifyUid(resourceUid));
         App._verify(App._verifyBody(publicBody));
         App._verify(App._verifyBody(privateBody));
@@ -128,7 +131,7 @@ class App {
         await HTTP.post(path, JSON.stringify(data));
     }
 
-    static async resourcelistAll(resourceUid) {
+    static async entriesList(resourceUid) {
         App._verify(App._verifyUid(resourceUid));
         const path = `/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
