@@ -21,40 +21,37 @@ def generate_timestamp():
 def verify_uid(uid):
     if len(uid) != (2 * LENGTH_OF_UID):
         raise ValueError('Invalid Resource ID')
-    return int(uid, 16)
+    int(uid, 16)
 
 
-def write(resource_uid, public_body, private_body, url, user_agent):
+def entries_add(resource_uid, public_body, private_body, url, user_agent):
     verify_uid(resource_uid)
 
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
 
+    insert_entry_sql = '''
+        INSERT INTO entries (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?)
+    '''
+
     conn, cur = connect(DB_PATH)
-
-    insert_entry_sql = """
-        INSERT INTO entries (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?, ?)
-    """
-    cur.execute(insert_entry_sql, (resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body))
-
+    cur.execute(insert_entry_sql, [resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent])
     conn.commit()
     conn.close()
 
     return {'uid': entry_uid, 'timestamp': timestamp}
 
 
-def read(resource_uid):
+def entries_list(resource_uid):
     verify_uid(resource_uid)
 
+    select_resource_sql = '''
+        SELECT resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent FROM entries WHERE resource_uid = ?
+    '''
+
     conn, cur = connect(DB_PATH)
-
-    select_resource_sql = """
-        SELECT resource_uid, entry_uid, timestamp, url, user_agent, public_body, private_body FROM entries WHERE resource_uid = ?
-    """
-
     cur.execute(select_resource_sql, [resource_uid])
     results = cur.fetchall()
-
     conn.close()
 
     return results
@@ -66,59 +63,56 @@ def connect(path):
 
 
 def setup():
-    conn, cur = connect(DB_PATH)
-
-    reset_tables_sql = """
+    reset_tables_sql = '''
         DROP TABLE IF EXISTS resources;
         DROP TABLE IF EXISTS entries;
-    """
+    '''
 
-    create_tables_sql = """
+    create_tables_sql = '''
         CREATE TABLE resources (
             resource_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
-            url TEXT NOT NULL,
-            user_agent TEXT NOT NULL,
             public_body TEXT NOT NULL,
-            private_body TEXT NOT NULL
+            private_body TEXT NOT NULL,
+            url TEXT NOT NULL,
+            user_agent TEXT NOT NULL
         );
-            CREATE TABLE entries (
+        CREATE TABLE entries (
             resource_uid TEXT NOT NULL,
             entry_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
-            url TEXT NOT NULL,
-            user_agent TEXT NOT NULL,
             public_body TEXT NOT NULL,
             private_body TEXT NOT NULL,
+            url TEXT NOT NULL,
+            user_agent TEXT NOT NULL,
             FOREIGN KEY (resource_uid) REFERENCES resources (resource_uid)
         );
-    """
+    '''
 
+    conn, cur = connect(DB_PATH)
     cur.executescript(reset_tables_sql + create_tables_sql)
     conn.close()
 
 
-def generate_test_resource():
+def resources_add(resource_uid, public_body, private_body, url, user_agent):
+    timestamp = generate_timestamp()
+    insert_resource_sql = '''
+        INSERT INTO resources (resource_uid, timestamp, public_body, private_body, url, user_agent) VALUES (?, ?, ?, ?, ?, ?)
+    '''
+
     conn, cur = connect(DB_PATH)
-
-    insert_resource_sql = """
-        INSERT INTO resources (resource_uid, timestamp, url, user_agent, public_body, private_body) VALUES (?, ?, ?, ?, ?, ?)
-    """
-
-    cur.execute(insert_resource_sql, ('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '2019-06-22T15:28:47.358620', '', '', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}'))
+    cur.execute(insert_resource_sql, [resource_uid, timestamp, public_body, private_body, url, user_agent])
     conn.close()
 
 
-def read_test_resource(resource_uid):
+def resources_list():
+    select_resource_sql = '''
+        SELECT resource_uid, timestamp, public_body, private_body, url, user_agent FROM resources
+    '''
+
     conn, cur = connect(DB_PATH)
-
-    select_resource_sql = """
-        SELECT resource_uid, timestamp, url, user_agent, public_body, private_body FROM resources WHERE resource_uid = ?
-    """
-
-    cur.execute(select_resource_sql, [resource_uid])
+    cur.execute(select_resource_sql)
     results = cur.fetchall()
-
     conn.close()
 
     return results
