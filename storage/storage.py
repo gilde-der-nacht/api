@@ -120,20 +120,28 @@ def resources_list():
 
 if __name__ == '__main__':
     setup()
-    generate_test_resource()
 
-    # uid1 = generate_uid()
-    # print(uid1)
-    #
-    # timestamp = generate_timestamp()
-    # print(timestamp)
-    #
-    # public_write = '{"a": 1}'
-    # private_write = '{"b": 2}'
-    #
-    # write(uid1, public_write, private_write)
-    # uid1_read, entry_uid1, public_read, private_read, timestamp = read(uid1)[0]
-    #
-    # assert uid1_read == uid1
-    # assert public_write == public_read
-    # assert private_write == private_read
+    # test resource
+
+    assert len(resources_list()) == 0
+    UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000'
+    resources_add(UID_TEST, '{}', '{}', '', '')
+    assert len(resources_list()) == 1
+
+    # test entries
+
+    PUBLIC = '{"a": 1}'
+    PRIVATE = '{"b": 2}'
+    N = 5
+    assert len(entries_list(UID_TEST)) == 0
+    for i in range(N):
+        entries_add(UID_TEST, PUBLIC, PRIVATE, '', '')
+    assert len(entries_list(UID_TEST)) == 5
+
+    print(entries_list(UID_TEST)[0])
+    assert entries_list(UID_TEST)[0][3] == PUBLIC
+    assert entries_list(UID_TEST)[0][4] == PRIVATE
+
+    # add useful resource
+
+    UID_ROLLENSPIELTAGE = resources_add('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}', '', '')
