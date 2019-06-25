@@ -66,6 +66,15 @@ def auth_required(fun):
     return decorator
 
 
+# TODO this is just a first proof of concept, maybe there is a simple/other way to do it
+def cors(fun):
+    @wraps(fun)
+    def decorator(*args, **kwargs):
+        response = fun(*args, **kwargs)
+        return Response(*response, {'Access-Control-Allow-Origin': '*'})
+    return decorator
+
+
 @app.route('/')
 def server_status():
     return '&#128154; Flask is running', requests.codes.OK
@@ -124,8 +133,10 @@ def js():
 
 # TODO add api version so clients can test for an API and there may also be backward compatibility for the future
 @app.route('/status')
+@cors
 def status():
-    return json.dumps({
+    status = {
         'version': '0.0.0',
         'time': datetime.datetime.now().isoformat(),
-    })
+    }
+    return json.dumps(status), requests.codes.OK
