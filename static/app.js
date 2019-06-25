@@ -55,6 +55,8 @@ const HTTP_504_GATEWAY_TIMEOUT = 504;
 const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
 const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+const SERVER = 'http://127.0.0.1:5000'
+
 /*
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 */
@@ -111,30 +113,36 @@ class App {
     }
 
     static async status() {
-        const response = await fetch('/status');
-        if(response.status !== HTTP_200_OK) {
+        const path = `${SERVER}/status`;
+        const [text, status] = await HTTP.get(path);
+        if(status !== HTTP_200_OK) {
             throw 'Invalid Response';
         }
-        const json = await response.json();
-        return json;
+        return JSON.parse(text);
     }
 
     static async entriesAdd(resourceUid, publicBody, privateBody) {
         App._verify(App._verifyUid(resourceUid));
         App._verify(App._verifyBody(publicBody));
         App._verify(App._verifyBody(privateBody));
-        const path = `/resources/${resourceUid}/entries`;
+        const path = `${SERVER}/resources/${resourceUid}/entries`;
         const data = {
             'publicBody': publicBody,
             'privateBody': privateBody,
         };
-        await HTTP.post(path, JSON.stringify(data));
+        const [_, status] = await HTTP.post(path, JSON.stringify(data));
+        if(status !== HTTP_201_CREATED) {
+            throw 'Invalid Response';
+        }
     }
 
     static async entriesList(resourceUid) {
         App._verify(App._verifyUid(resourceUid));
-        const path = `/resources/${resourceUid}/entries`;
+        const path = `${SERVER}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
+        if(status !== HTTP_200_OK) {
+            throw 'Invalid Response';
+        }
         return JSON.parse(text);
     }
 }
