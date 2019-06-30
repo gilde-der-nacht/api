@@ -67,6 +67,7 @@ def auth_required(fun):
 
 
 # TODO this is just a first proof of concept, maybe there is a simple/other way to do it
+# TODO maybe only add domain we want (e.g. rollenspieltage.ch/spieltage.ch/...)
 def cors(fun):
     @wraps(fun)
     def decorator(*args, **kwargs):
