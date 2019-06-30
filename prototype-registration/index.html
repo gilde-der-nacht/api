@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    width: 40em;
+    margin: 1em auto;
+}
+
+.full {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+input[type=text], textarea {
+    width: 100% ;
+}
+
+.round {
+    border: 1px solid #f0f;
+}
+
+.hint {
+    background-color: #fcc;
+}
+
+#rounds, #summaries {
+    font-size: 0.8em;
+}
+
+#rounds {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+</style>
+<!--
+<script src="http://127.0.0.1:5000/app.js"></script>
+-->
+<script>
+'use strict';
+
+async function digest(message) {
+    // TODO how portable is this? better use a library?
+    // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+    // https://www.npmjs.com/package/js-sha256
+    // TODO add this to the library
+    // TODO await is somehow not expected here IMHO as it is just a calculation
+
+    async function digestMessage(message) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+        const result = await window.crypto.subtle.digest('SHA-256', data);
+        return result;
+    }
+
+    function hexString(buffer) {
+        const byteArray = new Uint8Array(buffer);
+        const hexCodes = [...byteArray].map(value => {
+            const hexCode = value.toString(16);
+            const paddedHexCode = hexCode.padStart(2, '0');
+            return paddedHexCode;
+        });
+        return hexCodes.join('');
+    }
+
+    return hexString(await digestMessage(message));
+}
+
+async function main() {
+    const GAMES = {
+        'Adrian-0': {
+            name: 'Shadowrun',
+            gm: 'Adrian',
+            gameDescription: 'Dystopisch BlaBla ...',
+            campaignDescription: 'BlaBla ...',
+            lang: 'DE',
+            playersMax: 5,
+        },
+        'Manuela-0': {
+            name: 'Finsterwald',
+            gm: 'Manuela',
+            gameDescription: 'Steampunk Blabla ...',
+            campaignDescription: 'BlaBla ...',
+            lang: 'DE',
+            playersMax: 4,
+        },
+        'EnglishMan-0': {
+            name: 'D&D',
+            gm: 'EnglishMan',
+            gameDescription: 'D & D Blabla ...',
+            campaignDescription: 'Hack & Slash BlaBla ...',
+            lang: 'EN',
+            playersMax: 2,
+        },
+    };
+
+    const ROUNDS = {
+        'Adrian-0': { gameId: 'Adrian-0', day: 'friday', from: 13, to: 15 },
+        'Adrian-1': { gameId: 'Adrian-0', day: 'friday', from: 15, to: 17 },
+        'Adrian-2': { gameId: 'Adrian-0', day: 'saturday', from: 13, to: 15 },
+
+        'Manuela-0': { gameId: 'Manuela-0', day: 'friday', from: 13, to: 15 },
+        'Manuela-1': { gameId: 'Manuela-0', day: 'friday', from: 15, to: 17 },
+        'Manuela-2': { gameId: 'Manuela-0', day: 'saturday', from: 13, to: 15 },
+
+        'EnglishMan-0': { gameId: 'EnglishMan-0', day: 'friday', from: 13, to: 15 },
+        'EnglishMan-1': { gameId: 'EnglishMan-0', day: 'friday', from: 15, to: 17 },
+        'EnglishMan-2': { gameId: 'EnglishMan-0', day: 'saturday', from: 13, to: 15 },
+    };
+
+    /*
+    TODO check api and log error if it doesn't match
+    const status = await App.status();
+    console.log(status);
+    console.assert(status.version === '0.0.0');
+    */
+
+    const REGISTRATION_UID = '...';
+    //const registrations = await App.getEntries(REGISTRATION_UID);
+    const registrationsAll = [
+        {publicBody: {roundId: 'Adrian-0', email: 'a@unknown.tld'}},
+        {publicBody: {roundId: 'Adrian-0', email: 'b@unknown.tld'}},
+        {publicBody: {roundId: 'Adrian-0', email: 'c@unknown.tld'}},
+        {publicBody: {roundId: 'Adrian-0', email: 'd@unknown.tld'}},
+        {publicBody: {roundId: 'Adrian-0', email: 'e@unknown.tld'}},
+        {publicBody: {roundId: 'Adrian-1', email: 'a@unknown.tld'}},
+    ];
+
+    // TODO filter double/triple/... regstriations, only take the most recent one, add this function to the library as every user has this requirement
+    const registrations = registrationsAll;
+
+    const roundTemplateNode = document.getElementById('round-template');
+    const roundsNode = document.getElementById('rounds');
+
+    const summaryTemplateNode = document.getElementById('summary-template');
+    const summariesNode = document.getElementById('summaries');
+
+    const nameNode = document.getElementById('name');
+    const emailNode = document.getElementById('email');
+    const commentNode = document.getElementById('comment');
+    const submitNode = document.getElementById('submit');
+
+    const i18nNode = document.getElementById('i18n');
+    const i18nMap = {};
+    i18nNode.content.querySelectorAll('*').forEach(child => {
+        i18nMap[child.dataset.id] = child.dataset.text;
+    });
+    function tr(what) {
+        return i18nMap[what];
+    }
+
+    async function submit() {
+        const name = nameNode.value;
+        const email = emailNode.value;
+        const comment = commentNode.value;
+        const emailHashed = await digest(email);
+
+        const publicBody = {
+            email: emailHashed,
+        };
+        const privateBody = {
+            name: name,
+            email: email,
+            comment: comment,
+        };
+
+        const debugNode = document.getElementById('debug');
+        debugNode.innerText = JSON.stringify(publicBody) + '\n' + JSON.stringify(privateBody);
+
+        // TODO verify selection
+        // TODO send
+        // TODO refresh page after sending? or just remove selection add show comment?
+    }
+
+    function change() {
+        showSummaries();
+    }
+
+    function showSummaries(event) {
+        const fragment = document.createDocumentFragment();
+
+        const roundNodes = roundsNode.querySelectorAll('[id=round-template-container]');
+        roundNodes.forEach(roundNode => {
+            const roundId = roundNode.dataset.roundId;
+
+            //const checkboxNode = roundNode.getElementById('round-template-checkbox');
+            //const checkboxNode = roundNode.querySelector('input[type="checkbox"]');
+            const checkboxNode = roundNode.querySelector('[id=round-template-checkbox]');
+            const hintNode = roundNode.querySelector('[id=round-template-hint]');
+
+            hintNode.innerText = checkboxNode.checked ? 'You gonna play this' : 'You not wanna do this?'; // TODO do something useful here or remove it
+
+            if(checkboxNode.checked === true) {
+                const round = ROUNDS[roundId];
+                const game = GAMES[round.gameId];
+
+                const templateNode = summaryTemplateNode.content.cloneNode(true);
+                templateNode.getElementById('summary-template-name').innerText = game.name;
+                templateNode.getElementById('summary-template-day').innerText = tr(round.day);
+                templateNode.getElementById('summary-template-from').innerText = round.from;
+                templateNode.getElementById('summary-template-to').innerText = round.to;
+                fragment.appendChild(templateNode);
+            }
+        });
+
+        summariesNode.innerHTML = ''; // TODO ugly
+        summariesNode.appendChild(fragment);
+    }
+
+    function showRounds() {
+        const fragment = document.createDocumentFragment();
+
+        Object.keys(ROUNDS).forEach(roundId => {
+            const round = ROUNDS[roundId];
+            const game = GAMES[round.gameId];
+
+            const playersMax = game.playersMax;
+            const playersCurrent = registrations.filter(registration => {
+                return registration.publicBody.roundId === roundId;
+            }).length;
+
+            const templateNode = roundTemplateNode.content.cloneNode(true);
+            if(playersCurrent === playersMax) {
+                templateNode.getElementById('round-template-container').classList.add('full');
+            }
+            templateNode.getElementById('round-template-container').dataset.roundId = roundId;
+            templateNode.getElementById('round-template-name').innerText = game.name;
+            templateNode.getElementById('round-template-gm').innerText = game.gm;
+            templateNode.getElementById('round-template-game-description').innerText = game.gameDescription;
+            templateNode.getElementById('round-template-campaign-description').innerText = game.campaignDescription;
+            templateNode.getElementById('round-template-lang').innerText = game.lang;
+            templateNode.getElementById('round-template-lang-img').src = tr('flag-url-' + game.lang);
+            templateNode.getElementById('round-template-day').innerText = tr(round.day);
+            templateNode.getElementById('round-template-from').innerText = round.from;
+            templateNode.getElementById('round-template-to').innerText = round.to;
+            templateNode.getElementById('round-template-players-current').innerText = playersCurrent;
+            templateNode.getElementById('round-template-players-max').innerText = game.playersMax;
+            const checkboxNode = templateNode.getElementById('round-template-checkbox');
+            checkboxNode.addEventListener('change', change);
+            fragment.appendChild(templateNode);
+        });
+
+        roundsNode.appendChild(fragment);
+    }
+
+    submitNode.addEventListener('click', submit);
+
+    showRounds();
+    showSummaries();
+    submit();
+}
+
+window.addEventListener('load', main);
+
+</script>
+</head>
+<body>
+
+<!-- TODO not use ID, use name or data as ID should be unique? name is not allowed for all elements? ids should be unique according to HTML4/5 -->
+
+<template id="i18n">
+    <p data-id="friday" data-text="Freitag">-</p>
+    <p data-id="saturday" data-text="Samstag">-</p>
+    <!-- e.g. countryflags.com -->
+    <p data-id="flag-url-DE" data-text="germany-flag-small.png">-</p>
+    <p data-id="flag-url-EN" data-text="united-kingdom-flag-small.png">-</p>
+</template>
+
+<template id="round-template">
+    <label id="round-template-container">
+        <div class="round">
+            <h1>Name: <span id="round-template-name"></span></h1>
+            <p>Spielleiter: <span id="round-template-gm"></span></p>
+            <p>Spielbeschreibung: <span id="round-template-game-description"></span></p>
+            <p>Kampagnenbeschreibung: <span id="round-template-campaign-description"></span></p>
+            <p>Sprache: <span id="round-template-lang"></span> <img height="10" id="round-template-lang-img"></p>
+            <p>Tag/Zeit: <span id="round-template-day"></span> / <span id="round-template-from"></span> - <span id="round-template-to"></span></p>
+            <p>Spieler Aktuell: <strong><span id="round-template-players-current"></span></strong> / Max: <span id="round-template-players-max"></span></p>
+            <p class="hint">HINT/HERE <span id="round-template-hint"></span></p>
+            <input id="round-template-checkbox" type="checkbox">
+        </div>
+    </label>
+</template>
+
+<template id="summary-template">
+    <p id="summary-template-container">Name: <span id="summary-template-name"></span> / Tag <span id="summary-template-day"></span> / Von <span id="summary-template-from"></span> / Bis <span id="summary-template-to"></span></p>
+</template>
+
+<div id="rounds"></div>
+<p><input type="text" id="name" value="Hans Muster"></p>
+<p><input type="text" id="email" value="hans@muster.com"></p>
+<p><textarea id="comment">bla blib blub</textarea></p>
+<p><button id="submit">Submit</button></p>
+<div id="summaries"></div>
+
+<pre id="debug"></pre>
+
+<p>Bats frighten me. It's time my enemies shared my dread.</p>
+<p>Carbon fiber, .28 caliber, made in China. If you wanna kill a public servant, Mr Maroni... I recommend you buy American.</p>
+<p>I just the took to calling it the Bat. And yes Mr. Wayne, it does come in black.</p>
+<p>Death does not wait for you to be ready! Death is not considerate of fair! And make no mistake, here you face death. Tiger. Jujitsu. Panther. You're skilled. But this is not a dance. And you are afraid. But not of me. Tell us Mr. Wayne, what do you fear?</p>
+<p>Dr. Crane isn't here right now. But if you'd like to make an appointment.</p>
+
+</body>
+</html>
