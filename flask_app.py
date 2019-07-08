@@ -3,13 +3,13 @@
 '''
 # Run
 
-export FLASK_APP=flask-app.py
+export FLASK_APP=flask_app.py
 export FLASK_ENV=development
 flask run
 
 or
 
-FLASK_APP=flask-app.py FLASK_ENV=development flask run
+FLASK_APP=flask_app.py FLASK_ENV=development flask run
 
 # Linux Setup
 
@@ -72,7 +72,7 @@ def cors(fun):
     @wraps(fun)
     def decorator(*args, **kwargs):
         response = fun(*args, **kwargs)
-        return Response(*response, {'Access-Control-Allow-Origin': '*'})
+        return Response(*response, headers={'Access-Control-Allow-Origin': '*'})
     return decorator
 
 
