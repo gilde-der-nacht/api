@@ -144,4 +144,6 @@ if __name__ == '__main__':
 
     # add useful resource
 
-    UID_ROLLENSPIELTAGE = resources_add('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b', '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}', '', '')
+    UID_ROLLENSPIELTAGE = resources_add('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b',
+                                        '{"description": "Luzerner Rollenspieltage 2019"}',
+                                        '{"email": "mail@rollenspieltage.ch"}', '', '')

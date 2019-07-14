@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 # Run
 
 export FLASK_APP=flask_app.py
@@ -38,7 +38,7 @@ methods:
               public  -> public data, everybody can read
               private -> only access with authentication
 
-'''
+"""
 
 from functools import wraps
 from flask import Flask, request, abort, json, send_from_directory, Response
@@ -54,10 +54,11 @@ app = Flask(__name__)
 def auth_is_valid():
     return request.authorization and (request.authorization.username == 'gdn') and (request.authorization.password == 'gdn')
 
+
 def auth_required(fun):
-    '''
+    """
     decorator checks/handles if a page/ressource should require authentication
-    '''
+    """
     @wraps(fun)
     def decorator(*args, **kwargs):
         if not auth_is_valid():
@@ -67,7 +68,7 @@ def auth_required(fun):
 
 
 # TODO this is just a first proof of concept, maybe there is a simple/other way to do it
-# TODO maybe only add domain we want (e.g. rollenspieltage.ch/spieltage.ch/...)
+# TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch/...)
 def cors(fun):
     @wraps(fun)
     def decorator(*args, **kwargs):
@@ -99,7 +100,8 @@ def entries_get(resource_uid):
     return json.dumps(all_entries), requests.codes.OK
 
 
-# POST: Example JSON {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}
+# POST: Example JSON
+# {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
 def entries_post(resource_uid):
     body = json.loads(request.data)
