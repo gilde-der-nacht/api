@@ -133,7 +133,9 @@ async function submitRegistration(name, email, comment) {
     // TODO refresh page after sending? or just remove selection add show comment?
 }
 
-function forEachRound(registrations, rounds, callee) {
+function forEachRound(registrations, callee) {
+    const rounds = getRounds();
+    const games = getGames();
     Object.keys(rounds).forEach(roundId => {
         const round = rounds[roundId];
         const game = games[round.gameId];

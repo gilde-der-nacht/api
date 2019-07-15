@@ -47,8 +47,6 @@ input[type=text], textarea {
 'use strict';
 
 async function main() {
-    const games = getGames();
-    const rounds = getRounds();
     const registrations = await getRegistrations();
 
     const i18nMap = {};
@@ -75,16 +73,12 @@ async function main() {
         const summariesNode = document.getElementById('summaries');
         const roundsNode = document.getElementById('rounds');
         const fragment = document.createDocumentFragment();
-
-        const roundNodes = roundsNode.querySelectorAll('[data-id=container]');
-        roundNodes.forEach(roundNode => {
-            const roundId = roundNode.dataset.roundId;
+        forEachRound(registrations, (roundId, round, game, playersMax, playersCurrent) => {
+            const roundNode = roundsNode.querySelector('[data-round-id="' + roundId + '"]');
             const checkboxNode = roundNode.querySelector('[data-id=checkbox]');
             const hintNode = roundNode.querySelector('[data-id=hint]');
             hintNode.innerText = checkboxNode.checked ? 'SELECTED' : 'NOT SELECTED?'; // TODO do something useful here or remove it
             if(checkboxNode.checked === true) {
-                const round = rounds[roundId];
-                const game = games[round.gameId];
                 const templateNode = summaryTemplateNode.content.cloneNode(true);
                 templateNode.querySelector('[data-id=name]').innerText = game.name;
                 templateNode.querySelector('[data-id=day]').innerText = translate(round.day);
@@ -102,7 +96,7 @@ async function main() {
         const roundsNode = document.getElementById('rounds');
         const fragment = document.createDocumentFragment();
 
-        forEachRound(registrations, rounds, (roundId, round, game, playersMax, playersCurrent) => {
+        forEachRound(registrations, (roundId, round, game, playersMax, playersCurrent) => {
             const templateNode = roundTemplateNode.content.cloneNode(true);
             if(playersCurrent === playersMax) {
                 templateNode.querySelector('[data-id=container]').classList.add('round-full');
