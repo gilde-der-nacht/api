@@ -51,17 +51,12 @@ async function main() {
     const rounds = getRounds();
     const registrations = await getRegistrations();
 
-    const submitNode = document.getElementById('submit');
-    const i18nNode = document.getElementById('i18n');
-
-    // map used for translation
     const i18nMap = {};
-    i18nNode.content.querySelectorAll('*').forEach(child => {
+    document.getElementById('i18n').content.querySelectorAll('*').forEach(child => {
         i18nMap[child.dataset.id] = child.dataset.text;
     });
 
-    // translate
-    function tr(what) {
+    function translate(what) {
         return i18nMap[what];
     }
 
@@ -92,7 +87,7 @@ async function main() {
                 const game = games[round.gameId];
                 const templateNode = summaryTemplateNode.content.cloneNode(true);
                 templateNode.querySelector('[data-id=name]').innerText = game.name;
-                templateNode.querySelector('[data-id=day]').innerText = tr(round.day);
+                templateNode.querySelector('[data-id=day]').innerText = translate(round.day);
                 templateNode.querySelector('[data-id=from]').innerText = round.from;
                 templateNode.querySelector('[data-id=to]').innerText = round.to;
                 fragment.appendChild(templateNode);
@@ -107,13 +102,7 @@ async function main() {
         const roundsNode = document.getElementById('rounds');
         const fragment = document.createDocumentFragment();
 
-        Object.keys(rounds).forEach(roundId => {
-            const round = rounds[roundId];
-            const game = games[round.gameId];
-            const playersMax = game.playersMax;
-            const playersCurrent = registrations.filter(registration => {
-                return registration.publicBody.roundId === roundId;
-            }).length;
+        forEachRound(registrations, rounds, (roundId, round, game, playersMax, playersCurrent) => {
             const templateNode = roundTemplateNode.content.cloneNode(true);
             if(playersCurrent === playersMax) {
                 templateNode.querySelector('[data-id=container]').classList.add('round-full');
@@ -124,8 +113,8 @@ async function main() {
             templateNode.querySelector('[data-id=game-description]').innerText = game.gameDescription;
             templateNode.querySelector('[data-id=campaign-description]').innerText = game.campaignDescription;
             templateNode.querySelector('[data-id=lang]').innerText = game.lang;
-            templateNode.querySelector('[data-id=lang-img]').src = tr('flag-url-' + game.lang);
-            templateNode.querySelector('[data-id=day]').innerText = tr(round.day);
+            templateNode.querySelector('[data-id=lang-img]').src = translate('flag-url-' + game.lang);
+            templateNode.querySelector('[data-id=day]').innerText = translate(round.day);
             templateNode.querySelector('[data-id=from]').innerText = round.from;
             templateNode.querySelector('[data-id=to]').innerText = round.to;
             templateNode.querySelector('[data-id=players-current]').innerText = playersCurrent;
@@ -138,7 +127,8 @@ async function main() {
         replaceWithFragment(roundsNode, fragment);
     }
 
-    submitNode.addEventListener('click', submit);
+    document.getElementById('submit').addEventListener('click', submit);
+
     showRounds();
     showSummaries();
 }
@@ -178,10 +168,15 @@ window.addEventListener('load', main);
 </template>
 
 <div id="rounds"></div>
+
 <p><input type="text" id="name" value="Hans Muster"></p>
+
 <p><input type="text" id="email" value="hans@muster.com"></p>
+
 <p><textarea id="comment">bla blib blub</textarea></p>
+
 <p><button id="submit">Submit</button></p>
+
 <div id="summaries"></div>
 
 </body>

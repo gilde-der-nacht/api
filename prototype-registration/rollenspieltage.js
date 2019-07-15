@@ -132,3 +132,15 @@ async function submitRegistration(name, email, comment) {
     // TODO send
     // TODO refresh page after sending? or just remove selection add show comment?
 }
+
+function forEachRound(registrations, rounds, callee) {
+    Object.keys(rounds).forEach(roundId => {
+        const round = rounds[roundId];
+        const game = games[round.gameId];
+        const playersMax = game.playersMax;
+        const playersCurrent = registrations.filter(registration => {
+            return registration.publicBody.roundId === roundId;
+        }).length;
+        callee(roundId, round, game, playersMax, playersCurrent);
+    });
+}
