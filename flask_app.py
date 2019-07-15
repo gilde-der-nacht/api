@@ -57,7 +57,7 @@ def auth_is_valid():
 
 def auth_required(fun):
     """
-    decorator checks/handles if a page/ressource should require authentication
+    decorator checks/handles if a page/resource should require authentication
     """
     @wraps(fun)
     def decorator(*args, **kwargs):
