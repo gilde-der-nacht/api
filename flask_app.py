@@ -40,11 +40,11 @@ methods:
 
 """
 
-from functools import wraps
-from flask import Flask, request, abort, json, send_from_directory, Response
-
 import datetime
+from functools import wraps
+
 import requests
+from flask import Flask, request, json, send_from_directory, Response
 
 from storage import storage
 
