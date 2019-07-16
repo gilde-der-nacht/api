@@ -41,6 +41,7 @@ methods:
 """
 
 import datetime
+import os
 from functools import wraps
 
 import requests
@@ -52,7 +53,9 @@ app = Flask(__name__)
 
 
 def auth_is_valid():
-    return request.authorization and (request.authorization.username == 'gdn') and (request.authorization.password == 'gdn')
+    username = os.environ.get('OLYMP_USERNAME')
+    password = os.environ.get('OLYMP_PASSWORD')
+    return request.authorization and (request.authorization.username == username) and (request.authorization.password == password)
 
 
 def auth_required(fun):
