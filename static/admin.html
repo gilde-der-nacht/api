@@ -22,9 +22,9 @@ async function status() {
 
 async function add() {
     const resourceUid = document.getElementById('add-resource-uid').value;
-    const public = JSON.parse(document.getElementById('add-public').value);
-    const private = JSON.parse(document.getElementById('add-private').value);
-    await App.entriesAdd(resourceUid, public, private);
+    const publicBody = JSON.parse(document.getElementById('add-public').value);
+    const privateBody = JSON.parse(document.getElementById('add-private').value);
+    await App.entriesAdd(resourceUid, publicBody, privateBody);
 }
 
 async function list() {
