@@ -1,0 +1,8 @@
+
+curl http://127.0.0.1:5000/
+
+curl http://127.0.0.1:5000/status
+
+curl http://127.0.0.1:5000/app.js
+
+curl -i --header 'Content-Type: application/json' --request POST --data '{"publicBody": {"name": "Max Muster"}, "privateBody": {"email": "mail@xyz.ch"}}' http://127.0.0.1:5000/resources/0000000000000000000000000000000000000000000000000000000000000000/entries
