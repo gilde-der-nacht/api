@@ -125,6 +125,7 @@ def admin():
 @app.route('/test')
 @auth_required
 def test():
+    storage.setup()  # TODO: will probably delete everything
     return send_from_directory('static', 'test.html')
 
 
