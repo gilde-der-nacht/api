@@ -82,22 +82,22 @@ def server_status():
     return '&#128154; Flask is running', requests.codes.OK
 
 
-# @app.route('/resources/<resource_uid>/entries', methods=['GET'])
-# def entries_get(resource_uid):
-#     auth = auth_is_valid()
-#     all_raw_entries = storage.entries_list(resource_uid)
-#     all_entries = []
-#     for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
-#         all_entries += [{
-#             'resourceUid': resource_uid,
-#             'entryUid': entry_uid,
-#             'timestamp': timestamp,
-#             'publicBody': public_body,
-#             'privateBody': private_body if auth else {},
-#             'url': url if auth else '',
-#             'userAgent': user_agent if auth else '',
-#         }]
-#     return json.dumps(all_entries), requests.codes.OK
+@app.route('/resources/<resource_uid>/entries', methods=['GET'])
+def entries_get(resource_uid):
+    auth = auth_is_valid()
+    all_raw_entries = storage.entries_list(resource_uid)
+    all_entries = []
+    for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
+        all_entries += [{
+            'resourceUid': resource_uid,
+            'entryUid': entry_uid,
+            'timestamp': timestamp,
+            'publicBody': public_body,
+            'privateBody': private_body if auth else {},
+            'url': url if auth else '',
+            'userAgent': user_agent if auth else '',
+        }]
+    return json.dumps(all_entries), requests.codes.OK
 
 
 # POST: Example JSON
@@ -109,11 +109,6 @@ def entries_post(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
-
-    # debugging
-    if True:
-        return [], requests.codes.OK
-
     entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
 
