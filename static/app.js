@@ -116,6 +116,8 @@ class HTTP {
     }
 }
 
+const SERVER = document.location.origin.includes('127.0.0.1') ? document.location.origin :'https://api.gildedernacht.ch';
+
 // TODO app.js/App are awful names
 class App {
     // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
