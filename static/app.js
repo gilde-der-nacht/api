@@ -55,7 +55,7 @@ const HTTP_504_GATEWAY_TIMEOUT = 504;
 const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
 const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
-const SERVER = 'http://127.0.0.1:5000'
+const SERVER = document.location.href;
 
 /*
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
