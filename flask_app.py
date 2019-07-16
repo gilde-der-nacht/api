@@ -110,6 +110,10 @@ def entries_post(resource_uid):
     url = request.url
     user_agent = request.headers.get('User-Agent')
 
+    # debugging
+    if True:
+        return {public_body, private_body, url, user_agent}, requests.codes.OK
+
     entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
 
