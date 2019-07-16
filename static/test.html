@@ -39,9 +39,9 @@ async function main() {
 
     {
         const [_, status] = await HTTP.get('/invalid-url');
-        expect(status === HTTP_404_NOT_FOUND);
+        expect(status === HTTP.CODES().CODE_404_NOT_FOUND);
 
-        expect((await HTTP.get('/invalid-url'))[1] === HTTP_404_NOT_FOUND);
+        expect((await HTTP.get('/invalid-url'))[1] === HTTP.CODES().CODE_404_NOT_FOUND);
     }
 
     {
@@ -49,13 +49,13 @@ async function main() {
         const PATH_TEST = '/resources/' + UID_TEST + '/entries';
         const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
 
-        expect((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        expect((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_405_METHOD_NOT_ALLOWED);
 
-        expect((await HTTP.delete(PATH_EMPTY))[1] === HTTP_405_METHOD_NOT_ALLOWED);
+        expect((await HTTP.delete(PATH_EMPTY))[1] === HTTP.CODES().CODE_405_METHOD_NOT_ALLOWED);
 
-        expect((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP_201_CREATED);
+        expect((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_201_CREATED);
 
-        expect((await HTTP.get(PATH_TEST))[1] === HTTP_200_OK);
+        expect((await HTTP.get(PATH_TEST))[1] === HTTP.CODES().CODE_200_OK);
     }
 
     // test the service with the library the client uses

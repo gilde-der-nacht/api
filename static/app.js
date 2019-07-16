@@ -1,66 +1,88 @@
 'use strict';
 
 /*
-async, fetch, class, ... may be too new, babel can be used to convert the scripts
+This script is full of somewhat more modern JavaScript:
+
+async/await, fetch, class, ...
+
+If there is problem that not all devices support this newer this JavaScript
+keywords, this script itself can be "compiled" to an older JavaScript standard with
+
+Babel
+
+https://babeljs.io/
 
 sudo npm install @babel/core @babel/cli @babel/preset-env
 
 babel app.js
 */
 
-// TODO class does not support "static const", any idea?
-const HTTP_100_CONTINUE = 100;
-const HTTP_101_SWITCHING_PROTOCOLS = 101;
-const HTTP_200_OK = 200;
-const HTTP_201_CREATED = 201;
-const HTTP_202_ACCEPTED = 202;
-const HTTP_203_NON_AUTHORITATIVE_INFORMATION = 203;
-const HTTP_204_NO_CONTENT = 204;
-const HTTP_205_RESET_CONTENT = 205;
-const HTTP_206_PARTIAL_CONTENT = 206;
-const HTTP_300_MULTIPLE_CHOICES = 300;
-const HTTP_301_MOVED_PERMANENTLY = 301;
-const HTTP_302_FOUND = 302;
-const HTTP_303_SEE_OTHER = 303;
-const HTTP_304_NOT_MODIFIED = 304;
-const HTTP_305_USE_PROXY = 305;
-const HTTP_306_RESERVED = 306;
-const HTTP_307_TEMPORARY_REDIRECT = 307;
-const HTTP_400_BAD_REQUEST = 400;
-const HTTP_401_UNAUTHORIZED = 401;
-const HTTP_402_PAYMENT_REQUIRED = 402;
-const HTTP_403_FORBIDDEN = 403;
-const HTTP_404_NOT_FOUND = 404;
-const HTTP_405_METHOD_NOT_ALLOWED = 405;
-const HTTP_406_NOT_ACCEPTABLE = 406;
-const HTTP_407_PROXY_AUTHENTICATION_REQUIRED = 407;
-const HTTP_408_REQUEST_TIMEOUT = 408;
-const HTTP_409_CONFLICT = 409;
-const HTTP_410_GONE = 410;
-const HTTP_411_LENGTH_REQUIRED = 411;
-const HTTP_412_PRECONDITION_FAILED = 412;
-const HTTP_413_REQUEST_ENTITY_TOO_LARGE = 413;
-const HTTP_414_REQUEST_URI_TOO_LONG = 414;
-const HTTP_415_UNSUPPORTED_MEDIA_TYPE = 415;
-const HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
-const HTTP_417_EXPECTATION_FAILED = 417;
-const HTTP_428_PRECONDITION_REQUIRED = 428;
-const HTTP_429_TOO_MANY_REQUESTS = 429;
-const HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
-const HTTP_500_INTERNAL_SERVER_ERROR = 500;
-const HTTP_501_NOT_IMPLEMENTED = 501;
-const HTTP_502_BAD_GATEWAY = 502;
-const HTTP_503_SERVICE_UNAVAILABLE = 503;
-const HTTP_504_GATEWAY_TIMEOUT = 504;
-const HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505;
-const HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511;
-
-const SERVER = 'https://api.gildedernacht.ch/';
-
 /*
+A thin wrapper around the Fetch API
+
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 */
 class HTTP {
+
+    /*
+    Ideally this HTTP codes would be a "static const" part of the HTTP class,
+    but this seems to be impossible with the current (2019) JavaScript standards. If anyone
+    who reads this has a more JS-alike idea how to express the same idea, please let us know.
+
+    Usage:
+
+    HTTP.CODES().CODE_200_OK
+    */
+    static CODES() {
+        return {
+            CODE_100_CONTINUE: 100,
+            CODE_101_SWITCHING_PROTOCOLS: 101,
+            CODE_200_OK: 200,
+            CODE_201_CREATED: 201,
+            CODE_202_ACCEPTED: 202,
+            CODE_203_NON_AUTHORITATIVE_INFORMATION: 203,
+            CODE_204_NO_CONTENT: 204,
+            CODE_205_RESET_CONTENT: 205,
+            CODE_206_PARTIAL_CONTENT: 206,
+            CODE_300_MULTIPLE_CHOICES: 300,
+            CODE_301_MOVED_PERMANENTLY: 301,
+            CODE_302_FOUND: 302,
+            CODE_303_SEE_OTHER: 303,
+            CODE_304_NOT_MODIFIED: 304,
+            CODE_305_USE_PROXY: 305,
+            CODE_306_RESERVED: 306,
+            CODE_307_TEMPORARY_REDIRECT: 307,
+            CODE_400_BAD_REQUEST: 400,
+            CODE_401_UNAUTHORIZED: 401,
+            CODE_402_PAYMENT_REQUIRED: 402,
+            CODE_403_FORBIDDEN: 403,
+            CODE_404_NOT_FOUND: 404,
+            CODE_405_METHOD_NOT_ALLOWED: 405,
+            CODE_406_NOT_ACCEPTABLE: 406,
+            CODE_407_PROXY_AUTHENTICATION_REQUIRED: 407,
+            CODE_408_REQUEST_TIMEOUT: 408,
+            CODE_409_CONFLICT: 409,
+            CODE_410_GONE: 410,
+            CODE_411_LENGTH_REQUIRED: 411,
+            CODE_412_PRECONDITION_FAILED: 412,
+            CODE_413_REQUEST_ENTITY_TOO_LARGE: 413,
+            CODE_414_REQUEST_URI_TOO_LONG: 414,
+            CODE_415_UNSUPPORTED_MEDIA_TYPE: 415,
+            CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE: 416,
+            CODE_417_EXPECTATION_FAILED: 417,
+            CODE_428_PRECONDITION_REQUIRED: 428,
+            CODE_429_TOO_MANY_REQUESTS: 429,
+            CODE_431_REQUEST_HEADER_FIELDS_TOO_LARGE: 431,
+            CODE_500_INTERNAL_SERVER_ERROR: 500,
+            CODE_501_NOT_IMPLEMENTED: 501,
+            CODE_502_BAD_GATEWAY: 502,
+            CODE_503_SERVICE_UNAVAILABLE: 503,
+            CODE_504_GATEWAY_TIMEOUT: 504,
+            CODE_505_HTTP_VERSION_NOT_SUPPORTED: 505,
+            CODE_511_NETWORK_AUTHENTICATION_REQUIRED: 511,
+        };
+    }
+
     static async get(path) {
         const response = await fetch(path);
         const text = await response.text();
@@ -115,7 +137,7 @@ class App {
     static async status() {
         const path = `${SERVER}/status`;
         const [text, status] = await HTTP.get(path);
-        if(status !== HTTP_200_OK) {
+        if(status !== HTTP.CODES().CODE_200_OK) {
             throw 'Invalid Response';
         }
         return JSON.parse(text);
@@ -131,7 +153,7 @@ class App {
             'privateBody': privateBody,
         };
         const [_, status] = await HTTP.post(path, JSON.stringify(data));
-        if(status !== HTTP_201_CREATED) {
+        if(status !== HTTP.CODES().CODE_201_CREATED) {
             throw 'Invalid Response';
         }
     }
@@ -140,7 +162,7 @@ class App {
         App._verify(App._verifyUid(resourceUid));
         const path = `${SERVER}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
-        if(status !== HTTP_200_OK) {
+        if(status !== HTTP.CODES().CODE_200_OK) {
             throw 'Invalid Response';
         }
         return JSON.parse(text);
