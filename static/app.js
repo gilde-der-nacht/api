@@ -94,7 +94,7 @@ class HTTP {
     }
 }
 
-// TODO app.js/App are awfull names
+// TODO app.js/App are awful names
 class App {
     // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
 
