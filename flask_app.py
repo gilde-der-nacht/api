@@ -79,7 +79,7 @@ def cors(fun):
 
 @app.route('/')
 def server_status():
-    return '&#128154; Flask is running', requests.codes.OK
+    return 'Olymp is Up &#128154;', requests.codes.OK
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
@@ -87,6 +87,7 @@ def entries_get(resource_uid):
     auth = auth_is_valid()
     all_raw_entries = storage.entries_list(resource_uid)
     all_entries = []
+    # TODO check size (e.g. must be < 100 KiByte) or else someone can easily fill up the database with garbage
     for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
         all_entries += [{
             'resourceUid': resource_uid,
@@ -100,8 +101,6 @@ def entries_get(resource_uid):
     return json.dumps(all_entries), requests.codes.OK
 
 
-# POST: Example JSON
-# {"publicBody": {"name": "Anmeldungen Rollenspieltage 2019"}, "privateBody": {"email": "mail@xyz.ch"}}
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
 def entries_post(resource_uid):
     body = json.loads(request.data)
@@ -111,7 +110,6 @@ def entries_post(resource_uid):
     user_agent = request.headers.get('User-Agent')
     entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
-
     return entry_uid, requests.codes.CREATED
 
 
@@ -127,13 +125,11 @@ def test():
     return send_from_directory('static', 'test.html')
 
 
-# TODO use the name of the application here
 @app.route('/olymp.js')
 def js():
     return send_from_directory('static', 'olymp.js')
 
 
-# TODO add api version so clients can test for an API and there may also be backward compatibility for the future
 @app.route('/status')
 @cors
 def status():

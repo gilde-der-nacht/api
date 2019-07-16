@@ -18,6 +18,7 @@ function logAdd(message) {
 
 function expect(condition) {
     if(!condition) {
+        // as "new {}" produces an exception, the following lines are just an ugly hack to always get a stack trace
         let stack = '';
         try { new {}; } catch(exception) { stack = exception.stack; }
         logAdd(stack);

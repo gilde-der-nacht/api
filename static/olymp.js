@@ -23,7 +23,6 @@ A thin wrapper around the Fetch API
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 */
 class HTTP {
-
     /*
     Ideally this HTTP codes would be a "static const" part of the HTTP class,
     but this seems to be impossible with the current (2019) JavaScript standards. If anyone
@@ -118,8 +117,21 @@ class HTTP {
 
 const SERVER = document.location.origin.includes('127.0.0.1') ? document.location.origin :'https://api.gildedernacht.ch';
 
+/*
+This is the main class which allows an easy access to the Olymp server.
+
+At the moment the SERVER is hardcoded, it may be an idea to make the functions
+not static anymore and provide a constructor with the option to set the server
+explicitly.
+*/
 class Olymp {
-    // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
+    /*
+    The _verify functions are not here to protect against malicious intent (which is impossible),
+    but to give the user of this class an early feedback if a parameter is invalid.
+
+    At the moment _verifyUid & _verifyBody do not directly call _verify, because both functions
+    are tested externally. Something which may reveal too much details.
+    */
 
     static _verify(condition) {
         if(!condition) {
@@ -168,4 +180,6 @@ class Olymp {
         }
         return JSON.parse(text);
     }
+
+    // TODO add a function which acts like entriesList, but only return the most recent entry in case two entries have the same public and/or private body
 }
