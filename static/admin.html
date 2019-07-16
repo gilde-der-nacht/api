@@ -44,13 +44,15 @@ window.addEventListener('load', main);
 </head>
 <body>
 
-<h1>status</h1>
+<h1>Olymp Admin</h1>
+
+<h2>status</h2>
 
 <input id="status" type="button" value="status">
 
 <pre id="status-output"></pre>
 
-<h1>add entry</h1>
+<h2>add entry</h2>
 
 <p>Resource UID <input id="add-resource-uid" type="text" value="0000000000000000000000000000000000000000000000000000000000000000"></p>
 <p>Public <input id="add-public" type="text" value="{&quot;data&quot;: &quot;Hello&quot;}"></p>
@@ -60,7 +62,7 @@ window.addEventListener('load', main);
 
 <pre id="add-output"></pre>
 
-<h1>list all entries</h1>
+<h2>list all entries</h2>
 
 <p>Resource UID <input id="list-resource-uid" type="text" value="0000000000000000000000000000000000000000000000000000000000000000"></p>
 
@@ -68,23 +70,23 @@ window.addEventListener('load', main);
 
 <pre id="list-output"></pre>
 
-<!--
-Not Implemented Yet
+<h2>form</h2>
 
-<h1>form</h1>
+<p><strong>Not Implemented Yet</strong></p>
 
-<form action="/form/0000000000000000000000000000000000000000000000000000000000000000" method="POST">
-    <p>a <input name="a" type="text"></p>
-    <p>b <input name="b" type="text"></p>
-    <p>c <input name="c" type="text"></p>
-    <input name="d" type="hidden" value="ö">
-    <input name="e" type="hidden" value="ä">
-    <input name="f" type="hidden" value="ü">
+<!-- /form/0000000000000000000000000000000000000000000000000000000000000000 -->
+<form action="/status" method="POST">
+    <p>a-public <input name="a-public-name" data-access="public" type="text" value="a-public-value"></p>
+    <p>b-public <input name="b-public-name" data-access="public" type="text" value="b-public-value"></p>
+    <p>c-public <input name="c-public-name" data-access="public" type="text" value="c-public-value"></p>
+    <p>c-private <input name="c-private-name" data-access="private" type="text" value="c-private-value"></p>
+    <input name="d-public-name" data-access="public" type="hidden" value="d-public-value ö">
+    <input name="e-public-name" data-access="public" type="hidden" value="e-public-value ä">
+    <input name="f-public-name" data-access="public" type="hidden" value="f-public-value ü">
     <input type="submit">
 </form>
 
 <pre id="form-output"></pre>
--->
 
 </body>
 </html>
