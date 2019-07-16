@@ -8,7 +8,7 @@ body {
     margin: 1em auto;
 }
 </style>
-<script src="app.js"></script>
+<script src="olymp.js"></script>
 <script>
 'use strict';
 
@@ -61,28 +61,28 @@ async function main() {
     // test the service with the library the client uses
 
     {
-        const status = await App.status();
+        const status = await Olymp.status();
         expect('version' in status);
         expect('time' in status);
         expect(status.version === '0.0.0');
     }
 
     {
-        expect(!App._verifyBody('{}'));
-        expect(App._verifyBody({}));
+        expect(!Olymp._verifyBody('{}'));
+        expect(Olymp._verifyBody({}));
 
-        expect(!App._verifyUid(''));
-        expect(!App._verifyUid('0'));
-        expect(App._verifyUid(UID_EMPTY));
-        expect(App._verifyUid(UID_TEST));
-        expect(!App._verifyUid(UID_TEST + '0'));
+        expect(!Olymp._verifyUid(''));
+        expect(!Olymp._verifyUid('0'));
+        expect(Olymp._verifyUid(UID_EMPTY));
+        expect(Olymp._verifyUid(UID_TEST));
+        expect(!Olymp._verifyUid(UID_TEST + '0'));
     }
 
     {
         // add one element
-        const length1 = (await App.entriesList(UID_TEST)).length;
-        await App.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
-        const length2 = (await App.entriesList(UID_TEST)).length;
+        const length1 = (await Olymp.entriesList(UID_TEST)).length;
+        await Olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
+        const length2 = (await Olymp.entriesList(UID_TEST)).length;
         expect((length1 + 1) == length2);
     }
 

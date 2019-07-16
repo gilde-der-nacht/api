@@ -12,11 +12,11 @@ input[type=text] {
     width: 30em;
 }
 </style>
-<script src="app.js"></script>
+<script src="olymp.js"></script>
 <script>
 
 async function status() {
-    const status = await App.status();
+    const status = await Olymp.status();
     document.getElementById('status-output').innerText = JSON.stringify(status);
 }
 
@@ -24,12 +24,12 @@ async function add() {
     const resourceUid = document.getElementById('add-resource-uid').value;
     const publicBody = JSON.parse(document.getElementById('add-public').value);
     const privateBody = JSON.parse(document.getElementById('add-private').value);
-    await App.entriesAdd(resourceUid, publicBody, privateBody);
+    await Olymp.entriesAdd(resourceUid, publicBody, privateBody);
 }
 
 async function list() {
     const resourceUid = document.getElementById('list-resource-uid').value;
-    const list = await App.entriesList(resourceUid);
+    const list = await Olymp.entriesList(resourceUid);
     document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.userAgent + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
 }
 

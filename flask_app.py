@@ -128,9 +128,9 @@ def test():
 
 
 # TODO use the name of the application here
-@app.route('/app.js')
+@app.route('/olymp.js')
 def js():
-    return send_from_directory('static', 'app.js')
+    return send_from_directory('static', 'olymp.js')
 
 
 # TODO add api version so clients can test for an API and there may also be backward compatibility for the future

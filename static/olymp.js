@@ -14,7 +14,7 @@ https://babeljs.io/
 
 sudo npm install @babel/core @babel/cli @babel/preset-env
 
-babel app.js
+babel olymp.js
 */
 
 /*
@@ -118,8 +118,7 @@ class HTTP {
 
 const SERVER = document.location.origin.includes('127.0.0.1') ? document.location.origin :'https://api.gildedernacht.ch';
 
-// TODO app.js/App are awful names
-class App {
+class Olymp {
     // verify functions are not here to protect against malicious intent (which is impossible), but to give the user of this class an early feedback if a parameter is invalid
 
     static _verify(condition) {
@@ -146,9 +145,9 @@ class App {
     }
 
     static async entriesAdd(resourceUid, publicBody, privateBody) {
-        App._verify(App._verifyUid(resourceUid));
-        App._verify(App._verifyBody(publicBody));
-        App._verify(App._verifyBody(privateBody));
+        Olymp._verify(Olymp._verifyUid(resourceUid));
+        Olymp._verify(Olymp._verifyBody(publicBody));
+        Olymp._verify(Olymp._verifyBody(privateBody));
         const path = `${SERVER}/resources/${resourceUid}/entries`;
         const data = {
             'publicBody': publicBody,
@@ -161,7 +160,7 @@ class App {
     }
 
     static async entriesList(resourceUid) {
-        App._verify(App._verifyUid(resourceUid));
+        Olymp._verify(Olymp._verifyUid(resourceUid));
         const path = `${SERVER}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
         if(status !== HTTP.CODES().CODE_200_OK) {
