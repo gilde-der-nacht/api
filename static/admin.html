@@ -72,17 +72,15 @@ window.addEventListener('load', main);
 
 <h2>form</h2>
 
-<p><strong>Not Implemented Yet</strong></p>
-
-<!-- /form/0000000000000000000000000000000000000000000000000000000000000000 -->
-<form action="/status" method="POST">
-    <p>a-public <input name="a-public-name" data-access="public" type="text" value="a-public-value"></p>
-    <p>b-public <input name="b-public-name" data-access="public" type="text" value="b-public-value"></p>
-    <p>c-public <input name="c-public-name" data-access="public" type="text" value="c-public-value"></p>
-    <p>c-private <input name="c-private-name" data-access="private" type="text" value="c-private-value"></p>
-    <input name="d-public-name" data-access="public" type="hidden" value="d-public-value ö">
-    <input name="e-public-name" data-access="public" type="hidden" value="e-public-value ä">
-    <input name="f-public-name" data-access="public" type="hidden" value="f-public-value ü">
+<form action="/form/0000000000000000000000000000000000000000000000000000000000000000" method="POST">
+    <p>a-public <input name="public-a-name" type="text" value="public-a-value"></p>
+    <p>b-public <input name="public-b-name" type="text" value="public-b-value"></p>
+    <p>c-public <input name="public-c-name" type="text" value="public-c-value"></p>
+    <p>c-private <input name="private-d-name" type="text" value="private-d-value"></p>
+    <input name="public-d-name" type="hidden" value="public-d-value ö">
+    <input name="public-e-name" type="hidden" value="public-e-value ä">
+    <input name="public-f-name" type="hidden" value="public-f-value ü">
+    <input name="_redirect" type="hidden" value="/admin">
     <input type="submit">
 </form>
 

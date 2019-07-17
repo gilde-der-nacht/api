@@ -5,11 +5,13 @@
 
 export FLASK_APP=flask_app.py
 export FLASK_ENV=development
+export OLYMP_USERNAME=gdn
+export OLYMP_PASSWORD=gdn
 flask run
 
 or
 
-FLASK_APP=flask_app.py FLASK_ENV=development flask run
+OLYMP_USERNAME=gdn OLYMP_PASSWORD=gdn FLASK_ENV=development FLASK_APP=flask_app.py flask run
 
 # Linux Setup
 
@@ -24,19 +26,19 @@ domain: api.gildedernacht.ch/v1/
   '/resources/{uid}/entries/{uid}' -> interact with ONE entry
 
 methods:
-  GET     -> read all data (if not authenticated, only public data)
-  POST    -> write new data
-  PUT     -> write a copied entry which does update some data (doesn't override anything)
-  DELETE  -> write a copied entry with the status 'deleted' (doesn't override anything)
+  GET    -> read all data (if not authenticated, only public data)
+  POST   -> write new data
+  PUT    -> write a copied entry which does update some data (doesn't override anything)
+  DELETE -> write a copied entry with the status 'deleted' (doesn't override anything)
 
 # storage
 
   there are two kinds of data
-      resources   -> buckets for entries of the same kind, enriched with a email address
+      resources   -> buckets for entries of the same kind, enriched with a attributes (e.g. email address)
       entries     -> saved data (eg. form data or registrations for events),
           two main data sets (JSON format):
-              public  -> public data, everybody can read
-              private -> only access with authentication
+              public  -> public data, everybody can read it
+              private -> can only be accessed with authentication
 
 """
 
@@ -45,7 +47,7 @@ import os
 from functools import wraps
 
 import requests
-from flask import Flask, request, json, send_from_directory, Response
+from flask import Flask, request, json, send_from_directory, Response, redirect
 
 from storage import storage
 
@@ -70,7 +72,6 @@ def auth_required(fun):
     return decorator
 
 
-# TODO this is just a first proof of concept, maybe there is a simple/other way to do it
 # TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch/...)
 def cors(fun):
     @wraps(fun)
@@ -85,9 +86,11 @@ def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
 
+# TODO according to the API descirption on top, there should be the API version in front of the URL?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
-def entries_get(resource_uid):
+def entries_list(resource_uid):
     auth = auth_is_valid()
+    # TODO sort by timestamp? add parameter to limit maximum number of rows?
     all_raw_entries = storage.entries_list(resource_uid)
     all_entries = []
     for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
@@ -104,7 +107,7 @@ def entries_get(resource_uid):
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
-def entries_post(resource_uid):
+def entries_add(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     body = json.loads(request.data)
@@ -113,8 +116,35 @@ def entries_post(resource_uid):
     url = request.url
     user_agent = request.headers.get('User-Agent')
     entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
+    # TODO send email?
     entry_uid = entry.get('uid')
     return entry_uid, requests.codes.CREATED
+
+
+# TODO other url?
+# TODO at the moment it seem possible to add entries to resources which were not created previously, why is this?
+@app.route('/form/<resource_uid>', methods=['POST'])
+def form(resource_uid):
+    if len(request.data) > 100_000:
+        return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
+    PUBLIC_PREFIX = 'public-'
+    PRIVATE_PREFIX = 'private-'
+    public = {}
+    private = {}
+    for key, value in request.form.items():
+        if key.startswith(PUBLIC_PREFIX):
+            public[key[len(PUBLIC_PREFIX):]] = value
+        elif key.startswith(PRIVATE_PREFIX):
+            private[key[len(PRIVATE_PREFIX):]] = value
+    public_body = json.dumps(public)
+    private_body = json.dumps(private)
+    url = request.url
+    user_agent = request.headers.get('User-Agent')
+    entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
+    # TODO send email?
+    # TODO default?
+    redirectUrl = request.form['_redirect']
+    return redirect(redirectUrl)
 
 
 @app.route('/admin')
