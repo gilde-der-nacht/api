@@ -28,8 +28,6 @@ function expect(condition) {
 async function main() {
     logAdd('tests started\n');
 
-    // test the service with raw get/post/put/delete methods
-
     // this resource is empty forever
     const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
@@ -56,16 +54,7 @@ async function main() {
         expect(status === HTTP.CODES().CODE_404_NOT_FOUND);
     }
 
-    // test the service with the library the client uses
-
-    {
-        const status = await Olymp.status();
-        expect('version' in status);
-        expect('time' in status);
-        expect(status.version === '0.0.0');
-    }
-
-    // access UID_TEST per HTTP
+    // test the service with raw get/post/put/delete methods
 
     {
         const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
@@ -81,9 +70,20 @@ async function main() {
         expect((await HTTP.post(PATH_TEST, 'X'.repeat(1000000)))[1] === HTTP.CODES().CODE_413_REQUEST_ENTITY_TOO_LARGE);
 
         expect((await HTTP.get(PATH_TEST))[1] === HTTP.CODES().CODE_200_OK);
+
+        expect((await HTTP.post(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_500_INTERNAL_SERVER_ERROR); // TODO return another error code
     }
 
-    // add one element with
+    // test the service with the library the client uses
+
+    {
+        const status = await Olymp.status();
+        expect('version' in status);
+        expect('time' in status);
+        expect(status.version === '0.0.0');
+    }
+
+    // add/list element
 
     {
         const length1 = (await Olymp.entriesList(UID_TEST)).length;

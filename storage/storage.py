@@ -59,15 +59,19 @@ def entries_list(resource_uid):
 
 def connect(path):
     conn = sqlite3.connect(path, isolation_level=None)
-    return conn, conn.cursor()
+    cur = conn.cursor()
+    cur.execute('PRAGMA foreign_keys = ON')
+    return conn, cur
 
 
 def setup():
+    # TODO maybe remove this in the future
     reset_tables_sql = '''
         DROP TABLE IF EXISTS resources;
         DROP TABLE IF EXISTS entries;
     '''
 
+    # TODO create if exists
     create_tables_sql = '''
         CREATE TABLE resources (
             resource_uid TEXT UNIQUE NOT NULL,
