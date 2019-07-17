@@ -67,8 +67,8 @@ def connect(path):
 def setup():
     # TODO maybe remove this in the future
     reset_tables_sql = '''
-        DROP TABLE IF EXISTS resources;
         DROP TABLE IF EXISTS entries;
+        DROP TABLE IF EXISTS resources;
     '''
 
     # TODO create if exists
