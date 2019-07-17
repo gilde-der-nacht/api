@@ -60,20 +60,25 @@ def entries_list(resource_uid):
 def connect(path):
     conn = sqlite3.connect(path, isolation_level=None)
     cur = conn.cursor()
-    cur.execute('PRAGMA foreign_keys = ON')
+    cur.execute('PRAGMA foreign_keys = ON') # due to backward compatibility sqlite disabled foreign keys by default
     return conn, cur
 
 
-def setup():
-    # TODO maybe remove this in the future
-    reset_tables_sql = '''
+# TODO maybe remove this in the future, or add a special parameter to not accidentaly run this?
+def drop():
+    drop_tables_sql = '''
         DROP TABLE IF EXISTS entries;
         DROP TABLE IF EXISTS resources;
     '''
 
-    # TODO create if exists
+    conn, cur = connect(DB_PATH)
+    cur.executescript(drop_tables_sql)
+    conn.close()
+
+
+def create():
     create_tables_sql = '''
-        CREATE TABLE resources (
+        CREATE TABLE IF NOT EXISTS resources (
             resource_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
             public_body TEXT NOT NULL,
@@ -81,7 +86,7 @@ def setup():
             url TEXT NOT NULL,
             user_agent TEXT NOT NULL
         );
-        CREATE TABLE entries (
+        CREATE TABLE IF NOT EXISTS entries (
             resource_uid TEXT NOT NULL,
             entry_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
@@ -94,7 +99,7 @@ def setup():
     '''
 
     conn, cur = connect(DB_PATH)
-    cur.executescript(reset_tables_sql + create_tables_sql)
+    cur.executescript(create_tables_sql)
     conn.close()
 
 
@@ -123,8 +128,10 @@ def resources_list():
 
 
 if __name__ == '__main__':
+    # TODO maybe make a backup first, once we run the hot version?
 
-    setup() # TODO maybe make a backup first, once we run the hot version?
+    drop()
+    create()
 
     UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
     UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000'
@@ -139,11 +146,11 @@ if __name__ == '__main__':
 
     PUBLIC = '{"a": 1}'
     PRIVATE = '{"b": 2}'
-    N = 5
+    N = 3
     assert len(entries_list(UID_TEST)) == 0
     for i in range(N):
         entries_add(UID_TEST, PUBLIC, PRIVATE, '', '')
-    assert len(entries_list(UID_TEST)) == 5
+    assert len(entries_list(UID_TEST)) == N
 
     assert entries_list(UID_TEST)[0][3] == PUBLIC
     assert entries_list(UID_TEST)[0][4] == PRIVATE
