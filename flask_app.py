@@ -90,7 +90,6 @@ def entries_get(resource_uid):
     auth = auth_is_valid()
     all_raw_entries = storage.entries_list(resource_uid)
     all_entries = []
-    # TODO check size (e.g. must be < 100 KiByte) or else someone can easily fill up the database with garbage
     for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
         all_entries += [{
             'resourceUid': resource_uid,
@@ -106,6 +105,8 @@ def entries_get(resource_uid):
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
 def entries_post(resource_uid):
+    if len(request.data) > 100_000:
+        return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     body = json.loads(request.data)
     public_body = json.dumps(body['publicBody'])
     private_body = json.dumps(body['privateBody'])

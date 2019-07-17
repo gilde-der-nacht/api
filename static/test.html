@@ -39,11 +39,33 @@ async function main() {
     const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
 
     {
+        expect(!Olymp._verifyBody('{}'));
+        expect(Olymp._verifyBody({}));
+
+        expect(!Olymp._verifyUid(''));
+        expect(!Olymp._verifyUid('0'));
+        expect(Olymp._verifyUid(UID_EMPTY));
+        expect(Olymp._verifyUid(UID_TEST));
+        expect(!Olymp._verifyUid(UID_TEST + '0'));
+    }
+
+    // invalid url
+
+    {
         const [_, status] = await HTTP.get('/invalid-url');
         expect(status === HTTP.CODES().CODE_404_NOT_FOUND);
-
-        expect((await HTTP.get('/invalid-url'))[1] === HTTP.CODES().CODE_404_NOT_FOUND);
     }
+
+    // test the service with the library the client uses
+
+    {
+        const status = await Olymp.status();
+        expect('version' in status);
+        expect('time' in status);
+        expect(status.version === '0.0.0');
+    }
+
+    // access UID_TEST per HTTP
 
     {
         const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
@@ -56,31 +78,14 @@ async function main() {
 
         expect((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_201_CREATED);
 
+        expect((await HTTP.post(PATH_TEST, 'X'.repeat(1000000)))[1] === HTTP.CODES().CODE_413_REQUEST_ENTITY_TOO_LARGE);
+
         expect((await HTTP.get(PATH_TEST))[1] === HTTP.CODES().CODE_200_OK);
     }
 
-    // test the service with the library the client uses
+    // add one element with
 
     {
-        const status = await Olymp.status();
-        expect('version' in status);
-        expect('time' in status);
-        expect(status.version === '0.0.0');
-    }
-
-    {
-        expect(!Olymp._verifyBody('{}'));
-        expect(Olymp._verifyBody({}));
-
-        expect(!Olymp._verifyUid(''));
-        expect(!Olymp._verifyUid('0'));
-        expect(Olymp._verifyUid(UID_EMPTY));
-        expect(Olymp._verifyUid(UID_TEST));
-        expect(!Olymp._verifyUid(UID_TEST + '0'));
-    }
-
-    {
-        // add one element
         const length1 = (await Olymp.entriesList(UID_TEST)).length;
         await Olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
         const length2 = (await Olymp.entriesList(UID_TEST)).length;

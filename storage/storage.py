@@ -119,16 +119,19 @@ def resources_list():
 
 
 if __name__ == '__main__':
-    setup()
 
-    # test resource
+    setup() # TODO maybe make a backup first, once we run the hot version?
+
+    UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+    UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000'
+
+    # add one ressource
 
     assert len(resources_list()) == 0
-    UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000'
     resources_add(UID_TEST, '{}', '{}', '', '')
     assert len(resources_list()) == 1
 
-    # test entries
+    # test UID_TEST
 
     PUBLIC = '{"a": 1}'
     PRIVATE = '{"b": 2}'
@@ -138,12 +141,15 @@ if __name__ == '__main__':
         entries_add(UID_TEST, PUBLIC, PRIVATE, '', '')
     assert len(entries_list(UID_TEST)) == 5
 
-    print(entries_list(UID_TEST)[0])
     assert entries_list(UID_TEST)[0][3] == PUBLIC
     assert entries_list(UID_TEST)[0][4] == PRIVATE
 
-    # add useful resource
+    # test UID_EMPTY
 
-    UID_ROLLENSPIELTAGE = resources_add('095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b',
-                                        '{"description": "Luzerner Rollenspieltage 2019"}',
-                                        '{"email": "mail@rollenspieltage.ch"}', '', '')
+    assert len(entries_list(UID_EMPTY)) == 0
+
+    # add Rollenspieltage resource manually
+    # TODO remove this once we are hot
+
+    UID_APOLLON = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b'
+    resources_add(UID_APOLLON, '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}', '', '')
