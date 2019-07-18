@@ -14,6 +14,7 @@ input[type=text] {
 </style>
 <script src="olymp.js"></script>
 <script>
+'use strict';
 
 async function status() {
     const status = await Olymp.status();
@@ -33,10 +34,96 @@ async function list() {
     document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.userAgent + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
 }
 
+async function test() {
+    function expect(condition) {
+        if(!condition) {
+            // as "new {}" produces an exception, the following lines are just an ugly hack to always get a stack trace
+            let stack = '';
+            try { new {}; } catch(exception) { stack = exception.stack; }
+            testLog(stack);
+        }
+    }
+
+    function testLog(message) {
+        document.getElementById('test-log').innerText += message;
+    }
+
+    testLog('tests started\n');
+
+    // this resource is empty forever
+    const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+    // this resource is just to add anything you like, entries may be deleted occasionally by an administrator
+    const UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000';
+
+    const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
+
+    {
+        expect(!Olymp._verifyBody('{}'));
+        expect(Olymp._verifyBody({}));
+
+        expect(!Olymp._verifyUid(''));
+        expect(!Olymp._verifyUid('0'));
+        expect(Olymp._verifyUid(UID_EMPTY));
+        expect(Olymp._verifyUid(UID_TEST));
+        expect(!Olymp._verifyUid(UID_TEST + '0'));
+    }
+
+    // invalid url
+
+    {
+        const [_, status] = await HTTP.get('/invalid-url');
+        expect(status === HTTP.CODES().CODE_404_NOT_FOUND);
+    }
+
+    // test the service with raw get/post/put/delete methods
+
+    {
+        const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
+        const PATH_TEST = '/resources/' + UID_TEST + '/entries';
+        const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
+
+        expect((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_405_METHOD_NOT_ALLOWED);
+
+        expect((await HTTP.delete(PATH_EMPTY))[1] === HTTP.CODES().CODE_405_METHOD_NOT_ALLOWED);
+
+        expect((await HTTP.post(PATH_TEST, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_201_CREATED);
+
+        expect((await HTTP.post(PATH_TEST, 'X'.repeat(1000000)))[1] === HTTP.CODES().CODE_413_REQUEST_ENTITY_TOO_LARGE);
+
+        expect((await HTTP.get(PATH_TEST))[1] === HTTP.CODES().CODE_200_OK);
+
+        expect((await HTTP.post(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP.CODES().CODE_500_INTERNAL_SERVER_ERROR); // TODO return another error code
+    }
+
+    // test the service with the library the client uses
+
+    {
+        const status = await Olymp.status();
+        expect('version' in status);
+        expect('time' in status);
+        expect(status.version === '0.0.0');
+    }
+
+    // add/list element
+
+    {
+        const length1 = (await Olymp.entriesList(UID_TEST)).length;
+        await Olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
+        const length2 = (await Olymp.entriesList(UID_TEST)).length;
+        expect((length1 + 1) == length2);
+    }
+
+    testLog('tests finished\n');
+}
+
+
 function main() {
     document.getElementById('status').addEventListener('click', status);
     document.getElementById('add').addEventListener('click', add);
     document.getElementById('list').addEventListener('click', list);
+    document.getElementById('test').addEventListener('click', test);
+    status();
 }
 
 window.addEventListener('load', main);
@@ -51,6 +138,12 @@ window.addEventListener('load', main);
 <input id="status" type="button" value="status">
 
 <pre id="status-output"></pre>
+
+<h2>test</h2>
+
+<input id="test" type="button" value="test">
+
+<pre id="test-log"></pre>
 
 <h2>add entry</h2>
 
