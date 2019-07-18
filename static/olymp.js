@@ -182,7 +182,6 @@ class Olymp {
     }
 
     static filterMostRecent(entries, callee) {
-
         // as GROUP BY from SQL or a groupBy from functional libraries like https://lodash.com/docs/#groupBy or https://ramdajs.com/docs/#groupBy
         function groupBy(array, iteratee) {
             return array.reduce((acc, item) => {
@@ -203,6 +202,47 @@ class Olymp {
         });
         return entriesNewest;
     }
+
+    static hexlify(buffer) {
+        return [...new Uint8Array(buffer)].map(byte => {
+            return byte.toString(16).padStart(2, '0');
+        }).join('');
+    }
+
+    /*
+    If a user registers itself several times, there should be a possibility to detect this.
+    Because the Olymp server has, by design (maybe this need to be changed), no understanding
+    of the content of the data it stores, this needs to done on the client.
+    To do this, the client needs some unique information from the user. Possibilites are:
+
+    firstname + surname, email:
+
+    This would mean that the client has e.g. the email of all people registered, which would be awfull,
+    as all email addresses are revealed to the public.
+
+    Hash of firstname/surname/email:
+
+    Information is not directly revealed. But everyone who has an idea who is atending the event may
+    do the hashing by themself. Especeially because there is no salting, someone could do that in advance.
+
+    Salt+Hash of firstname/surname/email:
+
+    What is the salt? Ideally there should be a different salt per user, but because the server
+    has no idea about a user, this is not so easy possible. Salt = resource UID? Not ideal.
+    As the salt is always public information this just makes the process harder.
+
+    Portability?
+
+    https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+    https://www.npmjs.com/package/js-sha256
+    */
+    static async hash(value, salt) {
+        // TODO at least proper PBKDF2
+        const encoder = new TextEncoder();
+        const data = encoder.encode(value + salt);
+        const result = await window.crypto.subtle.digest('SHA-256', data);
+        return Olymp.hexlify(result);
+    }
 }
 
 /*
@@ -210,9 +250,9 @@ class Olymp {
 */
 class OlympMock {
     constructor(config) {
-        this.resources = {};
-        this.resources[RESOURCE_UID_TEST] = [];
+        this.entries = {};
         this.authenticated = true; // TODO add configuration option to change this
+        this.resourceAdd(RESOURCE_UID_TEST);
     }
 
     static async delay(milliseconds) {
@@ -234,6 +274,10 @@ class OlympMock {
         }
     }
 
+    async resourceAdd(resourceUid) {
+        this.entries[resourceUid] = [];
+    }
+
     async entriesAdd(resourceUid, publicBody, privateBody, timestamp=undefined) {
         const entryUid = OlympMock.createUid();
         const entry = {
@@ -245,7 +289,7 @@ class OlympMock {
             url: '',
             userAgent: '',
         }
-        this.resources[resourceUid].push(entry);
+        this.entries[resourceUid].push(entry);
         /*
         Locally generated timestamps are not in microseconds and therefore not unique,
         especially because there is no delay due an network connection.
@@ -255,6 +299,6 @@ class OlympMock {
     }
 
     async entriesList(resourceUid) {
-        return this.resources[resourceUid];
+        return this.entries[resourceUid];
     }
 };
