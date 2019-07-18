@@ -153,12 +153,6 @@ def admin():
     return send_from_directory('static', 'admin.html')
 
 
-@app.route('/test')
-@auth_required
-def test():
-    return send_from_directory('static', 'test.html')
-
-
 @app.route('/olymp.js')
 def js():
     return send_from_directory('static', 'olymp.js')
