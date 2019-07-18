@@ -30,55 +30,55 @@ class HTTP {
 
     Usage:
 
-    HTTP.CODES().CODE_200_OK
+    HTTP.CODES.OK_200
     */
-    static CODES() {
+    static get CODES() {
         return {
-            CODE_100_CONTINUE: 100,
-            CODE_101_SWITCHING_PROTOCOLS: 101,
-            CODE_200_OK: 200,
-            CODE_201_CREATED: 201,
-            CODE_202_ACCEPTED: 202,
-            CODE_203_NON_AUTHORITATIVE_INFORMATION: 203,
-            CODE_204_NO_CONTENT: 204,
-            CODE_205_RESET_CONTENT: 205,
-            CODE_206_PARTIAL_CONTENT: 206,
-            CODE_300_MULTIPLE_CHOICES: 300,
-            CODE_301_MOVED_PERMANENTLY: 301,
-            CODE_302_FOUND: 302,
-            CODE_303_SEE_OTHER: 303,
-            CODE_304_NOT_MODIFIED: 304,
-            CODE_305_USE_PROXY: 305,
-            CODE_306_RESERVED: 306,
-            CODE_307_TEMPORARY_REDIRECT: 307,
-            CODE_400_BAD_REQUEST: 400,
-            CODE_401_UNAUTHORIZED: 401,
-            CODE_402_PAYMENT_REQUIRED: 402,
-            CODE_403_FORBIDDEN: 403,
-            CODE_404_NOT_FOUND: 404,
-            CODE_405_METHOD_NOT_ALLOWED: 405,
-            CODE_406_NOT_ACCEPTABLE: 406,
-            CODE_407_PROXY_AUTHENTICATION_REQUIRED: 407,
-            CODE_408_REQUEST_TIMEOUT: 408,
-            CODE_409_CONFLICT: 409,
-            CODE_410_GONE: 410,
-            CODE_411_LENGTH_REQUIRED: 411,
-            CODE_412_PRECONDITION_FAILED: 412,
-            CODE_413_REQUEST_ENTITY_TOO_LARGE: 413,
-            CODE_414_REQUEST_URI_TOO_LONG: 414,
-            CODE_415_UNSUPPORTED_MEDIA_TYPE: 415,
-            CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE: 416,
-            CODE_417_EXPECTATION_FAILED: 417,
-            CODE_428_PRECONDITION_REQUIRED: 428,
-            CODE_429_TOO_MANY_REQUESTS: 429,
-            CODE_431_REQUEST_HEADER_FIELDS_TOO_LARGE: 431,
-            CODE_500_INTERNAL_SERVER_ERROR: 500,
-            CODE_501_NOT_IMPLEMENTED: 501,
-            CODE_502_BAD_GATEWAY: 502,
-            CODE_503_SERVICE_UNAVAILABLE: 503,
-            CODE_504_GATEWAY_TIMEOUT: 504,
-            CODE_505_HTTP_VERSION_NOT_SUPPORTED: 505,
-            CODE_511_NETWORK_AUTHENTICATION_REQUIRED: 511,
+            CONTINUE_100: 100,
+            SWITCHING_PROTOCOLS_101: 101,
+            OK_200: 200,
+            CREATED_201: 201,
+            ACCEPTED_202: 202,
+            NON_AUTHORITATIVE_INFORMATION_203: 203,
+            NO_CONTENT_204: 204,
+            RESET_CONTENT_205: 205,
+            PARTIAL_CONTENT_206: 206,
+            MULTIPLE_CHOICES_300: 300,
+            MOVED_PERMANENTLY_301: 301,
+            FOUND_302: 302,
+            SEE_OTHER_303: 303,
+            NOT_MODIFIED_304: 304,
+            USE_PROXY_305: 305,
+            RESERVED_306: 306,
+            TEMPORARY_REDIRECT_307: 307,
+            BAD_REQUEST_400: 400,
+            UNAUTHORIZED_401: 401,
+            PAYMENT_REQUIRED_402: 402,
+            FORBIDDEN_403: 403,
+            NOT_FOUND_404: 404,
+            METHOD_NOT_ALLOWED_405: 405,
+            NOT_ACCEPTABLE_406: 406,
+            PROXY_AUTHENTICATION_REQUIRED_407: 407,
+            REQUEST_TIMEOUT_408: 408,
+            CONFLICT_409: 409,
+            GONE_410: 410,
+            LENGTH_REQUIRED_411: 411,
+            PRECONDITION_FAILED_412: 412,
+            REQUEST_ENTITY_TOO_LARGE_413: 413,
+            REQUEST_URI_TOO_LONG_414: 414,
+            UNSUPPORTED_MEDIA_TYPE_415: 415,
+            REQUESTED_RANGE_NOT_SATISFIABLE_416: 416,
+            EXPECTATION_FAILED_417: 417,
+            PRECONDITION_REQUIRED_428: 428,
+            TOO_MANY_REQUESTS_429: 429,
+            REQUEST_HEADER_FIELDS_TOO_LARGE_431: 431,
+            INTERNAL_SERVER_ERROR_500: 500,
+            NOT_IMPLEMENTED_501: 501,
+            BAD_GATEWAY_502: 502,
+            SERVICE_UNAVAILABLE_503: 503,
+            GATEWAY_TIMEOUT_504: 504,
+            HTTP_VERSION_NOT_SUPPORTED_505: 505,
+            NETWORK_AUTHENTICATION_REQUIRED_511: 511,
         };
     }
 
@@ -150,7 +150,7 @@ class Olymp {
     static async status() {
         const path = `${SERVER}/status`;
         const [text, status] = await HTTP.get(path);
-        if(status !== HTTP.CODES().CODE_200_OK) {
+        if(status !== HTTP.CODES.OK_200) {
             throw 'Invalid Response';
         }
         return JSON.parse(text);
@@ -166,7 +166,7 @@ class Olymp {
             'privateBody': privateBody,
         };
         const [_, status] = await HTTP.post(path, JSON.stringify(data));
-        if(status !== HTTP.CODES().CODE_201_CREATED) {
+        if(status !== HTTP.CODES.CREATED_201) {
             throw 'Invalid Response';
         }
     }
@@ -175,7 +175,7 @@ class Olymp {
         Olymp._verify(Olymp._verifyUid(resourceUid));
         const path = `${SERVER}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
-        if(status !== HTTP.CODES().CODE_200_OK) {
+        if(status !== HTTP.CODES.OK_200) {
             throw 'Invalid Response';
         }
         return JSON.parse(text);
