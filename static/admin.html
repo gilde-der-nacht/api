@@ -47,11 +47,12 @@ async function test() {
         }
     }
 
-    function testLog(message) {
+    function testLog() {
+        const message = [...arguments].join(' ') + '\n';
         document.getElementById('test-log').innerText += message;
     }
 
-    testLog('tests started\n');
+    testLog('tests started');
 
     const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
 
@@ -118,7 +119,36 @@ async function test() {
         await run(new OlympMock({}));
     }
 
-    testLog('tests finished\n');
+    //example registration
+    {
+        const olymp = new OlympMock({});
+
+        const RESOURCE_UID = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b';
+
+        await olymp.resourceAdd(RESOURCE_UID);
+
+        // user updates the information 3 times
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0', 'GM-1'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0', 'GM-1', 'GM-2'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('b@unknown.tld', RESOURCE_UID)}, {name: 'b', email: 'b@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('c@unknown.tld', RESOURCE_UID)}, {name: 'c', email: 'c@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('d@unknown.tld', RESOURCE_UID)}, {name: 'd', email: 'd@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('e@unknown.tld', RESOURCE_UID)}, {name: 'e', email: 'e@unknown.tld'});
+
+        const status = await olymp.status();
+        expect(status.version === '0.0.0');
+
+        const registrationsUnfiltered = await olymp.entriesList(RESOURCE_UID);
+        const registrations = Olymp.filterMostRecent(registrationsUnfiltered, entry => entry.publicBody.userId);
+
+        registrations.forEach(registration => {
+            testLog(registration.timestamp, registration.publicBody.userId, registration.publicBody.rounds);
+        });
+    }
+
+    testLog('tests finished');
 }
 
 
