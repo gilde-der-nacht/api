@@ -106,6 +106,12 @@ class HTTP {
     }
 }
 
+// this resource is empty forever
+const RESOURCE_UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+// this resource is just to add anything you like, entries may be deleted occasionally by an administrator
+const RESOURCE_UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000';
+
 /*
 This is the main class which allows an easy access to the Olymp server.
 */
@@ -156,8 +162,8 @@ class Olymp {
         Olymp._verify(Olymp._verifyBody(privateBody));
         const path = `${this.server}/resources/${resourceUid}/entries`;
         const data = {
-            'publicBody': publicBody,
-            'privateBody': privateBody,
+            publicBody: publicBody,
+            privateBody: privateBody,
         };
         const [_, status] = await HTTP.post(path, JSON.stringify(data));
         if(status !== HTTP.CODES.CREATED_201) {

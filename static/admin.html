@@ -53,12 +53,6 @@ async function test() {
 
     testLog('tests started\n');
 
-    // this resource is empty forever
-    const UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-
-    // this resource is just to add anything you like, entries may be deleted occasionally by an administrator
-    const UID_TEST = '0000000000000000000000000000000000000000000000000000000000000000';
-
     const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
 
     {
@@ -67,16 +61,16 @@ async function test() {
 
         expect(!Olymp._verifyUid(''));
         expect(!Olymp._verifyUid('0'));
-        expect(Olymp._verifyUid(UID_EMPTY));
-        expect(Olymp._verifyUid(UID_TEST));
-        expect(!Olymp._verifyUid(UID_TEST + '0'));
+        expect(Olymp._verifyUid(RESOURCE_UID_EMPTY));
+        expect(Olymp._verifyUid(RESOURCE_UID_TEST));
+        expect(!Olymp._verifyUid(RESOURCE_UID_TEST + '0'));
     }
 
     // test the service with raw get/post/put/delete methods
 
     {
-        const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
-        const PATH_TEST = '/resources/' + UID_TEST + '/entries';
+        const PATH_EMPTY = '/resources/' + RESOURCE_UID_EMPTY + '/entries';
+        const PATH_TEST = '/resources/' + RESOURCE_UID_TEST + '/entries';
         const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
 
         const [_, status] = await HTTP.get('/invalid-url');
@@ -97,29 +91,31 @@ async function test() {
 
     // test the service with the library the client uses
     {
-        const olymp = new Olymp({});
+        async function run(olymp) {
+            const status = await olymp.status();
+            expect('version' in status);
+            expect('time' in status);
+            expect(status.version === '0.0.0');
 
-        const status = await olymp.status();
-        expect('version' in status);
-        expect('time' in status);
-        expect(status.version === '0.0.0');
 
+            const length1 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
+            await olymp.entriesAdd(RESOURCE_UID_TEST, {'data': 'public'}, {'data': 'private'});
+            const length2 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
+            expect((length1 + 1) == length2);
 
-        const length1 = (await olymp.entriesList(UID_TEST)).length;
-        await olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
-        const length2 = (await olymp.entriesList(UID_TEST)).length;
-        expect((length1 + 1) == length2);
+            const entries = await olymp.entriesList(RESOURCE_UID_TEST);
+            entries.forEach(entry => {
+                expect('resourceUid' in entry);
+                expect('entryUid' in entry);
+                expect('timestamp' in entry);
+                expect('publicBody' in entry);
+                expect('privateBody' in entry);
+                expect('url' in entry);
+                expect('userAgent' in entry);
+            });
+        }
 
-        const entries = await olymp.entriesList(UID_TEST);
-        entries.forEach(entry => {
-            expect('resourceUid' in entry);
-            expect('entryUid' in entry);
-            expect('timestamp' in entry);
-            expect('publicBody' in entry);
-            expect('privateBody' in entry);
-            expect('url' in entry);
-            expect('userAgent' in entry);
-        });
+        await run(new Olymp({}));
     }
 
     testLog('tests finished\n');
