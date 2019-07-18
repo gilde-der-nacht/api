@@ -112,17 +112,33 @@ async function test() {
         await Olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
         const length2 = (await Olymp.entriesList(UID_TEST)).length;
         expect((length1 + 1) == length2);
+
+        const entries = await Olymp.entriesList(UID_TEST);
+        entries.forEach(entry => {
+            expect('resourceUid' in entry);
+            expect('entryUid' in entry);
+            expect('timestamp' in entry);
+            expect('publicBody' in entry);
+            expect('privateBody' in entry);
+            expect('url' in entry);
+            expect('userAgent' in entry);
+        });
     }
 
     testLog('tests finished\n');
 }
 
 
-function main() {
+async function main() {
     document.getElementById('status').addEventListener('click', status);
     document.getElementById('add').addEventListener('click', add);
     document.getElementById('list').addEventListener('click', list);
     document.getElementById('test').addEventListener('click', test);
+    if(false) {
+        await status();
+        await test();
+        await list();
+    }
 }
 
 window.addEventListener('load', main);
