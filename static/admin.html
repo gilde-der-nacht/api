@@ -17,20 +17,23 @@ input[type=text] {
 'use strict';
 
 async function status() {
-    const status = await Olymp.status();
+    const olymp = new Olymp({});
+    const status = await olymp.status();
     document.getElementById('status-output').innerText = JSON.stringify(status);
 }
 
 async function add() {
+    const olymp = new Olymp({});
     const resourceUid = document.getElementById('add-resource-uid').value;
     const publicBody = JSON.parse(document.getElementById('add-public').value);
     const privateBody = JSON.parse(document.getElementById('add-private').value);
-    await Olymp.entriesAdd(resourceUid, publicBody, privateBody);
+    await olymp.entriesAdd(resourceUid, publicBody, privateBody);
 }
 
 async function list() {
+    const olymp = new Olymp({});
     const resourceUid = document.getElementById('list-resource-uid').value;
-    const list = await Olymp.entriesList(resourceUid);
+    const list = await olymp.entriesList(resourceUid);
     document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.userAgent + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
 }
 
@@ -69,19 +72,15 @@ async function test() {
         expect(!Olymp._verifyUid(UID_TEST + '0'));
     }
 
-    // invalid url
-
-    {
-        const [_, status] = await HTTP.get('/invalid-url');
-        expect(status === HTTP.CODES.NOT_FOUND_404);
-    }
-
     // test the service with raw get/post/put/delete methods
 
     {
         const PATH_EMPTY = '/resources/' + UID_EMPTY + '/entries';
         const PATH_TEST = '/resources/' + UID_TEST + '/entries';
         const JSON_EMPTY_STRING = JSON.stringify(JSON_EMPTY);
+
+        const [_, status] = await HTTP.get('/invalid-url');
+        expect(status === HTTP.CODES.NOT_FOUND_404);
 
         expect((await HTTP.put(PATH_EMPTY, JSON_EMPTY_STRING))[1] === HTTP.CODES.METHOD_NOT_ALLOWED_405);
 
@@ -97,23 +96,21 @@ async function test() {
     }
 
     // test the service with the library the client uses
-
     {
-        const status = await Olymp.status();
+        const olymp = new Olymp({});
+
+        const status = await olymp.status();
         expect('version' in status);
         expect('time' in status);
         expect(status.version === '0.0.0');
-    }
 
-    // add/list element
 
-    {
-        const length1 = (await Olymp.entriesList(UID_TEST)).length;
-        await Olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
-        const length2 = (await Olymp.entriesList(UID_TEST)).length;
+        const length1 = (await olymp.entriesList(UID_TEST)).length;
+        await olymp.entriesAdd(UID_TEST, {'data': 'public'}, {'data': 'private'});
+        const length2 = (await olymp.entriesList(UID_TEST)).length;
         expect((length1 + 1) == length2);
 
-        const entries = await Olymp.entriesList(UID_TEST);
+        const entries = await olymp.entriesList(UID_TEST);
         entries.forEach(entry => {
             expect('resourceUid' in entry);
             expect('entryUid' in entry);

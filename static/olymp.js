@@ -23,15 +23,6 @@ A thin wrapper around the Fetch API
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 */
 class HTTP {
-    /*
-    Ideally this HTTP codes would be a "static const" part of the HTTP class,
-    but this seems to be impossible with the current (2019) JavaScript standards. If anyone
-    who reads this has a more JS-alike idea how to express the same idea, please let us know.
-
-    Usage:
-
-    HTTP.CODES.OK_200
-    */
     static get CODES() {
         return {
             CONTINUE_100: 100,
@@ -115,16 +106,19 @@ class HTTP {
     }
 }
 
-const SERVER = document.location.origin.includes('127.0.0.1') ? document.location.origin :'https://api.gildedernacht.ch';
-
 /*
 This is the main class which allows an easy access to the Olymp server.
-
-At the moment the SERVER is hardcoded, it may be an idea to make the functions
-not static anymore and provide a constructor with the option to set the server
-explicitly.
 */
 class Olymp {
+    constructor(config) {
+        if('server' in config) {
+            this.server = config.server;
+        } else {
+            const origin = document.location.origin;
+            this.server = origin.includes('127.0.0.1') ? origin :'https://api.gildedernacht.ch';
+        }
+    }
+
     /*
     The _verify functions are not here to protect against malicious intent (which is impossible),
     but to give the user of this class an early feedback if a parameter is invalid.
@@ -147,8 +141,8 @@ class Olymp {
         return (typeof body) === 'object';
     }
 
-    static async status() {
-        const path = `${SERVER}/status`;
+    async status() {
+        const path = `${this.server}/status`;
         const [text, status] = await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {
             throw 'Invalid Response';
@@ -156,11 +150,11 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    static async entriesAdd(resourceUid, publicBody, privateBody) {
+    async entriesAdd(resourceUid, publicBody, privateBody) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
         Olymp._verify(Olymp._verifyBody(publicBody));
         Olymp._verify(Olymp._verifyBody(privateBody));
-        const path = `${SERVER}/resources/${resourceUid}/entries`;
+        const path = `${this.server}/resources/${resourceUid}/entries`;
         const data = {
             'publicBody': publicBody,
             'privateBody': privateBody,
@@ -171,9 +165,9 @@ class Olymp {
         }
     }
 
-    static async entriesList(resourceUid) {
+    async entriesList(resourceUid) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
-        const path = `${SERVER}/resources/${resourceUid}/entries`;
+        const path = `${this.server}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {
             throw 'Invalid Response';
