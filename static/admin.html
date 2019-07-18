@@ -97,7 +97,6 @@ async function test() {
             expect('time' in status);
             expect(status.version === '0.0.0');
 
-
             const length1 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
             await olymp.entriesAdd(RESOURCE_UID_TEST, {'data': 'public'}, {'data': 'private'});
             const length2 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
@@ -116,6 +115,7 @@ async function test() {
         }
 
         await run(new Olymp({}));
+        await run(new OlympMock({}));
     }
 
     testLog('tests finished\n');

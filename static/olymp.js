@@ -181,5 +181,80 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    // TODO add a function which acts like entriesList, but only return the most recent entry in case two entries have the same public and/or private body
+    static filterMostRecent(entries, callee) {
+
+        // as GROUP BY from SQL or a groupBy from functional libraries like https://lodash.com/docs/#groupBy or https://ramdajs.com/docs/#groupBy
+        function groupBy(array, iteratee) {
+            return array.reduce((acc, item) => {
+                const key = iteratee(item);
+                if(!(key in acc)) {
+                    acc[key] = [];
+                }
+                acc[key].push(item);
+                return acc;
+            }, {});
+        };
+
+        const grouped = groupBy(entries, callee); // e.g. entry => entry.publicBody.userId
+        const entriesNewest = Object.keys(grouped).map(key => {
+            const entries = grouped[key];
+            entries.sort((lhs, rhs) => lhs.timestamp < rhs.timestamp);
+            return entries[0]; // only take the newest
+        });
+        return entriesNewest;
+    }
 }
+
+/*
+(Should) behave exactly like Olymp, but does not need a connection to the backend.
+*/
+class OlympMock {
+    constructor(config) {
+        this.resources = {};
+        this.resources[RESOURCE_UID_TEST] = [];
+        this.authenticated = true; // TODO add configuration option to change this
+    }
+
+    static async delay(milliseconds) {
+        return new Promise((resolve) => setTimeout(resolve, milliseconds))
+    }
+
+    static createTimestamp() {
+        return new Date(Date.now()).toISOString().slice(0, -1);
+    }
+
+    static createUid() {
+        return 'TEST-UID'; // TODO randomize
+    }
+
+    async status() {
+        return {
+            time: OlympMock.createTimestamp(),
+            version: '0.0.0',
+        }
+    }
+
+    async entriesAdd(resourceUid, publicBody, privateBody, timestamp=undefined) {
+        const entryUid = OlympMock.createUid();
+        const entry = {
+            resourceUid: resourceUid,
+            entryUid: entryUid,
+            timestamp: timestamp === undefined ? OlympMock.createTimestamp() : timestamp,
+            publicBody: publicBody,
+            privateBody: privateBody,
+            url: '',
+            userAgent: '',
+        }
+        this.resources[resourceUid].push(entry);
+        /*
+        Locally generated timestamps are not in microseconds and therefore not unique,
+        especially because there is no delay due an network connection.
+        */
+        await OlympMock.delay(10);
+        return entryUid;
+    }
+
+    async entriesList(resourceUid) {
+        return this.resources[resourceUid];
+    }
+};
