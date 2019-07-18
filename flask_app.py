@@ -86,7 +86,7 @@ def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
 
-# TODO according to the API descirption on top, there should be the API version in front of the URL?
+# TODO according to the API description on top, there should be the API version in front of the URL?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
 def entries_list(resource_uid):
     auth = auth_is_valid()
@@ -122,7 +122,6 @@ def entries_add(resource_uid):
 
 
 # TODO other url?
-# TODO at the moment it seem possible to add entries to resources which were not created previously, why is this?
 @app.route('/form/<resource_uid>', methods=['POST'])
 def form(resource_uid):
     if len(request.data) > 100_000:
