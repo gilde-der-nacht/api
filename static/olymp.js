@@ -106,6 +106,37 @@ class HTTP {
     }
 }
 
+/*
+Function should be part of JavaScript language and is quite likely used by
+users of Olymp.
+
+At the moment only ascending ordering is implemented.
+
+Usage:
+
+result = sortBy(array, item => item.field);
+
+See:
+
+https://lodash.com/docs/#sortBy
+https://ramdajs.com/docs/#sortBy
+
+*/
+function sortBy(array, ...criterias) {
+    const result = array.slice(0);
+    result.sort((a, b) => {
+        for(let i = 0; i < criterias.length; i += 1) {
+            const ca = criterias[i](a);
+            const cb = criterias[i](b);
+            if((i < criterias.length) && (ca === cb)) {
+                continue;
+            }
+            return ca > cb; // > = ascending, < = descending
+        }
+    });
+    return result;
+}
+
 // this resource is empty forever
 const RESOURCE_UID_EMPTY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
