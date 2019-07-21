@@ -76,7 +76,7 @@ class HTTP {
     static async get(path) {
         const response = await fetch(path);
         const text = await response.text();
-        return [text, response.status]
+        return [text, response.status];
     }
 
     static async post(path, data) {
@@ -85,7 +85,7 @@ class HTTP {
             body: data,
         });
         const text = await response.text();
-        return [text, response.status]
+        return [text, response.status];
     }
 
     static async put(path, data) {
@@ -94,7 +94,7 @@ class HTTP {
             body: data,
         });
         const text = await response.text();
-        return [text, response.status]
+        return [text, response.status];
     }
 
     static async delete(path) {
@@ -102,7 +102,7 @@ class HTTP {
             method: 'DELETE',
         });
         const text = await response.text();
-        return [text, response.status]
+        return [text, response.status];
     }
 }
 
@@ -171,7 +171,7 @@ class Olymp {
     }
 
     static _verifyUid(uid) {
-        return (uid.length === 64) && RegExp('[0-9a-f]{64}').test(uid)
+        return (uid.length === 64) && RegExp('[0-9a-f]{64}').test(uid);
     }
 
     static _verifyIdentification(value) {
@@ -230,7 +230,7 @@ class OlympMock {
     }
 
     static async delay(milliseconds) {
-        return new Promise((resolve) => setTimeout(resolve, milliseconds))
+        return new Promise((resolve) => setTimeout(resolve, milliseconds));
     }
 
     static createTimestamp() {
@@ -245,7 +245,7 @@ class OlympMock {
         return {
             time: OlympMock.createTimestamp(),
             version: '0.0.0',
-        }
+        };
     }
 
     async resourceAdd(resourceUid) {
@@ -263,7 +263,7 @@ class OlympMock {
             privateBody: privateBody,
             url: '',
             userAgent: '',
-        }
+        };
         this.entries[resourceUid].push(entry);
         /*
         Locally generated timestamps are not in microseconds and therefore not unique,
@@ -286,7 +286,7 @@ class OlympMock {
                 acc[key].push(item);
                 return acc;
             }, {});
-        };
+        }
 
         const grouped = groupBy(entries, callee); // e.g. entry => entry.publicBody.userId
         const entriesNewest = Object.keys(grouped).map(key => {
@@ -301,4 +301,4 @@ class OlympMock {
         const unfiltered = this.entries[resourceUid];
         return OlympMock.filterMostRecent(unfiltered, item => item.identification);
     }
-};
+}
