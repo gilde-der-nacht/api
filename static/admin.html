@@ -60,7 +60,9 @@ async function test() {
     {
         expect(!Olymp._verifyBody('{}'));
         expect(Olymp._verifyBody({}));
-
+        expect(Olymp._verifyIdentification(''));
+        expect(Olymp._verifyIdentification('1234'));
+        expect(!Olymp._verifyIdentification(0));
         expect(!Olymp._verifyUid(''));
         expect(!Olymp._verifyUid('0'));
         expect(Olymp._verifyUid(RESOURCE_UID_EMPTY));
@@ -92,6 +94,7 @@ async function test() {
     }
 
     // test the service with the library the client uses
+
     {
         async function run(olymp) {
             const status = await olymp.status();
@@ -120,7 +123,8 @@ async function test() {
         await run(new OlympMock({}));
     }
 
-    //example registration
+    // example registration
+
     {
         const olymp = new OlympMock({});
 
