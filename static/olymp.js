@@ -217,69 +217,6 @@ class Olymp {
         }
         return JSON.parse(text);
     }
-
-    static filterMostRecent(entries, callee) {
-        // as GROUP BY from SQL or a groupBy from functional libraries like https://lodash.com/docs/#groupBy or https://ramdajs.com/docs/#groupBy
-        function groupBy(array, iteratee) {
-            return array.reduce((acc, item) => {
-                const key = iteratee(item);
-                if(!(key in acc)) {
-                    acc[key] = [];
-                }
-                acc[key].push(item);
-                return acc;
-            }, {});
-        };
-
-        const grouped = groupBy(entries, callee); // e.g. entry => entry.publicBody.userId
-        const entriesNewest = Object.keys(grouped).map(key => {
-            const entries = grouped[key];
-            entries.sort((lhs, rhs) => lhs.timestamp < rhs.timestamp);
-            return entries[0]; // only take the newest
-        });
-        return entriesNewest;
-    }
-
-    static hexlify(buffer) {
-        return [...new Uint8Array(buffer)].map(byte => {
-            return byte.toString(16).padStart(2, '0');
-        }).join('');
-    }
-
-    /*
-    If a user registers itself several times, there should be a possibility to detect this.
-    Because the Olymp server has, by design (maybe this need to be changed), no understanding
-    of the content of the data it stores, this needs to done on the client.
-    To do this, the client needs some unique information from the user. Possibilites are:
-
-    firstname + surname, email:
-
-    This would mean that the client has e.g. the email of all people registered, which would be awfull,
-    as all email addresses are revealed to the public.
-
-    Hash of firstname/surname/email:
-
-    Information is not directly revealed. But everyone who has an idea who is atending the event may
-    do the hashing by themself. Especeially because there is no salting, someone could do that in advance.
-
-    Salt+Hash of firstname/surname/email:
-
-    What is the salt? Ideally there should be a different salt per user, but because the server
-    has no idea about a user, this is not so easy possible. Salt = resource UID? Not ideal.
-    As the salt is always public information this just makes the process harder.
-
-    Portability?
-
-    https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-    https://www.npmjs.com/package/js-sha256
-    */
-    static async hash(value, salt) {
-        // TODO at least proper PBKDF2
-        const encoder = new TextEncoder();
-        const data = encoder.encode(value + salt);
-        const result = await window.crypto.subtle.digest('SHA-256', data);
-        return Olymp.hexlify(result);
-    }
 }
 
 /*
@@ -331,12 +268,37 @@ class OlympMock {
         /*
         Locally generated timestamps are not in microseconds and therefore not unique,
         especially because there is no delay due an network connection.
+        So add an artifical delay.
         */
-        await OlympMock.delay(10);
+        const delayMilliseconds = 10;
+        await OlympMock.delay(delayMilliseconds);
         return entryUid;
     }
 
+    static filterMostRecent(entries, callee) {
+        // as GROUP BY from SQL or a groupBy from functional libraries like https://lodash.com/docs/#groupBy or https://ramdajs.com/docs/#groupBy
+        function groupBy(array, iteratee) {
+            return array.reduce((acc, item) => {
+                const key = iteratee(item);
+                if(!(key in acc)) {
+                    acc[key] = [];
+                }
+                acc[key].push(item);
+                return acc;
+            }, {});
+        };
+
+        const grouped = groupBy(entries, callee); // e.g. entry => entry.publicBody.userId
+        const entriesNewest = Object.keys(grouped).map(key => {
+            const entries = grouped[key];
+            entries.sort((lhs, rhs) => lhs.timestamp < rhs.timestamp);
+            return entries[0]; // only take the newest
+        });
+        return entriesNewest;
+    }
+
     async entriesList(resourceUid) {
-        return this.entries[resourceUid];
+        const unfiltered = this.entries[resourceUid];
+        return OlympMock.filterMostRecent(unfiltered, item => item.identification);
     }
 };

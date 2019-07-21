@@ -133,20 +133,21 @@ async function test() {
         await olymp.resourceAdd(RESOURCE_UID);
 
         // user updates the information 3 times
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0', 'GM-1'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0', 'GM-1', 'GM-2'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'a@unknown.tld', {rounds: ['GM-0']}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'a@unknown.tld', {rounds: ['GM-0', 'GM-1']}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'a@unknown.tld', {rounds: ['GM-0', 'GM-1', 'GM-2']}, {name: 'a', email: 'a@unknown.tld'});
 
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0'], userId: await Olymp.hash('b@unknown.tld', RESOURCE_UID)}, {name: 'b', email: 'b@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0'], userId: await Olymp.hash('c@unknown.tld', RESOURCE_UID)}, {name: 'c', email: 'c@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0'], userId: await Olymp.hash('d@unknown.tld', RESOURCE_UID)}, {name: 'd', email: 'd@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, '', {rounds: ['GM-0'], userId: await Olymp.hash('e@unknown.tld', RESOURCE_UID)}, {name: 'e', email: 'e@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'b@unknown.tld', {rounds: ['GM-0']}, {name: 'b', email: 'b@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'c@unknown.tld', {rounds: ['GM-0']}, {name: 'c', email: 'c@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'd@unknown.tld', {rounds: ['GM-0']}, {name: 'd', email: 'd@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, 'e@unknown.tld', {rounds: ['GM-0']}, {name: 'e', email: 'e@unknown.tld'});
 
         const status = await olymp.status();
         expect(status.version === '0.0.0');
 
-        const registrationsUnfiltered = await olymp.entriesList(RESOURCE_UID);
-        const registrations = Olymp.filterMostRecent(registrationsUnfiltered, entry => entry.publicBody.userId);
+        const registrations = await olymp.entriesList(RESOURCE_UID);
+
+        expect(registrations.length == 5); // double registrations are removed
 
         registrations.forEach(registration => {
             testLog(registration.timestamp, registration.publicBody.userId, registration.publicBody.rounds);
