@@ -156,12 +156,14 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    async entriesAdd(resourceUid, publicBody, privateBody) {
+    async entriesAdd(resourceUid, identificationUid, publicBody, privateBody) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
+        Olymp._verify(Olymp._verifyUid(identificationUid));
         Olymp._verify(Olymp._verifyBody(publicBody));
         Olymp._verify(Olymp._verifyBody(privateBody));
         const path = `${this.server}/resources/${resourceUid}/entries`;
         const data = {
+            identificationUid: identificationUid,
             publicBody: publicBody,
             privateBody: privateBody,
         };
@@ -278,11 +280,12 @@ class OlympMock {
         this.entries[resourceUid] = [];
     }
 
-    async entriesAdd(resourceUid, publicBody, privateBody, timestamp=undefined) {
+    async entriesAdd(resourceUid, identificationUid, publicBody, privateBody, timestamp=undefined) {
         const entryUid = OlympMock.createUid();
         const entry = {
             resourceUid: resourceUid,
             entryUid: entryUid,
+            identificationUid: identificationUid,
             timestamp: timestamp === undefined ? OlympMock.createTimestamp() : timestamp,
             publicBody: publicBody,
             privateBody: privateBody,

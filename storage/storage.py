@@ -24,18 +24,18 @@ def verify_uid(uid):
     int(uid, 16)
 
 
-def entries_add(resource_uid, public_body, private_body, url, user_agent):
+def entries_add(resource_uid, identification_uid, public_body, private_body, url, user_agent):
     verify_uid(resource_uid)
 
     entry_uid = generate_uid()
     timestamp = generate_timestamp()
 
     insert_entry_sql = '''
-        INSERT INTO entries (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO entries (resource_uid, entry_uid, timestamp, identification_uid, public_body, private_body, url, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     '''
 
     conn, cur = connect(DB_PATH)
-    cur.execute(insert_entry_sql, [resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent])
+    cur.execute(insert_entry_sql, [resource_uid, entry_uid, timestamp, identification_uid, public_body, private_body, url, user_agent])
     conn.commit()
     conn.close()
 
@@ -46,7 +46,7 @@ def entries_list(resource_uid):
     verify_uid(resource_uid)
 
     select_resource_sql = '''
-        SELECT resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent FROM entries WHERE resource_uid = ?
+        SELECT resource_uid, entry_uid, timestamp, identification_uid, public_body, private_body, url, user_agent FROM entries WHERE resource_uid = ?
     '''
 
     conn, cur = connect(DB_PATH)
@@ -90,6 +90,7 @@ def create():
             resource_uid TEXT NOT NULL,
             entry_uid TEXT UNIQUE NOT NULL,
             timestamp TEXT NOT NULL,
+            identification_uid TEXT NOT NULL,
             public_body TEXT NOT NULL,
             private_body TEXT NOT NULL,
             url TEXT NOT NULL,
@@ -149,11 +150,11 @@ if __name__ == '__main__':
     N = 3
     assert len(entries_list(UID_TEST)) == 0
     for i in range(N):
-        entries_add(UID_TEST, PUBLIC, PRIVATE, '', '')
+        entries_add(UID_TEST, generate_uid(), PUBLIC, PRIVATE, '', '')
     assert len(entries_list(UID_TEST)) == N
 
-    assert entries_list(UID_TEST)[0][3] == PUBLIC
-    assert entries_list(UID_TEST)[0][4] == PRIVATE
+    assert entries_list(UID_TEST)[0][4] == PUBLIC
+    assert entries_list(UID_TEST)[0][5] == PRIVATE
 
     # test UID_EMPTY
 

@@ -93,11 +93,12 @@ def entries_list(resource_uid):
     # TODO sort by timestamp? add parameter to limit maximum number of rows?
     all_raw_entries = storage.entries_list(resource_uid)
     all_entries = []
-    for (resource_uid, entry_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_entries:
+    for (resource_uid, entry_uid, timestamp, identification_uid, public_body, private_body, url, user_agent) in all_raw_entries:
         all_entries += [{
             'resourceUid': resource_uid,
             'entryUid': entry_uid,
             'timestamp': timestamp,
+            'identificationUid': identification_uid if auth else '',
             'publicBody': public_body,
             'privateBody': private_body if auth else {},
             'url': url if auth else '',
@@ -111,11 +112,12 @@ def entries_add(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     body = json.loads(request.data)
+    identification_uid = body['identificationUid']
     public_body = json.dumps(body['publicBody'])
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
+    entry = storage.entries_add(resource_uid, identification_uid, public_body, private_body, url, user_agent)
     # TODO send email?
     entry_uid = entry.get('uid')
     return entry_uid, requests.codes.CREATED
@@ -135,11 +137,12 @@ def form(resource_uid):
             public[key[len(PUBLIC_PREFIX):]] = value
         elif key.startswith(PRIVATE_PREFIX):
             private[key[len(PRIVATE_PREFIX):]] = value
+    identification_uid = '' # TODO
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    entry = storage.entries_add(resource_uid, public_body, private_body, url, user_agent)
+    entry = storage.entries_add(resource_uid, identification_uid, public_body, private_body, url, user_agent)
     # TODO send email?
     # TODO default?
     redirectUrl = request.form['_redirect']

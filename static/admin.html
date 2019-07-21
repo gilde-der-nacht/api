@@ -25,9 +25,10 @@ async function status() {
 async function add() {
     const olymp = new Olymp({});
     const resourceUid = document.getElementById('add-resource-uid').value;
+    const identificationUid = document.getElementById('add-identification-uid').value;
     const publicBody = JSON.parse(document.getElementById('add-public').value);
     const privateBody = JSON.parse(document.getElementById('add-private').value);
-    await olymp.entriesAdd(resourceUid, publicBody, privateBody);
+    await olymp.entriesAdd(resourceUid, identificationUid, publicBody, privateBody);
 }
 
 async function list() {
@@ -54,7 +55,9 @@ async function test() {
 
     testLog('tests started');
 
-    const JSON_EMPTY = {'publicBody': {}, 'privateBody': {}};
+    const IDENTIFICATION_UID = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+
+    const JSON_EMPTY = {identificationUid: IDENTIFICATION_UID, publicBody: {}, privateBody: {}};
 
     {
         expect(!Olymp._verifyBody('{}'));
@@ -99,7 +102,7 @@ async function test() {
             expect(status.version === '0.0.0');
 
             const length1 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
-            await olymp.entriesAdd(RESOURCE_UID_TEST, {'data': 'public'}, {'data': 'private'});
+            await olymp.entriesAdd(RESOURCE_UID_TEST, IDENTIFICATION_UID, {data: 'public'}, {data: 'private'});
             const length2 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
             expect((length1 + 1) == length2);
 
@@ -128,14 +131,14 @@ async function test() {
         await olymp.resourceAdd(RESOURCE_UID);
 
         // user updates the information 3 times
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0', 'GM-1'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0', 'GM-1', 'GM-2'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0', 'GM-1'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0', 'GM-1', 'GM-2'], userId: await Olymp.hash('a@unknown.tld', RESOURCE_UID)}, {name: 'a', email: 'a@unknown.tld'});
 
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('b@unknown.tld', RESOURCE_UID)}, {name: 'b', email: 'b@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('c@unknown.tld', RESOURCE_UID)}, {name: 'c', email: 'c@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('d@unknown.tld', RESOURCE_UID)}, {name: 'd', email: 'd@unknown.tld'});
-        await olymp.entriesAdd(RESOURCE_UID, {rounds: ['GM-0'], userId: await Olymp.hash('e@unknown.tld', RESOURCE_UID)}, {name: 'e', email: 'e@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0'], userId: await Olymp.hash('b@unknown.tld', RESOURCE_UID)}, {name: 'b', email: 'b@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0'], userId: await Olymp.hash('c@unknown.tld', RESOURCE_UID)}, {name: 'c', email: 'c@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0'], userId: await Olymp.hash('d@unknown.tld', RESOURCE_UID)}, {name: 'd', email: 'd@unknown.tld'});
+        await olymp.entriesAdd(RESOURCE_UID, IDENTIFICATION_UID, {rounds: ['GM-0'], userId: await Olymp.hash('e@unknown.tld', RESOURCE_UID)}, {name: 'e', email: 'e@unknown.tld'});
 
         const status = await olymp.status();
         expect(status.version === '0.0.0');
@@ -186,6 +189,7 @@ window.addEventListener('load', main);
 <h2>add entry</h2>
 
 <p>Resource UID <input id="add-resource-uid" type="text" value="0000000000000000000000000000000000000000000000000000000000000000"></p>
+<p>Identification UID <input id="add-identification-uid" type="text" value="0000000000000000000000000000000000000000000000000000000000000000"></p>
 <p>Public <input id="add-public" type="text" value="{&quot;data&quot;: &quot;Hello&quot;}"></p>
 <p>Private <input id="add-private" type="text" value="{&quot;data&quot;: &quot;x@y.z&quot;}"></p>
 
