@@ -143,6 +143,10 @@ class Olymp {
         return (uid.length === 64) && RegExp('[0-9a-f]{64}').test(uid)
     }
 
+    static _verifyIdentification(value) {
+        return (typeof value) === 'string';
+    }
+
     static _verifyBody(body) {
         return (typeof body) === 'object';
     }
@@ -156,14 +160,14 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    async entriesAdd(resourceUid, identificationUid, publicBody, privateBody) {
+    async entriesAdd(resourceUid, identification, publicBody, privateBody) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
-        Olymp._verify(Olymp._verifyUid(identificationUid));
+        Olymp._verify(Olymp._verifyIdentification(identification));
         Olymp._verify(Olymp._verifyBody(publicBody));
         Olymp._verify(Olymp._verifyBody(privateBody));
         const path = `${this.server}/resources/${resourceUid}/entries`;
         const data = {
-            identificationUid: identificationUid,
+            identification: identification,
             publicBody: publicBody,
             privateBody: privateBody,
         };
@@ -280,12 +284,12 @@ class OlympMock {
         this.entries[resourceUid] = [];
     }
 
-    async entriesAdd(resourceUid, identificationUid, publicBody, privateBody, timestamp=undefined) {
+    async entriesAdd(resourceUid, identification, publicBody, privateBody, timestamp=undefined) {
         const entryUid = OlympMock.createUid();
         const entry = {
             resourceUid: resourceUid,
             entryUid: entryUid,
-            identificationUid: identificationUid,
+            identification: identification,
             timestamp: timestamp === undefined ? OlympMock.createTimestamp() : timestamp,
             publicBody: publicBody,
             privateBody: privateBody,
