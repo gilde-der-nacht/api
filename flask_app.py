@@ -44,14 +44,28 @@ methods:
 
 import datetime
 import os
-from functools import wraps
-
 import requests
-from flask import Flask, request, json, send_from_directory, Response, redirect
+import functools
+import flask_mail
 
 from storage import storage
+from flask import Flask, request, json, send_from_directory, Response, redirect
+
 
 app = Flask(__name__)
+
+
+# see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
+app.config['MAIL_PORT'] = 2500 # mailslurper uses port 2500 as default
+mail = flask_mail.Mail(app)
+MAIL_SENDER = 'anyone@gdn.any'
+MAIL_RECIPIENTS = ['a@gdn.any', 'b@gdn.any', 'c@gdn.any']
+MAIL_SUBJECT_PREFIX = 'GdN Mail '
+
+
+def mail_send(subject, body):
+    msg = flask_mail.Message(subject=MAIL_SUBJECT_PREFIX + subject, body=body, sender=MAIL_SENDER, recipients=MAIL_RECIPIENTS)
+    mail.send(msg)
 
 
 def auth_is_valid():
@@ -64,7 +78,7 @@ def auth_required(fun):
     """
     decorator checks/handles if a page/resource should require authentication
     """
-    @wraps(fun)
+    @functools.wraps(fun)
     def decorator(*args, **kwargs):
         if not auth_is_valid():
             return Response('Authentication Required', requests.codes.UNAUTHORIZED, {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
@@ -74,7 +88,7 @@ def auth_required(fun):
 
 # TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch/...)
 def cors(fun):
-    @wraps(fun)
+    @functools.wraps(fun)
     def decorator(*args, **kwargs):
         response = fun(*args, **kwargs)
         return Response(*response, headers={'Access-Control-Allow-Origin': '*'})
@@ -117,8 +131,16 @@ def entries_add(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
+    entry = {
+        'resourceUid': resource_uid,
+        'identification': identification,
+        'publicBody': public_body,
+        'privateBody': private_body,
+        'url': url,
+        'userAgent': user_agent,
+    }
+    mail_send('entries_add', json.dumps(entry))
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    # TODO send email?
     entry_uid = entry.get('uid')
     return entry_uid, requests.codes.CREATED
 

@@ -226,6 +226,7 @@ class OlympMock {
     constructor(config) {
         this.entries = {};
         this.authenticated = true; // TODO add configuration option to change this
+        this.localStorage = false; // TODO add coonfiguration option to use local storage for persistent testing
         this.resourceAdd(RESOURCE_UID_TEST);
     }
 
