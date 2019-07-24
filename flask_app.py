@@ -115,16 +115,18 @@ def entries_list(resource_uid):
             'entryUid': entry_uid,
             'timestamp': timestamp,
             'identification': identification if auth else '',
-            'publicBody': public_body,
-            'privateBody': private_body if auth else {},
+            'publicBody': json.loads(public_body),
+            'privateBody': json.loads(private_body) if auth else {},
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
         all_entries_filtered[identification] = entry
+    print(json.dumps(list(all_entries_filtered.values())))
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
+@cors
 def entries_add(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
