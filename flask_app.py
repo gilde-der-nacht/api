@@ -47,6 +47,7 @@ import os
 import requests
 import functools
 import flask_mail
+import collections
 
 from storage import storage
 from flask import Flask, request, json, send_from_directory, Response, redirect
@@ -101,14 +102,15 @@ def server_status():
 
 
 # TODO according to the API description on top, there should be the API version in front of the URL?
+# TODO make version without filtering, or add a parameter to enable/disable it??
+# TODO add parameter to limit maximum number of rows?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
 def entries_list(resource_uid):
     auth = auth_is_valid()
-    # TODO sort by timestamp? add parameter to limit maximum number of rows?
     all_raw_entries = storage.entries_list(resource_uid)
-    all_entries = []
+    all_entries_filtered = collections.OrderedDict();
     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent) in all_raw_entries:
-        all_entries += [{
+        entry = {
             'resourceUid': resource_uid,
             'entryUid': entry_uid,
             'timestamp': timestamp,
@@ -117,8 +119,9 @@ def entries_list(resource_uid):
             'privateBody': private_body if auth else {},
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
-        }]
-    return json.dumps(all_entries), requests.codes.OK
+        }
+        all_entries_filtered[identification] = entry
+    return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])

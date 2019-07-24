@@ -35,7 +35,7 @@ async function list() {
     const olymp = new Olymp({});
     const resourceUid = document.getElementById('list-resource-uid').value;
     const list = await olymp.entriesList(resourceUid);
-    document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.userAgent + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
+    document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.identification + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
 }
 
 async function test() {
@@ -96,27 +96,59 @@ async function test() {
     // test the service with the library the client uses
 
     {
+        async function randomIdentification() {
+            const bytes = window.crypto.getRandomValues(new Uint8Array(32));
+            return ([...bytes].map(value => String.fromCharCode((value % 26) + 97)).join(''));
+        }
+
         async function run(olymp) {
-            const status = await olymp.status();
-            expect('version' in status);
-            expect('time' in status);
-            expect(status.version === '0.0.0');
+            {
+                const status = await olymp.status();
+                expect('version' in status);
+                expect('time' in status);
+                expect(status.version === '0.0.0');
+            }
 
-            const length1 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
-            await olymp.entriesAdd(RESOURCE_UID_TEST, '', {data: 'public'}, {data: 'private'});
-            const length2 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
-            expect((length1 + 1) == length2);
+            {
+                const identification = await randomIdentification();
 
-            const entries = await olymp.entriesList(RESOURCE_UID_TEST);
-            entries.forEach(entry => {
-                expect('resourceUid' in entry);
-                expect('entryUid' in entry);
-                expect('timestamp' in entry);
-                expect('publicBody' in entry);
-                expect('privateBody' in entry);
-                expect('url' in entry);
-                expect('userAgent' in entry);
-            });
+                const length1 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
+                await olymp.entriesAdd(RESOURCE_UID_TEST, identification, {data: 'public'}, {data: 'private'});
+                const length2 = (await olymp.entriesList(RESOURCE_UID_TEST)).length;
+                expect((length1 + 1) == length2);
+            }
+
+            {
+                const entries = await olymp.entriesList(RESOURCE_UID_TEST);
+                entries.forEach(entry => {
+                    expect('resourceUid' in entry);
+                    expect('identification' in entry);
+                    expect('entryUid' in entry);
+                    expect('timestamp' in entry);
+                    expect('publicBody' in entry);
+                    expect('privateBody' in entry);
+                    expect('url' in entry);
+                    expect('userAgent' in entry);
+                });
+            }
+
+            {
+                const identification = await randomIdentification();
+
+                // add three times an entry with the same identification
+                await olymp.entriesAdd(RESOURCE_UID_TEST, identification, {data: 0}, {data: 0});
+                await olymp.entriesAdd(RESOURCE_UID_TEST, identification, {data: 0}, {data: 0});
+                await olymp.entriesAdd(RESOURCE_UID_TEST, identification, {data: 0}, {data: 0});
+
+                // the server should filter out duplicate entries and only return the most recent one
+                const entries = await olymp.entriesList(RESOURCE_UID_TEST);
+                const numberOfEntries = entries.reduce((accumulator, entry) => {
+                    return entry.identification === identification ? accumulator + 1 : accumulator;
+                }, 0);
+                console.log(numberOfEntries);
+                expect(numberOfEntries === 1);
+            }
+
         }
 
         await run(new Olymp({}));
@@ -156,7 +188,6 @@ async function test() {
 
     testLog('tests finished');
 }
-
 
 async function main() {
     document.getElementById('status').addEventListener('click', status);

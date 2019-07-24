@@ -47,7 +47,7 @@ def entries_list(resource_uid):
     verify_uid(resource_uid)
 
     select_resource_sql = '''
-        SELECT resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent FROM entries WHERE resource_uid = ?
+        SELECT resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent FROM entries WHERE resource_uid = ? ORDER BY timestamp
     '''
 
     conn, cur = connect(DB_PATH)
