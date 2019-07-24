@@ -232,8 +232,32 @@ class OlympMock {
     constructor(config) {
         this.entries = {};
         this.authenticated = true; // TODO add configuration option to change this
-        this.localStorage = false; // TODO add coonfiguration option to use local storage for persistent testing
+        this.localStorage = true; // TODO add coonfiguration option to use local storage for persistent testing
+        this.load();
         this.resourceAdd(RESOURCE_UID_TEST);
+    }
+
+    // TODO unify constructor/clear
+    clear() {
+        this.entries = {};
+        this.resourceAdd(RESOURCE_UID_TEST);
+        this.save();
+    }
+
+    load() {
+        if(this.localStorage) {
+            try {
+                this.entries = JSON.parse(window.localStorage.getItem('entries'));
+            } catch {
+                this.entries = {};
+            }
+        }
+    }
+
+    save() {
+        if(this.localStorage) {
+            window.localStorage.setItem('entries', JSON.stringify(this.entries));
+        }
     }
 
     static async delay(milliseconds) {
@@ -256,7 +280,9 @@ class OlympMock {
     }
 
     async resourceAdd(resourceUid) {
-        this.entries[resourceUid] = [];
+        if(!(resourceUid in this.entries)) {
+            this.entries[resourceUid] = [];
+        }
     }
 
     async entriesAdd(resourceUid, identification, publicBody, privateBody, timestamp=undefined) {
@@ -272,6 +298,7 @@ class OlympMock {
             userAgent: '',
         };
         this.entries[resourceUid].push(entry);
+        this.save();
         /*
         Locally generated timestamps are not in microseconds and therefore not unique,
         especially because there is no delay due an network connection.
