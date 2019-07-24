@@ -97,6 +97,7 @@ def cors(fun):
 
 
 @app.route('/')
+@cors
 def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
@@ -105,6 +106,7 @@ def server_status():
 # TODO make version without filtering, or add a parameter to enable/disable it??
 # TODO add parameter to limit maximum number of rows?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
+@cors
 def entries_list(resource_uid):
     auth = auth_is_valid()
     all_raw_entries = storage.entries_list(resource_uid)
@@ -152,6 +154,7 @@ def entries_add(resource_uid):
 
 # TODO other url?
 @app.route('/form/<resource_uid>', methods=['POST'])
+@cors
 def form(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE

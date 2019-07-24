@@ -74,7 +74,10 @@ class HTTP {
     }
 
     static async get(path) {
-        const response = await fetch(path);
+        const response = await fetch(path, {
+            method: 'GET',
+            mode: 'cors',
+        });
         const text = await response.text();
         return [text, response.status];
     }
@@ -82,6 +85,7 @@ class HTTP {
     static async post(path, data) {
         const response = await fetch(path, {
             method: 'POST',
+            mode: 'cors',
             body: data,
         });
         const text = await response.text();
@@ -91,6 +95,7 @@ class HTTP {
     static async put(path, data) {
         const response = await fetch(path, {
             method: 'PUT',
+            mode: 'cors',
             body: data,
         });
         const text = await response.text();
@@ -100,6 +105,7 @@ class HTTP {
     static async delete(path) {
         const response = await fetch(path, {
             method: 'DELETE',
+            mode: 'cors',
         });
         const text = await response.text();
         return [text, response.status];
@@ -152,7 +158,7 @@ class Olymp {
             this.server = config.server;
         } else {
             const origin = document.location.origin;
-            this.server = origin.includes('127.0.0.1') ? origin :'https://api.gildedernacht.ch';
+            this.server = origin.includes('127.0.0.1') ? 'http://127.0.0.1:5000' :'https://api.gildedernacht.ch';
         }
     }
 
@@ -186,7 +192,7 @@ class Olymp {
         const path = `${this.server}/status`;
         const [text, status] = await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {
-            throw 'Invalid Response';
+            throw 'Status - Invalid Response';
         }
         return JSON.parse(text);
     }
@@ -204,7 +210,7 @@ class Olymp {
         };
         const [_, status] = await HTTP.post(path, JSON.stringify(data));
         if(status !== HTTP.CODES.CREATED_201) {
-            throw 'Invalid Response';
+            throw 'Add - Invalid Response';
         }
     }
 
@@ -213,7 +219,7 @@ class Olymp {
         const path = `${this.server}/resources/${resourceUid}/entries`;
         const [text, status] = await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {
-            throw 'Invalid Response';
+            throw 'List - Invalid Response';
         }
         return JSON.parse(text);
     }

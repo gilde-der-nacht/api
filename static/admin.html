@@ -129,6 +129,9 @@ async function test() {
                     expect('privateBody' in entry);
                     expect('url' in entry);
                     expect('userAgent' in entry);
+
+                    expect((typeof entry.publicBody) === 'object');
+                    expect((typeof entry.privateBody) === 'object');
                 });
             }
 
@@ -145,7 +148,6 @@ async function test() {
                 const numberOfEntries = entries.reduce((accumulator, entry) => {
                     return entry.identification === identification ? accumulator + 1 : accumulator;
                 }, 0);
-                console.log(numberOfEntries);
                 expect(numberOfEntries === 1);
             }
 
