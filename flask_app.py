@@ -62,9 +62,12 @@ mail = flask_mail.Mail(app)
 MAIL_SENDER = 'anyone@gdn.any'
 MAIL_RECIPIENTS = ['a@gdn.any', 'b@gdn.any', 'c@gdn.any']
 MAIL_SUBJECT_PREFIX = 'GdN Mail '
+DISABLE_EMAIL = True
 
 
 def mail_send(subject, body):
+    if DISABLE_EMAIL:
+        return
     msg = flask_mail.Message(subject=MAIL_SUBJECT_PREFIX + subject, body=body, sender=MAIL_SENDER, recipients=MAIL_RECIPIENTS)
     mail.send(msg)
 
@@ -123,7 +126,6 @@ def entries_list(resource_uid):
             'userAgent': user_agent if auth else '',
         }
         all_entries_filtered[identification] = entry
-    print(json.dumps(list(all_entries_filtered.values())))
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 

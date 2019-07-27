@@ -35,7 +35,7 @@ async function list() {
     const olymp = new Olymp({});
     const resourceUid = document.getElementById('list-resource-uid').value;
     const list = await olymp.entriesList(resourceUid);
-    document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.identification + ' - ' + entry.publicBody + ' - ' + entry.privateBody).join('\n');
+    document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.identification + ' - ' + JSON.stringify(entry.publicBody) + ' - ' + JSON.stringify(entry.privateBody)).join('\n');
 }
 
 async function test() {
