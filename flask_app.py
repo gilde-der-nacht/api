@@ -57,7 +57,7 @@ app = Flask(__name__)
 
 
 # see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
-app.config['MAIL_PORT'] = 2500 # mailslurper uses port 2500 as default
+app.config['MAIL_PORT'] = 2500  # mailslurper uses port 2500 as default
 mail = flask_mail.Mail(app)
 MAIL_SENDER = 'anyone@gdn.any'
 MAIL_RECIPIENTS = ['a@gdn.any', 'b@gdn.any', 'c@gdn.any']
@@ -113,7 +113,7 @@ def server_status():
 def entries_list(resource_uid):
     auth = auth_is_valid()
     all_raw_entries = storage.entries_list(resource_uid)
-    all_entries_filtered = collections.OrderedDict();
+    all_entries_filtered = collections.OrderedDict()
     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent) in all_raw_entries:
         entry = {
             'resourceUid': resource_uid,
@@ -169,7 +169,7 @@ def form(resource_uid):
             public[key[len(PUBLIC_PREFIX):]] = value
         elif key.startswith(PRIVATE_PREFIX):
             private[key[len(PRIVATE_PREFIX):]] = value
-    identification = '' # TODO
+    identification = ''  # TODO
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.url
