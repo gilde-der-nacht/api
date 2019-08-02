@@ -177,7 +177,7 @@ class Olymp {
     }
 
     static _verifyUid(uid) {
-        return (uid.length === 64) && RegExp('[0-9a-f]{64}').test(uid);
+        return RegExp('[0-9a-f]{64}').test(uid);
     }
 
     static _verifyIdentification(value) {
