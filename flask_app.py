@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 """
+# Setup
+
+pip3 install flask flask_mail requests
+
 # Run
 
 export FLASK_APP=flask_app.py
