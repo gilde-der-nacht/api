@@ -47,6 +47,8 @@ methods:
 """
 
 import datetime
+import os
+
 import requests
 import functools
 import collections
@@ -60,7 +62,9 @@ app = Flask(__name__)
 
 
 def load_config():
-    with open('config.json', 'r') as file:
+    CONFIG_PATH = os.path.dirname(os.path.abspath(__file__))
+    FILE_PATH = CONFIG_PATH + '/config.json'
+    with open(FILE_PATH, 'r') as file:
         config = json.load(file)
         return config
 
