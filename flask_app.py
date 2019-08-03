@@ -112,7 +112,7 @@ def server_status():
 @cors
 def entries_list(resource_uid):
     auth = auth_is_valid()
-    all_raw_entries = storage.entries_list(resource_uid)
+    all_raw_entries = storage.entries_list(resource_uid) # storage returns a list sorted by timestamp (this is important for the following loop)
     all_entries_filtered = collections.OrderedDict()
     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent) in all_raw_entries:
         entry = {
@@ -125,7 +125,7 @@ def entries_list(resource_uid):
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
-        all_entries_filtered[identification] = entry
+        all_entries_filtered[identification] = entry # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
