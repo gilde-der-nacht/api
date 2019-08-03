@@ -177,7 +177,7 @@ class Olymp {
     }
 
     static _verifyUid(uid) {
-        return RegExp('[0-9a-f]{64}').test(uid);
+        return RegExp('^[0-9a-f]{64}$').test(uid);
     }
 
     static _verifyIdentification(value) {
@@ -232,7 +232,7 @@ class OlympMock {
     constructor(config) {
         this.entries = {};
         this.authenticated = true; // TODO add configuration option to change this
-        this.localStorage = true; // TODO add coonfiguration option to use local storage for persistent testing
+        this.localStorage = false; // TODO add coonfiguration option to use local storage for persistent testing
         this.load();
         this.resourceAdd(RESOURCE_UID_TEST);
     }
