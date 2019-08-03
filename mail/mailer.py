@@ -9,8 +9,11 @@ MAIL_SUBJECT_PREFIX = 'Mail from Olymp: '
 EMAIL_DISABLED = False
 
 
-def mail_config(app):
-    app.config['MAIL_PORT'] = 2500  # mailslurper uses port 2500 as default
+def mail_config(app, host, username, password):
+    app.config['MAIL_SERVER'] = host
+    app.config['MAIL_USERNAME'] = username
+    app.config['MAIL_PASSWORD'] = password
+    app.config['MAIL_USE_TLS'] = True
     mail = Mail(app)
     return mail
 

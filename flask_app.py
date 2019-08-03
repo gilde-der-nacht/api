@@ -73,10 +73,7 @@ config = load_config()
 username = config['auth']['username']
 password = config['auth']['password']
 
-
-def mail_send(subject, body):
-    mail = mailer.mail_config(app)
-    mailer.mail_send(mail, subject, body)
+mail = mailer.mail_config(app, config['mail']['host'], config['mail']['username'], config['mail']['password'])
 
 
 def auth_is_valid():
@@ -153,7 +150,7 @@ def entries_add(resource_uid):
         'url': url,
         'userAgent': user_agent,
     }
-    mail_send('entries_add', json.dumps(entry))
+    mailer.mail_send(mail, 'entries_add', json.dumps(entry))
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
     return entry_uid, requests.codes.CREATED
