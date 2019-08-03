@@ -87,3 +87,4 @@ build/
 *.egg-info/
 
 database\.sqlite3
+config.json

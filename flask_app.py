@@ -48,37 +48,38 @@ methods:
 
 import datetime
 import os
+
 import requests
 import functools
-import flask_mail
 import collections
 
 from storage import storage
+from mail import mailer
 from flask import Flask, request, json, send_from_directory, Response, redirect
 
 
 app = Flask(__name__)
 
 
-# see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
-app.config['MAIL_PORT'] = 2500  # mailslurper uses port 2500 as default
-mail = flask_mail.Mail(app)
-MAIL_SENDER = 'anyone@gdn.any'
-MAIL_RECIPIENTS = ['a@gdn.any', 'b@gdn.any', 'c@gdn.any']
-MAIL_SUBJECT_PREFIX = 'GdN Mail '
-DISABLE_EMAIL = True
+def load_config():
+    CONFIG_PATH = os.path.dirname(os.path.abspath(__file__))
+    FILE_PATH = CONFIG_PATH + '/config.json'
+    with open(FILE_PATH, 'r') as file:
+        config = json.load(file)
+        return config
+
+
+config = load_config()
+username = config['auth']['username']
+password = config['auth']['password']
 
 
 def mail_send(subject, body):
-    if DISABLE_EMAIL:
-        return
-    msg = flask_mail.Message(subject=MAIL_SUBJECT_PREFIX + subject, body=body, sender=MAIL_SENDER, recipients=MAIL_RECIPIENTS)
-    mail.send(msg)
+    mail = mailer.mail_config(app)
+    mailer.mail_send(mail, subject, body)
 
 
 def auth_is_valid():
-    username = os.environ.get('OLYMP_USERNAME')
-    password = os.environ.get('OLYMP_PASSWORD')
     return request.authorization and (request.authorization.username == username) and (request.authorization.password == password)
 
 
@@ -94,7 +95,7 @@ def auth_required(fun):
     return decorator
 
 
-# TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch/...)
+# TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch...)
 def cors(fun):
     @functools.wraps(fun)
     def decorator(*args, **kwargs):
@@ -116,7 +117,7 @@ def server_status():
 @cors
 def entries_list(resource_uid):
     auth = auth_is_valid()
-    all_raw_entries = storage.entries_list(resource_uid) # storage returns a list sorted by timestamp (this is important for the following loop)
+    all_raw_entries = storage.entries_list(resource_uid)  # storage returns a list sorted by timestamp (this is important for the following loop)
     all_entries_filtered = collections.OrderedDict()
     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent) in all_raw_entries:
         entry = {
@@ -129,7 +130,7 @@ def entries_list(resource_uid):
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
-        all_entries_filtered[identification] = entry # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
+        all_entries_filtered[identification] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
