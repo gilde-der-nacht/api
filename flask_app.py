@@ -50,30 +50,19 @@ import datetime
 import os
 import requests
 import functools
-import flask_mail
 import collections
 
 from storage import storage
+from mail import mailer
 from flask import Flask, request, json, send_from_directory, Response, redirect
 
 
 app = Flask(__name__)
 
 
-# see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
-app.config['MAIL_PORT'] = 2500  # mailslurper uses port 2500 as default
-mail = flask_mail.Mail(app)
-MAIL_SENDER = 'anyone@gdn.any'
-MAIL_RECIPIENTS = ['a@gdn.any', 'b@gdn.any', 'c@gdn.any']
-MAIL_SUBJECT_PREFIX = 'GdN Mail '
-DISABLE_EMAIL = True
-
-
 def mail_send(subject, body):
-    if DISABLE_EMAIL:
-        return
-    msg = flask_mail.Message(subject=MAIL_SUBJECT_PREFIX + subject, body=body, sender=MAIL_SENDER, recipients=MAIL_RECIPIENTS)
-    mail.send(msg)
+    mail = mailer.mail_config(app)
+    mailer.mail_send(mail, subject, body)
 
 
 def auth_is_valid():
