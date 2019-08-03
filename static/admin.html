@@ -196,7 +196,7 @@ async function test() {
         expect(registrations.length == 5); // double registrations are removed
 
         registrations.forEach(registration => {
-            testLog(registration.timestamp, registration.publicBody.userId, registration.publicBody.rounds);
+            testLog(registration.timestamp, registration.identification, registration.publicBody.rounds);
         });
     }
 
