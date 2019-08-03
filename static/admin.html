@@ -194,10 +194,10 @@ async function test() {
         const registrations = await olymp.entriesList(RESOURCE_UID);
 
         expect(registrations.length == 5); // double registrations are removed
-
-        registrations.forEach(registration => {
-            testLog(registration.timestamp, registration.identification, registration.publicBody.rounds);
-        });
+        
+        expect(registrations[0].identification === 'a@unknown.tld');
+        expect(registrations[0].publicBody.rounds.join(' ') === 'GM-0 GM-1 GM-2');
+        expect(registrations[4].identification === 'e@unknown.tld');
     }
 
     testLog('tests finished');
