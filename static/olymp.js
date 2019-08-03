@@ -137,7 +137,7 @@ function sortBy(array, ...criterias) {
             if((i < criterias.length) && (ca === cb)) {
                 continue;
             }
-            return ca > cb; // > = ascending, < = descending
+            return ca > cb ? 1 : -1; // > = ascending, < = descending
         }
     });
     return result;
@@ -325,7 +325,7 @@ class OlympMock {
         const grouped = groupBy(entries, callee); // e.g. entry => entry.publicBody.userId
         const entriesNewest = Object.keys(grouped).map(key => {
             const entries = grouped[key];
-            entries.sort((lhs, rhs) => lhs.timestamp < rhs.timestamp);
+            entries.sort((lhs, rhs) => lhs.timestamp < rhs.timestamp ? 1 : -1);
             return entries[0]; // only take the newest
         });
         return entriesNewest;
