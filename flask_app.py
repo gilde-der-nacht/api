@@ -47,7 +47,6 @@ methods:
 """
 
 import datetime
-import os
 import requests
 import functools
 import collections
@@ -60,14 +59,23 @@ from flask import Flask, request, json, send_from_directory, Response, redirect
 app = Flask(__name__)
 
 
+def load_config():
+    with open('config.json', 'r') as file:
+        config = json.load(file)
+        return config
+
+
+config = load_config()
+username = config['auth']['username']
+password = config['auth']['password']
+
+
 def mail_send(subject, body):
     mail = mailer.mail_config(app)
     mailer.mail_send(mail, subject, body)
 
 
 def auth_is_valid():
-    username = os.environ.get('OLYMP_USERNAME')
-    password = os.environ.get('OLYMP_PASSWORD')
     return request.authorization and (request.authorization.username == username) and (request.authorization.password == password)
 
 
