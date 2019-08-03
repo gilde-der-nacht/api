@@ -166,12 +166,9 @@ This is the main class which allows an easy access to the Olymp server.
 */
 class Olymp {
     constructor(config) {
-        if('server' in config) {
-            this.server = config.server;
-        } else {
-            const origin = document.location.origin;
-            this.server = origin.includes('127.0.0.1') ? 'http://127.0.0.1:5000' :'https://api.gildedernacht.ch';
-        }
+        this.username = typeof config.username === 'undefined' ? null : config.username;
+        this.password = typeof config.password === 'undefined' ? null : config.password;
+        this.server = typeof config.server === 'undefined' ? 'http://127.0.0.1:5000' : config.server;
     }
 
     /*
@@ -229,8 +226,8 @@ class Olymp {
     async entriesList(resourceUid) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
         const path = `${this.server}/resources/${resourceUid}/entries`;
-        //const [text, status] = await HTTP.getWithAuthorization(path, 'name', 'pw');
-        const [text, status] = await HTTP.get(path);
+        const credentials = (this.username !== null) && (this.password !== null);
+        const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {
             throw 'List - Invalid Response';
         }
