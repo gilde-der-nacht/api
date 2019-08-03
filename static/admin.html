@@ -123,8 +123,8 @@ async function test() {
                 const entries = await olymp.entriesList(RESOURCE_UID_TEST);
                 entries.forEach(entry => {
                     expect('resourceUid' in entry);
-                    expect('identification' in entry);
                     expect('entryUid' in entry);
+                    expect('identification' in entry);
                     expect('timestamp' in entry);
                     expect('publicBody' in entry);
                     expect('privateBody' in entry);
@@ -245,14 +245,15 @@ window.addEventListener('load', main);
 <h2>form</h2>
 
 <form action="/form/0000000000000000000000000000000000000000000000000000000000000000" method="POST">
-    <p>a-public <input name="public-a-name" type="text" value="public-a-value"></p>
-    <p>b-public <input name="public-b-name" type="text" value="public-b-value"></p>
-    <p>c-public <input name="public-c-name" type="text" value="public-c-value"></p>
-    <p>c-private <input name="private-d-name" type="text" value="private-d-value"></p>
-    <input name="public-d-name" type="hidden" value="public-d-value ö">
-    <input name="public-e-name" type="hidden" value="public-e-value ä">
-    <input name="public-f-name" type="hidden" value="public-f-value ü">
-    <input name="_redirect" type="hidden" value="/admin">
+    <p>identification <input name="identification" type="text" value="identification-value"></p>
+    <p>public-a <input name="public-a-name" type="text" value="public-a-value"></p>
+    <p>public-b <input name="public-b-name" type="text" value="public-b-value"></p>
+    <p>public-c <input name="public-c-name" type="text" value="public-c-value"></p>
+    <p>private-d <input name="private-d-name" type="text" value="private-d-value"></p>
+    <input name="public-e-name" type="hidden" value="public-e-value ö">
+    <input name="public-f-name" type="hidden" value="public-f-value ä">
+    <input name="public-g-name" type="hidden" value="public-g-value ü">
+    <input name="redirect" type="hidden" value="/admin">
     <input type="submit">
 </form>
 

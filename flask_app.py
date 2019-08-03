@@ -160,20 +160,22 @@ def entries_add(resource_uid):
 
 # TODO other url?
 @app.route('/form/<resource_uid>', methods=['POST'])
-@cors
 def form(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     PUBLIC_PREFIX = 'public-'
     PRIVATE_PREFIX = 'private-'
+    IDENDTIFICATION = 'identification'
     public = {}
     private = {}
+    identification = ''
     for key, value in request.form.items():
         if key.startswith(PUBLIC_PREFIX):
             public[key[len(PUBLIC_PREFIX):]] = value
         elif key.startswith(PRIVATE_PREFIX):
             private[key[len(PRIVATE_PREFIX):]] = value
-    identification = ''  # TODO
+        elif key == IDENDTIFICATION:
+            identification = value
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.url
@@ -181,7 +183,7 @@ def form(resource_uid):
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
     # TODO send email?
     # TODO default?
-    redirectUrl = request.form['_redirect']
+    redirectUrl = request.form['redirect']
     return redirect(redirectUrl)
 
 
