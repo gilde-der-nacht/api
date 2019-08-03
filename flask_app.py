@@ -92,17 +92,15 @@ def auth_required(fun):
     return decorator
 
 
-# TODO maybe only add domain we want (e.g. rollenspieltage.ch, spieltage.ch...)
-def cors(fun):
-    @functools.wraps(fun)
-    def decorator(*args, **kwargs):
-        response = fun(*args, **kwargs)
-        return Response(*response, headers={'Access-Control-Allow-Origin': '*'})
-    return decorator
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
 
 
 @app.route('/')
-@cors
 def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
@@ -111,7 +109,6 @@ def server_status():
 # TODO make version without filtering, or add a parameter to enable/disable it??
 # TODO add parameter to limit maximum number of rows?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
-@cors
 def entries_list(resource_uid):
     auth = auth_is_valid()
     all_raw_entries = storage.entries_list(resource_uid)  # storage returns a list sorted by timestamp (this is important for the following loop)
@@ -132,7 +129,6 @@ def entries_list(resource_uid):
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
-@cors
 def entries_add(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
@@ -197,7 +193,6 @@ def js():
 
 
 @app.route('/status')
-@cors
 def status():
     status = {
         'version': '0.0.0',
