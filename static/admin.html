@@ -5,7 +5,7 @@
 <style>
 body {
     font-family: Tahoma, Verdana, sans-serif;
-    width: 40em;
+    width: 60em;
     margin: 1em auto;
 }
 
@@ -36,7 +36,18 @@ async function list() {
     const olymp = new Olymp({});
     const resourceUid = document.getElementById('list-resource-uid').value;
     const list = await olymp.entriesList(resourceUid);
-    document.getElementById('list-output').innerText = list.map(entry => entry.timestamp + ' - ' + entry.identification + ' - ' + JSON.stringify(entry.publicBody) + ' - ' + JSON.stringify(entry.privateBody)).join('\n');
+    document.getElementById('list-output').innerHTML = list.map(entry => {
+        return '<p>' + [
+            'entryUid: ' + entry.entryUid,
+            'timestamp: ' + entry.timestamp,
+            'url: ' + entry.url,
+            'userAgent: ' + entry.userAgent,
+            'identification: ' + entry.identification,
+            'publicBody: ' + JSON.stringify(entry.publicBody),
+            'privateBody: ' + JSON.stringify(entry.privateBody),
+        ].join('</p><p>') + '</p><p>&nbsp;</p>';
+            
+    }).join('\n');
 }
 
 async function test() {
@@ -232,15 +243,13 @@ window.addEventListener('load', main);
 
 <input id="add" type="button" value="add">
 
-<pre id="add-output"></pre>
-
 <h2>list all entries</h2>
 
 <p>Resource UID <input id="list-resource-uid" type="text" value="0000000000000000000000000000000000000000000000000000000000000000"></p>
 
 <input id="list" type="button" value="list">
 
-<pre id="list-output"></pre>
+<div id="list-output"></div>
 
 <h2>form</h2>
 
@@ -256,8 +265,6 @@ window.addEventListener('load', main);
     <input name="redirect" type="hidden" value="/admin">
     <input type="submit">
 </form>
-
-<pre id="form-output"></pre>
 
 </body>
 </html>
