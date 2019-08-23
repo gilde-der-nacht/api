@@ -124,7 +124,7 @@ def entries_list(resource_uid):
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
-        all_entries_filtered[identification] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
+        all_entries_filtered[identification.lower()] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
@@ -195,7 +195,7 @@ def js():
 @app.route('/status')
 def status():
     status = {
-        'version': '0.0.0',
+        'version': '1.0.0',
         'time': datetime.datetime.now().isoformat(),
     }
     return json.dumps(status), requests.codes.OK
