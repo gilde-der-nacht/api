@@ -118,7 +118,7 @@ async function test() {
                 const status = await olymp.status();
                 expect('version' in status);
                 expect('time' in status);
-                expect(status.version === '0.0.0');
+                expect(status.version === '1.0.0');
             }
 
             {
@@ -189,7 +189,7 @@ async function test() {
         await olymp.entriesAdd(RESOURCE_UID, 'e@unknown.tld', {rounds: ['GM-0']}, {name: 'e', email: 'e@unknown.tld'});
 
         const status = await olymp.status();
-        expect(status.version === '0.0.0');
+        expect(status.version === '1.0.0');
 
         const registrations = await olymp.entriesList(RESOURCE_UID);
 
