@@ -138,6 +138,13 @@ def entries_add(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
+    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'entries_add')
+    entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
+    entry_uid = entry.get('uid')
+    return entry_uid, requests.codes.CREATED
+
+
+def mail_send(resource_uid, identification, public_body, private_body, url, user_agent, subject):
     entry = {
         'resourceUid': resource_uid,
         'identification': identification,
@@ -146,10 +153,7 @@ def entries_add(resource_uid):
         'url': url,
         'userAgent': user_agent,
     }
-    mailer.mail_send(mail, 'entries_add', json.dumps(entry))
-    entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    entry_uid = entry.get('uid')
-    return entry_uid, requests.codes.CREATED
+    mailer.mail_send(mail, subject, json.dumps(entry))
 
 
 # TODO other url?
@@ -174,8 +178,8 @@ def form(resource_uid):
     private_body = json.dumps(private)
     url = request.url
     user_agent = request.headers.get('User-Agent')
+    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    # TODO send email?
     # TODO default?
     redirectUrl = request.form['redirect']
     return redirect(redirectUrl)
