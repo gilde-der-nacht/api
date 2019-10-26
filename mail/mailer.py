@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 
 # see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
 MAIL_SENDER = 'mail@gildedernacht.ch'
-MAIL_RECIPIENTS = ['mail@rollenspieltage.ch']
+MAIL_RECIPIENTS = ['mail@gildedernacht.ch']
 MAIL_SUBJECT_PREFIX = 'Mail from Olymp: '
 EMAIL_DISABLED = False
 
