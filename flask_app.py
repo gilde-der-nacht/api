@@ -57,7 +57,6 @@ from storage import storage
 from mail import mailer
 from flask import Flask, request, json, send_from_directory, Response, redirect
 
-
 app = Flask(__name__)
 
 
@@ -77,18 +76,22 @@ mail = mailer.mail_config(app, config['mail']['host'], config['mail']['username'
 
 
 def auth_is_valid():
-    return request.authorization and (request.authorization.username == username) and (request.authorization.password == password)
+    return request.authorization and (request.authorization.username == username) and (
+            request.authorization.password == password)
 
 
 def auth_required(fun):
     """
     decorator checks/handles if a page/resource should require authentication
     """
+
     @functools.wraps(fun)
     def decorator(*args, **kwargs):
         if not auth_is_valid():
-            return Response('Authentication Required', requests.codes.UNAUTHORIZED, {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
+            return Response('Authentication Required', requests.codes.UNAUTHORIZED,
+                            {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
         return fun(*args, **kwargs)
+
     return decorator
 
 
@@ -111,9 +114,12 @@ def server_status():
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
 def entries_list(resource_uid):
     auth = auth_is_valid()
-    all_raw_entries = storage.entries_list(resource_uid)  # storage returns a list sorted by timestamp (this is important for the following loop)
+    all_raw_entries = storage.entries_list(
+        resource_uid)  # storage returns a list sorted by timestamp (this is important for the following loop)
     all_entries_filtered = collections.OrderedDict()
-    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent) in all_raw_entries:
+    for (
+            resource_uid, entry_uid, timestamp, identification, public_body, private_body, url,
+            user_agent) in all_raw_entries:
         entry = {
             'resourceUid': resource_uid,
             'entryUid': entry_uid,
@@ -124,7 +130,8 @@ def entries_list(resource_uid):
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
-        all_entries_filtered[identification.lower()] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
+        all_entries_filtered[
+            identification.lower()] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
     return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
 
 
@@ -145,8 +152,12 @@ def entries_add(resource_uid):
 
 
 def get_recipients(resource_uid):
-    resource = storage.resources_list_single(resource_uid)
-    return [resource[3]['email']]
+    try:
+        resource = storage.resources_list_single(resource_uid)
+        recipients = [resource[3]['email']]
+    except:
+        recipients = None
+    return recipients
 
 
 def mail_send(resource_uid, identification, public_body, private_body, url, user_agent, subject):
