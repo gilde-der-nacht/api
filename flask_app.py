@@ -188,7 +188,7 @@ def form(resource_uid):
     if not spam:
         mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     else:
-        resource_uid = 'spam'
+        resource_uid = '883a724e1fe834dea8c182433f6beecca0e7ada622658872d2e1b7fa6b85d6a9'  # resource uid for spam entries
 
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
     # TODO default?
