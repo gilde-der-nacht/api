@@ -144,6 +144,11 @@ def entries_add(resource_uid):
     return entry_uid, requests.codes.CREATED
 
 
+def get_recipients(resource_uid):
+    resource = storage.resources_list_single(resource_uid)
+    return [resource[3]['email']]
+
+
 def mail_send(resource_uid, identification, public_body, private_body, url, user_agent, subject):
     entry = {
         'resourceUid': resource_uid,
@@ -153,7 +158,8 @@ def mail_send(resource_uid, identification, public_body, private_body, url, user
         'url': url,
         'userAgent': user_agent,
     }
-    mailer.mail_send(mail, subject, json.dumps(entry))
+    recipients = get_recipients(resource_uid)
+    mailer.mail_send(mail, subject, json.dumps(entry), recipients)
 
 
 # TODO other url?

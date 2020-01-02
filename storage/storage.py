@@ -36,7 +36,8 @@ def entries_add(resource_uid, identification, public_body, private_body, url, us
     '''
 
     conn, cur = connect(DB_PATH)
-    cur.execute(insert_entry_sql, [resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent])
+    cur.execute(insert_entry_sql,
+                [resource_uid, entry_uid, timestamp, identification, public_body, private_body, url, user_agent])
     conn.commit()
     conn.close()
 
@@ -61,7 +62,7 @@ def entries_list(resource_uid):
 def connect(path):
     conn = sqlite3.connect(path, isolation_level=None)
     cur = conn.cursor()
-    cur.execute('PRAGMA foreign_keys = ON') # due to backward compatibility sqlite disabled foreign keys by default
+    cur.execute('PRAGMA foreign_keys = ON')  # due to backward compatibility sqlite disabled foreign keys by default
     return conn, cur
 
 
@@ -129,6 +130,13 @@ def resources_list():
     return results
 
 
+def resources_list_single(resource_uid):
+    all_resources = resources_list()
+    for resource in all_resources:
+        if resource_uid == resource[0]:
+            return resource
+
+
 if __name__ == '__main__':
     # TODO maybe make a backup first, once we run the hot version?
 
@@ -160,9 +168,3 @@ if __name__ == '__main__':
     # test UID_EMPTY
 
     assert len(entries_list(UID_EMPTY)) == 0
-
-    # add Rollenspieltage resource manually
-    # TODO remove this once we are hot
-
-    UID_APOLLON = '095da522f49aebbd35443fd2349d578a1aaf4a9ea05ae7d59383a5f416d4fd3b'
-    resources_add(UID_APOLLON, '{"description": "Luzerner Rollenspieltage 2019"}', '{"email": "mail@rollenspieltage.ch"}', '', '')

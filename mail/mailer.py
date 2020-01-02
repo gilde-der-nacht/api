@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+
 from flask_mail import Mail, Message
 
 # see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
@@ -36,12 +37,13 @@ def body_formatting(body):
     return lines
 
 
-def mail_send(mail, subject, body):
+def mail_send(mail, subject, body, recipients):
     body_formatted = body_formatting(body) + DOUBLE_NEW_LINE + str(body)
     if EMAIL_DISABLED:
         return
+    recipients = recipients if recipients else MAIL_RECIPIENTS
     msg = Message(subject=MAIL_SUBJECT_PREFIX + subject,
                   body=body_formatted,
                   sender=MAIL_SENDER,
-                  recipients=MAIL_RECIPIENTS)
+                  recipients=recipients)
     mail.send(msg)
