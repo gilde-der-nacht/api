@@ -37,7 +37,7 @@ def body_formatting(body):
     return lines
 
 
-def mail_send(mail, subject, body, recipients):
+def mail_send(mail, subject, body, recipients=None):
     body_formatted = body_formatting(body) + DOUBLE_NEW_LINE + str(body)
     if EMAIL_DISABLED:
         return

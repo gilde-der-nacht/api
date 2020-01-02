@@ -175,7 +175,7 @@ def mail_send(resource_uid, identification, public_body, private_body, url, user
     # for debbunging only
     entry['debug'] = str(recipients)
 
-    mailer.mail_send(mail, subject, json.dumps(entry), recipients)
+    mailer.mail_send(mail, subject, json.dumps(entry))
 
 
 # TODO other url?
