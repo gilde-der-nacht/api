@@ -164,21 +164,30 @@ def form(resource_uid):
     PUBLIC_PREFIX = 'public-'
     PRIVATE_PREFIX = 'private-'
     IDENDTIFICATION = 'identification'
+    CAPTCHA_SUFFIX = 'captcha'
     public = {}
     private = {}
     identification = ''
     for key, value in request.form.items():
-        if key.startswith(PUBLIC_PREFIX):
+        if key.endswith(CAPTCHA_SUFFIX):
+            spam = (value != '')
+            private[CAPTCHA_SUFFIX] = value
+            private['spam'] = spam
+        elif key.startswith(PUBLIC_PREFIX):
             public[key[len(PUBLIC_PREFIX):]] = value
         elif key.startswith(PRIVATE_PREFIX):
             private[key[len(PRIVATE_PREFIX):]] = value
         elif key == IDENDTIFICATION:
             identification = value
+
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
+
+    if not spam:
+        mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
+
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
     # TODO default?
     redirectUrl = request.form['redirect']
@@ -199,7 +208,7 @@ def js():
 @app.route('/status')
 def status():
     status = {
-        'version': '1.0.0',
+        'version': '1.0.1',
         'time': datetime.datetime.now().isoformat(),
     }
     return json.dumps(status), requests.codes.OK
