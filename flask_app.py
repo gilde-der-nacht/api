@@ -155,7 +155,7 @@ def get_recipients(resource_uid):
     resource = storage.resources_list_single(resource_uid)
     try:
         # recipients = [resource[3]['email']]
-        recipients = resource
+        recipients = resource[3]
     except:
         recipients = None
     return recipients
