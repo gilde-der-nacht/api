@@ -24,7 +24,7 @@ def body_formatting(body):
     for key, value in json.loads(body):
         lines.append(key + ': ' + value + '\n')
 
-    lines.append('\n\n' + body)
+    # lines.append('\n\n' + body)
     return json.dumps(lines)
 
 
