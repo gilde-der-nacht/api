@@ -41,7 +41,7 @@ def mail_send(mail, subject, body, recipients=None):
     body_formatted = body_formatting(body) + DOUBLE_NEW_LINE + str(body)
     if EMAIL_DISABLED:
         return
-    recipients = recipients if recipients else MAIL_RECIPIENTS
+    recipients = [recipients] if recipients else MAIL_RECIPIENTS
     msg = Message(subject=MAIL_SUBJECT_PREFIX + subject,
                   body=body_formatted,
                   sender=MAIL_SENDER,
