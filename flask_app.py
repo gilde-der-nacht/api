@@ -152,8 +152,8 @@ def entries_add(resource_uid):
 
 
 def get_recipients(resource_uid):
+    resource = storage.resources_list_single(resource_uid)
     try:
-        resource = storage.resources_list_single(resource_uid)
         recipients = [resource[3]['email']]
     except:
         recipients = None
@@ -170,6 +170,10 @@ def mail_send(resource_uid, identification, public_body, private_body, url, user
         'userAgent': user_agent,
     }
     recipients = get_recipients(resource_uid)
+
+    # for debbunging only
+    entry['debug'] = recipients
+
     mailer.mail_send(mail, subject, json.dumps(entry), recipients)
 
 
