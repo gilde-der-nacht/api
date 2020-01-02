@@ -154,8 +154,8 @@ def entries_add(resource_uid):
 def get_recipients(resource_uid):
     resource = storage.resources_list_single(resource_uid)
     try:
-        # recipients = [resource[3]['email']]
-        recipients = resource[3]['email']
+        private_body = json.loads(resource[3])
+        recipients = private_body['email']
     except:
         recipients = None
     return recipients
