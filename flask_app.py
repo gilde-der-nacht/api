@@ -152,9 +152,10 @@ def entries_add(resource_uid):
 
 
 def get_recipients(resource_uid):
-    resource = storage.resources_list_single(resource_uid)
     try:
+        resource = storage.resources_list_single(resource_uid)
         recipients = [resource[3]['email']]
+        return resource
     except:
         recipients = None
     return recipients
