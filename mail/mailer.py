@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 from flask_mail import Mail, Message
 
 # see https://pythonhosted.org/Flask-Mail/ for E-Mail configuration
@@ -18,7 +19,17 @@ def mail_config(app, host, username, password):
     return mail
 
 
+def body_formatting(body):
+    lines = []
+    for key, value in json.loads(body):
+        lines.append(key + ': ' + value + '\n')
+
+    lines.append('\n\n' + body)
+    return json.dumps(lines)
+
+
 def mail_send(mail, subject, body):
+    body = body_formatting(body);
     if EMAIL_DISABLED:
         return
     msg = Message(subject=MAIL_SUBJECT_PREFIX + subject,
