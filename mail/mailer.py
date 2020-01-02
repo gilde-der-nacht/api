@@ -19,21 +19,28 @@ def mail_config(app, host, username, password):
     return mail
 
 
-# def body_formatting(body):
-#     lines = []
-#     for key, value in json.loads(body):
-#         lines.append(key + ': ' + value + '\n')
-#
-#     lines.append('\n\n' + body)
-#     return json.dumps(lines)
+def body_formatting(body):
+    lines = ''
+    body = json.loads(body)
+
+    for key, value in body.items():
+        if key.endswith('Body'):
+            value = json.loads(value)
+            for key2, value2 in value.items():
+                lines += key2 + ': ' + str(value2) + '\n'
+        else:
+            lines += key + ': ' + value + '\n'
+
+    return lines
 
 
 def mail_send(mail, subject, body):
-    # body = body_formatting(body);
+    NEW_LINE = '\r\n'
+    body_formatted = body_formatting(body) + NEW_LINE + NEW_LINE + str(body)
     if EMAIL_DISABLED:
         return
     msg = Message(subject=MAIL_SUBJECT_PREFIX + subject,
-                  body=body,
+                  body=body_formatted,
                   sender=MAIL_SENDER,
                   recipients=MAIL_RECIPIENTS)
     mail.send(msg)
