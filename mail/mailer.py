@@ -30,9 +30,9 @@ def body_formatting(body):
         if key.endswith('Body'):
             value = json.loads(value)
             for key2, value2 in value.items():
-                lines += key2 + ':' + NEW_LINE + str(value2) + DOUBLE_NEW_LINE
+                lines += str(key2) + ':' + NEW_LINE + str(value2) + DOUBLE_NEW_LINE
         else:
-            lines += key + ':' + NEW_LINE + value + DOUBLE_NEW_LINE
+            lines += str(key) + ':' + NEW_LINE + str(value) + DOUBLE_NEW_LINE
 
     return lines
 
