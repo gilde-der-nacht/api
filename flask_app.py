@@ -197,17 +197,19 @@ def form(resource_uid):
         elif key == IDENDTIFICATION:
             identification = value
 
+    # debugging
+    private['test'] = request.form['redirect']
+
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.headers.get('Referer')
     user_agent = request.headers.get('User-Agent')
 
-    redirect_url = request.form['redirect'] if request.form['redirect'] else str(url)
-
     if spam:
         return redirect(redirect_url + '?msg=spam')
 
     mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
+    redirect_url = request.form['redirect'] if request.form['redirect'] else url
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
     return redirect(redirect_url + '?msg=success')
 
