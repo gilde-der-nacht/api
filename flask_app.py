@@ -175,7 +175,6 @@ def mail_send(resource_uid, identification, public_body, private_body, url, user
     mailer.mail_send(mail, subject, json.dumps(entry), recipients)
 
 
-# TODO other url?
 @app.route('/form/<resource_uid>', methods=['POST'])
 def form(resource_uid):
     if len(request.data) > 100_000:
@@ -184,14 +183,14 @@ def form(resource_uid):
     PRIVATE_PREFIX = 'private-'
     IDENDTIFICATION = 'identification'
     CAPTCHA_SUFFIX = 'captcha'
+    DEFAULT_REDIRECT_URL = 'https://gildedernacht.ch'
     public = {}
     private = {}
     identification = ''
+    spam = False
     for key, value in request.form.items():
         if key.endswith(CAPTCHA_SUFFIX):
             spam = (value != '')
-            private[CAPTCHA_SUFFIX] = value
-            private['spam'] = spam
         elif key.startswith(PUBLIC_PREFIX):
             public[key[len(PUBLIC_PREFIX):]] = value
         elif key.startswith(PRIVATE_PREFIX):
@@ -199,20 +198,23 @@ def form(resource_uid):
         elif key == IDENDTIFICATION:
             identification = value
 
+    # debugging
+    private['test'] = request.remote_addr
+
     public_body = json.dumps(public)
     private_body = json.dumps(private)
     url = request.url
     user_agent = request.headers.get('User-Agent')
 
-    if not spam:
-        mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
-    else:
-        resource_uid = '883a724e1fe834dea8c182433f6beecca0e7ada622658872d2e1b7fa6b85d6a9'  # resource uid for spam entries
+    redirectUrl = request.form['redirect'] if request.form['redirect'] else DEFAULT_REDIRECT_URL
 
+    if spam:
+        return redirect(redirectUrl + '?msg=spam')
+
+    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    # TODO default?
     redirectUrl = request.form['redirect']
-    return redirect(redirectUrl)
+    return redirect(redirectUrl + '?msg=success')
 
 
 @app.route('/admin')
