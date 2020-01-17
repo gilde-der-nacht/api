@@ -199,7 +199,7 @@ def form(resource_uid):
 
     public_body = json.dumps(public)
     private_body = json.dumps(private)
-    url = request.headers.get('Referer')
+    url = request.headers.get('Referer') if request.headers.get('Referer') else request.url
     user_agent = request.headers.get('User-Agent')
     redirect_url = request.form.get('redirect', url)
 
