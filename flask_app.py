@@ -204,11 +204,11 @@ def form(resource_uid):
     redirect_url = request.form.get('redirect', url)
 
     if spam:
-        return redirect(redirect_url + '?msg=spam')
+        return redirect(redirect_url + '?msg=spam', requests.codes.NOT_ACCEPTABLE)
 
     mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    return redirect(redirect_url + '?msg=success')
+    return redirect(redirect_url + '?msg=success', requests.codes.CREATED)
 
 
 @app.route('/admin')
