@@ -183,7 +183,6 @@ def form(resource_uid):
     PRIVATE_PREFIX = 'private-'
     IDENDTIFICATION = 'identification'
     CAPTCHA_SUFFIX = 'captcha'
-    DEFAULT_REDIRECT_URL = 'https://gildedernacht.ch'
     public = {}
     private = {}
     identification = ''
@@ -198,15 +197,12 @@ def form(resource_uid):
         elif key == IDENDTIFICATION:
             identification = value
 
-    # debugging
-    private['test'] = str(request.headers.get('Referer'))
-
     public_body = json.dumps(public)
     private_body = json.dumps(private)
-    url = request.url
+    url = request.headers.get('Referer')
     user_agent = request.headers.get('User-Agent')
 
-    redirectUrl = request.form['redirect'] if request.form['redirect'] else DEFAULT_REDIRECT_URL
+    redirectUrl = request.form['redirect'] if request.form['redirect'] else url
 
     if spam:
         return redirect(redirectUrl + '?msg=spam')
