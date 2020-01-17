@@ -202,7 +202,7 @@ def form(resource_uid):
     url = request.headers.get('Referer')
     user_agent = request.headers.get('User-Agent')
 
-    redirectUrl = request.form['redirect'] if request.form['redirect'] else url
+    redirectUrl = request.form['redirect'] if request.form['redirect'] else str(url)
 
     if spam:
         return redirect(redirectUrl + '?msg=spam')
