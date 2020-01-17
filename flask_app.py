@@ -199,7 +199,7 @@ def form(resource_uid):
             identification = value
 
     # debugging
-    private['test'] = request.headers
+    private['test'] = str(request.headers)
 
     public_body = json.dumps(public)
     private_body = json.dumps(private)
