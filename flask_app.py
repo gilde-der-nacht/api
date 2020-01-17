@@ -202,15 +202,14 @@ def form(resource_uid):
     url = request.headers.get('Referer')
     user_agent = request.headers.get('User-Agent')
 
-    redirectUrl = request.form['redirect'] if request.form['redirect'] else str(url)
+    redirect_url = request.form['redirect'] if request.form['redirect'] else str(url)
 
     if spam:
-        return redirect(redirectUrl + '?msg=spam')
+        return redirect(redirect_url + '?msg=spam')
 
     mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
-    redirectUrl = request.form['redirect']
-    return redirect(redirectUrl + '?msg=success')
+    return redirect(redirect_url + '?msg=success')
 
 
 @app.route('/admin')
