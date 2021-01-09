@@ -2,9 +2,9 @@ version: "3"
 
 services:
   olymp:
-    build: ./olymp/
+    build: .
     container_name: olymp
     volumes:
-      - ./olymp:/app
+      - ./app:/app
     ports:
       - 80:80
