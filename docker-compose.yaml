@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  olymp:
+    build: ./olymp/
+    container_name: olymp
+    volumes:
+      - ./olymp:/app
+    ports:
+      - 80:80
