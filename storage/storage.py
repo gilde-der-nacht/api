@@ -66,8 +66,9 @@ def entries_get(resource_uid, entry_uid):
     print("")
     print("LOOP WORKS")
     print("")
-    for entry in all_entries_raw if entry['entryUid'] == entry_uid:
-        print(entry)
+    for entry in all_entries_raw:
+        if entry['entryUid'] == entry_uid:
+            print(entry)
     return list(entry for entry in all_entries if entry['entryUid'] == entry_uid)[0]
 
 def connect(path):
