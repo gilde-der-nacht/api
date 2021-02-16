@@ -61,6 +61,7 @@ def entries_list(resource_uid):
 
 def entries_get(resource_uid, entry_uid):
     all_entries_raw = entries_list(resource_uid)
+    print(all_entries_raw)
     return list(entry for entry in all_entries_raw if entry[0] == entry_uid)
 
 def connect(path):
