@@ -222,8 +222,8 @@ def form(resource_uid):
 
     discord_webhook = 'https://discord.com/api/webhooks/811316197781667912/BmVflKDBcODBYmbOHZX04klQQUrgRF7fA-OgaW-BQaak7MPNINzSeB8Q8ZEOxTUnfH9b'
 
-    entry_url = 'https://api.gildedernacht.ch/resources/' +
-    resource_uid + '/entries/' + entry['uid']
+    entry_url = 'https://api.gildedernacht.ch/resources/' + \
+        resource_uid + '/entries/' + entry['uid']
     payload = {'content': 'Neue Nachricht von \'' +
                resource_uid + '\':\n' + entry_url}
     requests.post(discord_webhook, json=payload)
