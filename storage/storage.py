@@ -61,15 +61,7 @@ def entries_list(resource_uid):
 
 def entries_get(resource_uid, entry_uid):
     all_entries_raw = entries_list(resource_uid)
-    for entry in all_entries_raw:
-        pass
-    print("")
-    print("LOOP WORKS")
-    print("")
-    for entry in all_entries_raw:
-        if entry['entryUid'] == entry_uid:
-            print(entry)
-    return list(entry for entry in all_entries if entry['entryUid'] == entry_uid)[0]
+    return list(entry for entry in all_entries_raw if entry['entry_uid'] == entry_uid)[0]
 
 def connect(path):
     conn = sqlite3.connect(path, isolation_level=None)
