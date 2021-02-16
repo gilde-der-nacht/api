@@ -221,7 +221,8 @@ def form(resource_uid):
         resource_uid, identification, public_body, private_body, url, user_agent)
     print("")
     print("entry")
-    print(entry)
+    print(entry['uid'])
+    print(entry.uid)
     print("")
 
     discord_webhook = 'https://discord.com/api/webhooks/811316197781667912/BmVflKDBcODBYmbOHZX04klQQUrgRF7fA-OgaW-BQaak7MPNINzSeB8Q8ZEOxTUnfH9b'
