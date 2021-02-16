@@ -216,10 +216,14 @@ def form(resource_uid):
     if spam:
         return redirect(redirect_url + '?msg=spam')
 
-    mail_send(resource_uid, identification, public_body,
-              private_body, url, user_agent, 'form')
+    # mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
     entry = storage.entries_add(
         resource_uid, identification, public_body, private_body, url, user_agent)
+
+    discord_webhook = 'https://discord.com/api/webhooks/811316197781667912/BmVflKDBcODBYmbOHZX04klQQUrgRF7fA-OgaW-BQaak7MPNINzSeB8Q8ZEOxTUnfH9b'
+    payload = {'content': 'https://api.gildedernacht.ch/resources/' +
+               resource_uid + '/entries/' + entry.uid}
+    requests.post(discord_webhook, json=payload)
     return redirect(redirect_url + '?msg=success')
 
 
