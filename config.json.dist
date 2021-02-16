@@ -7,5 +7,8 @@
     "host": "host",
     "username": "username",
     "password": "password"
+  },
+  "discord": {
+    "inbox-webhook": "webhook"
   }
 }
