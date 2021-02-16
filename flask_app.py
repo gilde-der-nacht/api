@@ -72,12 +72,13 @@ config = load_config()
 username = config['auth']['username']
 password = config['auth']['password']
 
-mail = mailer.mail_config(app, config['mail']['host'], config['mail']['username'], config['mail']['password'])
+mail = mailer.mail_config(
+    app, config['mail']['host'], config['mail']['username'], config['mail']['password'])
 
 
 def auth_is_valid():
     return request.authorization and (request.authorization.username == username) and (
-            request.authorization.password == password)
+        request.authorization.password == password)
 
 
 def auth_required(fun):
@@ -98,7 +99,8 @@ def auth_required(fun):
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
@@ -145,10 +147,18 @@ def entries_add(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'entries_add')
-    entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
+    mail_send(resource_uid, identification, public_body,
+              private_body, url, user_agent, 'entries_add')
+    entry = storage.entries_add(
+        resource_uid, identification, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
     return entry_uid, requests.codes.CREATED
+
+
+@app.route('/resources/<resource_uid>/entries/<entry_uid>', methods=['GET'])
+@auth_required
+def get_entry(resource_uid, entry_uid):
+    return storage.entries_get(resource_uid, entry_uid)
 
 
 def get_recipients(resource_uid):
@@ -206,8 +216,10 @@ def form(resource_uid):
     if spam:
         return redirect(redirect_url + '?msg=spam')
 
-    mail_send(resource_uid, identification, public_body, private_body, url, user_agent, 'form')
-    entry = storage.entries_add(resource_uid, identification, public_body, private_body, url, user_agent)
+    mail_send(resource_uid, identification, public_body,
+              private_body, url, user_agent, 'form')
+    entry = storage.entries_add(
+        resource_uid, identification, public_body, private_body, url, user_agent)
     return redirect(redirect_url + '?msg=success')
 
 

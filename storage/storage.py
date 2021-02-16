@@ -59,6 +59,10 @@ def entries_list(resource_uid):
     return results
 
 
+def entries_get(resource_uid, entry_uid):
+    all_entries = entries_list(resource_uid)
+    return list(entry for entry in all_entries if entry['entryUid'] == entry_uid)[0]
+
 def connect(path):
     conn = sqlite3.connect(path, isolation_level=None)
     cur = conn.cursor()
