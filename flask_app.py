@@ -158,7 +158,7 @@ def entries_add(resource_uid):
 @app.route('/resources/<resource_uid>/entries/<entry_uid>', methods=['GET'])
 @auth_required
 def get_entry(resource_uid, entry_uid):
-    return storage.entries_get(resource_uid, entry_uid)
+    return json.dumps(storage.entries_get(resource_uid, entry_uid))
 
 
 def get_recipients(resource_uid):
