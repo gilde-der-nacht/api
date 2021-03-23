@@ -228,7 +228,7 @@ def form(resource_uid):
     payload = {'content': 'Neue Nachricht von \'' + redirect_url + '\':'\
         '\n\n' \
         'Nachrichtauszug:\n' \
-        '\'' + public['message'][0:20] +' [...] '+ public['message'][-20:] + '\'_' \
+        '\'' + private['message'][0:20] +' [...] '+ private['message'][-20:] + '\'_' \
         '\n\n' + entry_url
     }
 
