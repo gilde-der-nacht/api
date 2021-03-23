@@ -227,7 +227,7 @@ def form(resource_uid):
 
     if ('message' in private) and (len(private['message']) > 0):
         message = private['message']
-        msg = f'\'${message}\''
+        msg = f'\'{message}\''
     else:
         msg = 'Nachricht war leer.'
 
