@@ -224,14 +224,12 @@ def form(resource_uid):
 
     entry_url = 'https://api.gildedernacht.ch/resources/' + \
         resource_uid + '/entries/' + entry['uid']
-    new_line = '\n'
-    quote = '\''
-    payload = {'content': '\
-        Neue Nachricht von ' + quote + redirect_url + quote + ':'\
-        new_line + new_line \
-        'Nachrichtauszug:' + new_line \
-        quote + public['message'][0:20] +' [...] '+ public['message'][-20:] +'' + quote + '_' \
-        new_line + new_line + entry_url
+
+    payload = {'content': 'Neue Nachricht von \'' + redirect_url + '\':'\
+        '\n\n' \
+        'Nachrichtauszug:\n' \
+        '\'' + public['message'][0:20] +' [...] '+ public['message'][-20:] + '\'_' \
+        '\n\n' + entry_url
     }
 
     requests.post(webhook, json=payload)
