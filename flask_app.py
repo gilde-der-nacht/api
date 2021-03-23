@@ -225,10 +225,18 @@ def form(resource_uid):
     entry_url = 'https://api.gildedernacht.ch/resources/' + \
         resource_uid + '/entries/' + entry['uid']
 
+    if 'message' in private:
+        msg = private['message']
+    else:
+        msg = 'Nachricht war leer.'
+
+    words = msg.split(' ')
+    msg_excerpt = words if len(words) < 20 else words[0:10] + ['[...]'] + words[-10:]
+
     payload = {'content': 'Neue Nachricht von \'' + redirect_url + '\':'\
         '\n\n' \
         'Nachrichtauszug:\n' \
-        '_\'' + private['message'][0:20] +' [...] '+ private['message'][-20:] + '\'_' \
+        '_\'' + (' '.join(msg_excerpt)) + '\'_' \
         '\n\n' + entry_url
     }
 
