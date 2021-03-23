@@ -226,7 +226,7 @@ def form(resource_uid):
     entry_url = 'https://api.gildedernacht.ch/resources/' + \
         resource_uid + '/entries/' + entry['uid']
     payload = {'content': 'Neue Nachricht von \'' +
-               redirect_url + '\':\n\n' + entry_url}
+               redirect_url + '\':\n\Nachrichtauszug:\n _\''+ public['message'][0:20] +' [...] '+ public['message'][-20:] +'\'_\n\n' + entry_url}
     requests.post(webhook, json=payload)
     return redirect(redirect_url + '?msg=success')
 
