@@ -10,5 +10,10 @@
   },
   "discord": {
     "inbox-webhook": "webhook"
+  },
+  "mailjet": {
+    "public_key": "key",
+    "private_key": "key",
+    "version": "v3.1"
   }
 }
