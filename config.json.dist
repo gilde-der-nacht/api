@@ -3,11 +3,6 @@
     "username": "username",
     "password": "password"
   },
-  "mail": {
-    "host": "host",
-    "username": "username",
-    "password": "password"
-  },
   "discord": {
     "inbox-webhook": "webhook"
   },
