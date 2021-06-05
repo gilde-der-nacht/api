@@ -46,7 +46,7 @@ def mail_send(client, message, sender, recipient, template):
                 "Subject": "Wir haben eine neue Nachricht erhalten.",
                 "Variables": {
                     "title": "Neue Nachricht.",
-                    "quote": message
+                    "quote": message,
                     "msgAfterQuote": "Von " + sender.name + ", " + sender.mail
                 },
             }
