@@ -1,51 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-# Setup
-
-pip3 install flask flask_mail requests
-
-# Run
-
-export FLASK_APP=flask_app.py
-export FLASK_ENV=development
-export OLYMP_USERNAME=gdn
-export OLYMP_PASSWORD=gdn
-flask run
-
-or
-
-OLYMP_USERNAME=gdn OLYMP_PASSWORD=gdn FLASK_ENV=development FLASK_APP=flask_app.py flask run
-
-# Linux Setup
-
-apt-get install python3-flask-mail
-
-# This flask microservice accepts REST requests as follows
-
-domain: api.gildedernacht.ch/v1/
-  '/resources'                     -> interact with ALL the resources
-  '/resources/{uid}'               -> interact with ONE resource
-  '/resources/{uid}/entries'       -> interact with ALL entries of one resource
-  '/resources/{uid}/entries/{uid}' -> interact with ONE entry
-
-methods:
-  GET    -> read all data (if not authenticated, only public data)
-  POST   -> write new data
-  PUT    -> write a copied entry which does update some data (doesn't override anything)
-  DELETE -> write a copied entry with the status 'deleted' (doesn't override anything)
-
-# storage
-
-  there are two kinds of data
-      resources   -> buckets for entries of the same kind, enriched with a attributes (e.g. email address)
-      entries     -> saved data (eg. form data or registrations for events),
-          two main data sets (JSON format):
-              public  -> public data, everybody can read it
-              private -> can only be accessed with authentication
-
-"""
-
 import datetime
 import os
 
@@ -54,7 +8,8 @@ import functools
 import collections
 
 from storage import storage
-from mail import mailer
+from mail import mailjet
+from mail import discord
 from flask import Flask, request, json, send_from_directory, Response, redirect
 
 app = Flask(__name__)
@@ -72,8 +27,12 @@ config = load_config()
 username = config['auth']['username']
 password = config['auth']['password']
 
-mail = mailer.mail_config(
-    app, config['mail']['host'], config['mail']['username'], config['mail']['password'])
+
+mailClient = mailjet.config(
+    config['mailjet']['public_key'],
+    config['mailjet']['private_key'],
+    config['mailjet']['version']
+)
 
 
 def auth_is_valid():
@@ -161,30 +120,6 @@ def get_entry(resource_uid, entry_uid):
     return json.dumps(storage.entries_get(resource_uid, entry_uid))
 
 
-def get_recipients(resource_uid):
-    resource = storage.resources_list_single(resource_uid)
-    try:
-        private_body = json.loads(resource[3])
-        recipients = private_body['email']
-    except:
-        recipients = None
-    return recipients
-
-
-def mail_send(resource_uid, identification, public_body, private_body, url, user_agent, subject):
-    entry = {
-        'resourceUid': resource_uid,
-        'identification': identification,
-        'publicBody': public_body,
-        'privateBody': private_body,
-        'url': url,
-        'userAgent': user_agent,
-    }
-    recipients = get_recipients(resource_uid)
-
-    mailer.mail_send(mail, subject, json.dumps(entry), recipients)
-
-
 @app.route('/form/<resource_uid>', methods=['POST'])
 def form(resource_uid):
     if len(request.data) > 100_000:
@@ -220,10 +155,6 @@ def form(resource_uid):
         resource_uid, identification, public_body, private_body, url, user_agent)
 
     config = load_config()
-    webhook = config['discord']['inbox-webhook']
-
-    entry_url = 'https://api.gildedernacht.ch/resources/' + \
-        resource_uid + '/entries/' + entry['uid']
 
     if ('message' in private) and (len(private['message']) > 0):
         message = private['message']
@@ -231,17 +162,28 @@ def form(resource_uid):
     else:
         msg = 'Nachricht war leer.'
 
-    words = msg.split(' ')
-    msg_excerpt = words if len(words) < 20 else words[0:10] + ['[...]'] + words[-10:]
+    if 'rollenspieltage.ch' in redirect_url:
+        recipient = {
+            email: 'mail@rollenspieltage.ch',
+            name: 'Luzerner Rpllenspieltage'
+        }
+        template = 'rollenspieltage'
+    else if 'spieltage.ch' in redirect_url:
+        recipient = {
+            email: 'mail@spieltage.ch',
+            name: 'Luzerner Spieltage'
+        }
+        template = 'spieltage'
+    else:
+        recipient = {
+            email: 'mail@gildedernacht.ch',
+            name: 'Gilde der Nacht'
+        }
+        template = 'gilde'
 
-    payload = {'content': 'Neue Nachricht von \'' + redirect_url + '\':'\
-        '\n\n' \
-        'Nachrichtauszug:\n' \
-        '_' + (' '.join(msg_excerpt)) + '_' \
-        '\n\n' + entry_url
-    }
+    discord.msg_send(resource_uid, entry, msg, redirect_url, config['discord']['inbox-webhook'])
+    mailjet.mail_send(mailClient, msg, {mail: private['email'], name: private['name']}, recipient, template)
 
-    requests.post(webhook, json=payload)
     return redirect(redirect_url + '?msg=success')
 
 
