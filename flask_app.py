@@ -182,7 +182,7 @@ def form(resource_uid):
         template = 'gilde'
 
     discord.msg_send(resource_uid, entry, msg, redirect_url, config['discord']['inbox-webhook'])
-    mailjet.mail_send(mailClient, msg, {mail: private['email'], name: private['name']}, recipient, template)
+    mailjet.mail_send(mailClient, msg, {'mail': private['email'], 'name': private['name']}, recipient, template)
 
     return redirect(redirect_url + '?msg=success')
 
