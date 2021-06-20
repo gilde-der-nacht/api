@@ -164,20 +164,20 @@ def form(resource_uid):
 
     if 'rollenspieltage.ch' in redirect_url:
         recipient = {
-            email: 'mail@rollenspieltage.ch',
-            name: 'Luzerner Rpllenspieltage'
+            'email': 'mail@rollenspieltage.ch',
+            'name': 'Luzerner Rpllenspieltage'
         }
         template = 'rollenspieltage'
     elif 'spieltage.ch' in redirect_url:
         recipient = {
-            email: 'mail@spieltage.ch',
-            name: 'Luzerner Spieltage'
+            'email': 'mail@spieltage.ch',
+            'name': 'Luzerner Spieltage'
         }
         template = 'spieltage'
     else:
         recipient = {
-            email: 'mail@gildedernacht.ch',
-            name: 'Gilde der Nacht'
+            'email': 'mail@gildedernacht.ch',
+            'name': 'Gilde der Nacht'
         }
         template = 'gilde'
 
