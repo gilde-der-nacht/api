@@ -26,7 +26,7 @@ def mail_send(client, message, sender, recipient, template):
                     }
                 ],
                 'TemplateID': mail_template.get(template),
-                'TemplateLanguage': true,
+                'TemplateLanguage': True,
                 'Subject': 'Wir haben deine Nachricht erhalten.',
                 'Variables': {
                     'title': 'Vielen Dank für deine Nachricht.',
@@ -47,7 +47,7 @@ def mail_send(client, message, sender, recipient, template):
                     'Name': sender['name']
                 },
                 'TemplateID': mail_template.get(template),
-                'TemplateLanguage': true,
+                'TemplateLanguage': True,
                 'Subject': 'Wir haben eine neue Nachricht erhalten.',
                 'Variables': {
                     'title': 'Neue Nachricht.',
