@@ -21,8 +21,8 @@ def mail_send(client, message, sender, recipient, template):
             {
                 'To': [
                     {
-                    'Email': sender.mail,
-                    'Name': sender.name
+                    'Email': sender['mail'],
+                    'Name': sender['name']
                     }
                 ],
                 'TemplateID': mail_template.get(template),
@@ -38,13 +38,13 @@ def mail_send(client, message, sender, recipient, template):
             {
                 'To': [
                     {
-                    'Email': recipient.mail,
-                    'Name': recipient.name
+                    'Email': recipient['mail'],
+                    'Name': recipient['name']
                     }
                 ],
                 'ReplyTo': {
-                    'Email': sender.mail,
-                    'Name': sender.name
+                    'Email': sender['mail'],
+                    'Name': sender['name']
                 },
                 'TemplateID': mail_template.get(template),
                 'TemplateLanguage': true,
@@ -53,7 +53,7 @@ def mail_send(client, message, sender, recipient, template):
                     'title': 'Neue Nachricht.',
                     'msgBeforeQuote': 'Die Nachricht:',
                     'quote': message,
-                    'msgAfterQuote': 'Von ' + sender.name + ', ' + sender.mail
+                    'msgAfterQuote': 'Von ' + sender['name'] + ', ' + sender['mail']
                 }
             }
         ]
