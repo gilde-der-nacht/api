@@ -21,7 +21,7 @@ def mail_send(client, message, sender, recipient, template):
             {
                 'To': [
                     {
-                    'Email': sender['mail'],
+                    'Email': sender['email'],
                     'Name': sender['name']
                     }
                 ],
@@ -38,12 +38,12 @@ def mail_send(client, message, sender, recipient, template):
             {
                 'To': [
                     {
-                    'Email': recipient['mail'],
+                    'Email': recipient['email'],
                     'Name': recipient['name']
                     }
                 ],
                 'ReplyTo': {
-                    'Email': sender['mail'],
+                    'Email': sender['email'],
                     'Name': sender['name']
                 },
                 'TemplateID': mail_template.get(template),
@@ -53,7 +53,7 @@ def mail_send(client, message, sender, recipient, template):
                     'title': 'Neue Nachricht.',
                     'msgBeforeQuote': 'Die Nachricht:',
                     'quote': message,
-                    'msgAfterQuote': 'Von ' + sender['name'] + ', ' + sender['mail']
+                    'msgAfterQuote': 'Von ' + sender['name'] + ', ' + sender['email']
                 }
             }
         ]
