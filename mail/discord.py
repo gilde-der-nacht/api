@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import request
-
+import requests
 
 def msg_send(resource_uid, entry, msg, redirect_url, webhook):
     entry_url = 'https://api.gildedernacht.ch/resources/' + \
