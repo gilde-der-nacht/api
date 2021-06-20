@@ -6,8 +6,8 @@ import os
 
 mail_template = {
     'gilde': 2939493,
-    'spieltage' 2939553,
-    'rollenspieltage' 2939557
+    'spieltage': 2939553,
+    'rollenspieltage': 2939557
 }
 
 
