@@ -235,7 +235,7 @@ class Olymp {
     }
 
     async resourcesList() {
-        const path = `${this.server}/resources/`;
+        const path = `${this.server}/resources`;
         const credentials = (this.username !== null) && (this.password !== null);
         const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {

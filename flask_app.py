@@ -69,7 +69,7 @@ def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
 
-@app.route('/resources/', methods=['GET'])
+@app.route('/resources', methods=['GET'])
 def resources_list():
     auth = auth_is_valid()
     all_raw_resources = storage.resources_list()
