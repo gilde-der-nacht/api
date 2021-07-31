@@ -73,7 +73,7 @@ def server_status():
 def resources_list():
     auth = auth_is_valid()
     all_raw_resources = storage.resources_list()
-    all_resources_filtered = collections.OrderedDict()
+    all_resources_filtered = []
     for (resource_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_resources:
         resource = {
             'resourceUid': resource_uid,
