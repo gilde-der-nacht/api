@@ -81,7 +81,7 @@ class HTTP {
         const text = await response.text();
         return [text, response.status];
     }
-    
+
     static async getWithAuthorization(path, username, password) {
         const response = await fetch(path, {
             method: 'GET',
@@ -92,7 +92,7 @@ class HTTP {
         });
         const text = await response.text();
         return [text, response.status];
-    }    
+    }
 
     static async post(path, data) {
         const response = await fetch(path, {
@@ -226,6 +226,16 @@ class Olymp {
     async entriesList(resourceUid) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
         const path = `${this.server}/resources/${resourceUid}/entries`;
+        const credentials = (this.username !== null) && (this.password !== null);
+        const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
+        if(status !== HTTP.CODES.OK_200) {
+            throw 'List - Invalid Response';
+        }
+        return JSON.parse(text);
+    }
+
+    async resourcesList() {
+        const path = `${this.server}/resources/`;
         const credentials = (this.username !== null) && (this.password !== null);
         const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
         if(status !== HTTP.CODES.OK_200) {

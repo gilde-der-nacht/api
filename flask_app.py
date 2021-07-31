@@ -69,6 +69,24 @@ def server_status():
     return 'Olymp is Up &#128154;', requests.codes.OK
 
 
+@app.route('/resources/', methods=['GET'])
+def resources_list():
+    auth = auth_is_valid()
+    all_raw_resources = storage.resources_list()
+    all_resources_filtered = collections.OrderedDict()
+    for (resource_uid, timestamp, public_body, private_body, url, user_agent) in all_raw_resources:
+        resource = {
+            'resourceUid': resource_uid,
+            'timestamp': timestamp,
+            'publicBody': json.loads(public_body),
+            'privateBody': json.loads(private_body) if auth else {},
+            'url': url if auth else '',
+            'userAgent': user_agent if auth else '',
+        }
+        all_resources_filtered.append(resource)
+    return json.dumps(all_resources_filtered), requests.codes.OK
+
+
 # TODO according to the API description on top, there should be the API version in front of the URL?
 # TODO make version without filtering, or add a parameter to enable/disable it??
 # TODO add parameter to limit maximum number of rows?
