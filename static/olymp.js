@@ -272,7 +272,7 @@ class Olymp {
     if (status !== HTTP.CODES.CREATED_201) {
       throw "Add - Invalid Response";
     }
-    return text;
+    return JSON.parse(text);
   }
 }
 
