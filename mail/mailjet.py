@@ -29,7 +29,7 @@ i18n = {
             'weTryContactYou': 'Zögere nicht, uns bei Fragen oder Unklarheiten zu kontaktieren.',
             'weReceivedAMsg': 'Wir haben eine neue Anmeldung erhalten.',
             'newMsg': 'Neue Anmeldung.',
-            'theMsg': '',
+            'theMsg': 'Zur Anmeldung',
             'from': 'Von'
         }
     },
@@ -43,7 +43,17 @@ i18n = {
             'newMsg': 'New message.',
             'theMsg': 'The message',
             'from': 'From'}
-    }
+    },
+        'rollenspieltage2021': {
+            'weReceivedYourMsg': 'We have received your registration.',
+            'thankYouForYourMsg': 'Thank you for your registration.',
+            'yourMsg': 'Adapt your registration',
+            'weTryContactYou': 'Do not hesitate to contact us with any questions.',
+            'weReceivedAMsg': 'We received a new registration.',
+            'newMsg': 'New registration.',
+            'theMsg': 'To the registration',
+            'from': 'Von'
+        }
 }
 
 
