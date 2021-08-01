@@ -229,7 +229,10 @@ def register(resource_uid):
     email = private.get('intro').get('email')
     language = private.get('intro').get('interfaceLanguage') or 'de'
     questions = private.get('outro').get('questions')
-    edit_link = 'https://test.rollenspieltage.ch/edit?secret=' + secret
+
+    langPrefix = ('/' + language) if language == 'en' else ''
+    edit_link = 'https://test.rollenspieltage.ch' + \
+        langPrefix + '/edit?secret=' + secret
 
     discord.msg_send(resource_uid, entry, questions, 'Anmeldung Rollenspieltage 2021 (' + language + ')',
                      config['discord']['inbox-webhook'])
