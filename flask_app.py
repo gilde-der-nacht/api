@@ -206,6 +206,20 @@ def form(resource_uid):
 
     return redirect(redirect_url + '?msg=success')
 
+# Luzerner Rollenspieltage 2021: Registration
+@app.route('/resources/<resource_uid>/register', methods=['POST'])
+def entries_add(resource_uid):
+    if len(request.data) > 100_000:
+        return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
+    secret = storage.generate_uid()
+    body = json.loads(request.data)
+    public_body = json.dumps(body['publicBody'])
+    private_body = json.dumps(body['privateBody'])
+    url = request.url
+    user_agent = request.headers.get('User-Agent')
+    storage.entries_add(
+        resource_uid, secret, public_body, private_body, url, user_agent)
+    return secret, requests.codes.CREATED
 
 @app.route('/admin')
 @auth_required

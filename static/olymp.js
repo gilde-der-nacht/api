@@ -243,6 +243,17 @@ class Olymp {
         }
         return JSON.parse(text);
     }
+
+    async register(resourceUid) {
+        Olymp._verify(Olymp._verifyUid(resourceUid));
+        const path = `${this.server}/resources/${resourceUid}/register`;
+        const credentials = (this.username !== null) && (this.password !== null);
+        const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
+        if(status !== HTTP.CODES.OK_200) {
+            throw 'List - Invalid Response';
+        }
+        return JSON.parse(text);
+    }
 }
 
 /*
