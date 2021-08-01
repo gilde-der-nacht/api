@@ -208,9 +208,8 @@ def form(resource_uid):
 
     return redirect(redirect_url + '?msg=success')
 
+
 # Luzerner Rollenspieltage 2021: Registration
-
-
 @app.route('/resources/<resource_uid>/register', methods=['POST'])
 def register(resource_uid):
     if len(request.data) > 100_000:
@@ -225,6 +224,26 @@ def register(resource_uid):
         resource_uid, secret, public_body, private_body, url, user_agent)
 
     return json.dumps({'entry_uid': entry.get('uid'), 'secret': secret}), requests.codes.CREATED
+
+
+@app.route('/resources/<resource_uid>/registration/<entry_uid>/<secret>', methods=['GET'])
+def get_registration(resource_uid, entry_uid, secret):
+    entry_list = storage.entries_list(resource_uid)
+    registration_entry = None
+    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body) in entry_list:
+        if (identification is secret):
+            registration_entry = {
+                'resourceUid': resource_uid,
+                'entryUid': entry_uid,
+                'timestamp': timestamp,
+                'secret': identification,
+                'publicBody': json.loads(public_body),
+                'privateBody': json.loads(private_body),
+            }
+
+    if (registration_entry is None):
+        return '', requests.codes.UNAUTHORIZED
+    return json.dumps(registration_entry)
 
 
 @app.route('/admin')
