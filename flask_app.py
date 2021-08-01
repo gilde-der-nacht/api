@@ -228,9 +228,10 @@ def register(resource_uid):
     name = private.get('intro').get('name')
     email = private.get('intro').get('email')
     language = private.get('intro').get('interfaceLanguage')
+    questions = private.get('outro').get('questions')
     edit_link = 'https://test.rollenspieltage.ch/edit?secret=' + secret
 
-    discord.msg_send(resource_uid, entry, "", 'Anmeldung Rollenspieltage 2021 (' + language + ')',
+    discord.msg_send(resource_uid, entry, questions, 'Anmeldung Rollenspieltage 2021 (' + language + ')',
                      config['discord']['inbox-webhook'])
     mailjet.mail_send(mailClient, edit_link, {
                       'email': email, 'name': name}, {
