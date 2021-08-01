@@ -201,12 +201,16 @@ def form(resource_uid):
         }
         template = 'gilde'
 
-    discord.msg_send(resource_uid, entry, msg, redirect_url, config['discord']['inbox-webhook'])
-    mailjet.mail_send(mailClient, msg, {'email': private['email'], 'name': private['name']}, recipient, template, language)
+    discord.msg_send(resource_uid, entry, msg, redirect_url,
+                     config['discord']['inbox-webhook'])
+    mailjet.mail_send(mailClient, msg, {
+                      'email': private['email'], 'name': private['name']}, recipient, template, language)
 
     return redirect(redirect_url + '?msg=success')
 
 # Luzerner Rollenspieltage 2021: Registration
+
+
 @app.route('/resources/<resource_uid>/register', methods=['POST'])
 def register(resource_uid):
     if len(request.data) > 100_000:
@@ -217,9 +221,12 @@ def register(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    storage.entries_add(
+    entry = storage.entries_add(
         resource_uid, secret, public_body, private_body, url, user_agent)
-    return secret, requests.codes.CREATED
+    entry_uid = entry.get('uid')
+
+    return {entry_uid, secret}, requests.codes.CREATED
+
 
 @app.route('/admin')
 @auth_required
