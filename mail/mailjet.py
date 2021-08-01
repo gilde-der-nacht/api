@@ -12,24 +12,26 @@ mail_template = {
 
 i18n = {
     'de': {
-        'weReceivedYourMsg': 'Wir haben deine Nachricht erhalten.',
-        'thankYouForYourMsg': 'Vielen Dank für deine Nachricht.',
-        'yourMsg': 'Deine Nachricht',
-        'weTryContactYou': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.',
-        'weReceivedAMsg': 'Wir haben eine neue Nachricht erhalten.',
-        'newMsg': 'Neue Nachricht.',
-        'theMsg': 'Die Nachricht',
-        'from': 'Von'
-    },
+        'default': {
+            'weReceivedYourMsg': 'Wir haben deine Nachricht erhalten.',
+            'thankYouForYourMsg': 'Vielen Dank für deine Nachricht.',
+            'yourMsg': 'Deine Nachricht',
+            'weTryContactYou': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.',
+            'weReceivedAMsg': 'Wir haben eine neue Nachricht erhalten.',
+            'newMsg': 'Neue Nachricht.',
+            'theMsg': 'Die Nachricht',
+            'from': 'Von'
+        }},
     'en': {
-        'weReceivedYourMsg': 'We have received your message.',
-        'thankYouForYourMsg': 'Thank you for your message.',
-        'yourMsg': 'Your message',
-        'weTryContactYou': 'We try replying within 24 hours to your message.',
-        'weReceivedAMsg': 'We received a new message.',
-        'newMsg': 'New message.',
-        'theMsg': 'The message',
-        'from': 'From'
+        'default': {
+            'weReceivedYourMsg': 'We have received your message.',
+            'thankYouForYourMsg': 'Thank you for your message.',
+            'yourMsg': 'Your message',
+            'weTryContactYou': 'We try replying within 24 hours to your message.',
+            'weReceivedAMsg': 'We received a new message.',
+            'newMsg': 'New message.',
+            'theMsg': 'The message',
+            'from': 'From'}
     }
 }
 
@@ -38,16 +40,16 @@ def config(public_key, private_key, version):
     return Client(auth=(public_key, private_key), version=version)
 
 
-def mail_send(client, message, sender, recipient, template, language='de'):
-    texts = i18n[language]
+def mail_send(client, message, sender, recipient, template, language='de', kind='default'):
+    texts = i18n[language][kind]
 
     data = {
         'Messages': [
             {
                 'To': [
                     {
-                    'Email': sender['email'],
-                    'Name': sender['name']
+                        'Email': sender['email'],
+                        'Name': sender['name']
                     }
                 ],
                 'TemplateID': mail_template.get(template),
@@ -63,8 +65,8 @@ def mail_send(client, message, sender, recipient, template, language='de'):
             {
                 'To': [
                     {
-                    'Email': recipient['email'],
-                    'Name': recipient['name']
+                        'Email': recipient['email'],
+                        'Name': recipient['name']
                     }
                 ],
                 'ReplyTo': {
