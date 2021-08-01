@@ -229,7 +229,7 @@ def register(resource_uid):
 @app.route('/resources/<resource_uid>/registration/<secret>', methods=['GET'])
 def get_registration(resource_uid, secret):
     entry_list = storage.entries_list(resource_uid)
-    return json.dumps(entries_list)
+    return json.dumps(entry_list)
     # registration_entry = None
     # for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
     #     if (identification is secret):
