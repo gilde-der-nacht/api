@@ -229,21 +229,22 @@ def register(resource_uid):
 @app.route('/resources/<resource_uid>/registration/<secret>', methods=['GET'])
 def get_registration(resource_uid, secret):
     entry_list = storage.entries_list(resource_uid)
-    registration_entry = None
-    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
-        if (identification is secret):
-            registration_entry = {
-                'resourceUid': resource_uid,
-                'entryUid': entry_uid,
-                'timestamp': timestamp,
-                'secret': identification,
-                'publicBody': json.loads(public_body),
-                'privateBody': json.loads(private_body),
-            }
+    return json.dumps(entries_list)
+    # registration_entry = None
+    # for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
+    #     if (identification is secret):
+    #         registration_entry = {
+    #             'resourceUid': resource_uid,
+    #             'entryUid': entry_uid,
+    #             'timestamp': timestamp,
+    #             'secret': identification,
+    #             'publicBody': json.loads(public_body),
+    #             'privateBody': json.loads(private_body),
+    #         }
 
-    if (registration_entry is None):
-        return 'shit', requests.codes.UNAUTHORIZED
-    return json.dumps(registration_entry)
+    # if (registration_entry is None):
+    #     return 'shit', requests.codes.UNAUTHORIZED
+    # return json.dumps(registration_entry)
 
 
 @app.route('/admin')
