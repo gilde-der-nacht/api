@@ -224,8 +224,9 @@ def register(resource_uid):
     entry = storage.entries_add(
         resource_uid, secret, public_body, private_body, url, user_agent)
 
-    name = private_body.get('intro').get('name')
-    email = private_body.get('intro').get('email')
+    private = json.loads(private_body)
+    name = private.get('intro').get('name')
+    email = private.get('intro').get('email')
     edit_link = 'https://test.rollenspieltage.ch/edit?secret=' + secret
 
     discord.msg_send(resource_uid, entry, "", 'Anmeldung Rollenspieltage 2021',
