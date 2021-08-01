@@ -244,13 +244,18 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    async register(resourceUid) {
+    async register(resourceUid, privateBody) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
+        Olymp._verify(Olymp._verifyBody(privateBody));
+
         const path = `${this.server}/resources/${resourceUid}/register`;
-        const credentials = (this.username !== null) && (this.password !== null);
-        const [text, status] = credentials ? await HTTP.getWithAuthorization(path, this.username, this.password) : await HTTP.get(path);
-        if(status !== HTTP.CODES.OK_200) {
-            throw 'List - Invalid Response';
+
+        const data = {
+            privateBody: privateBody,
+        };
+        const [text, status] = await HTTP.post(path, JSON.stringify(data));
+        if(status !== HTTP.CODES.CREATED_201) {
+            throw 'Add - Invalid Response';
         }
         return JSON.parse(text);
     }
