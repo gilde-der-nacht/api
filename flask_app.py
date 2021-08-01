@@ -230,7 +230,7 @@ def register(resource_uid):
 def get_registration(resource_uid, secret):
     entry_list = storage.entries_list(resource_uid)
     registration_entry = None
-    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body) in entry_list:
+    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
         if (identification is secret):
             registration_entry = {
                 'resourceUid': resource_uid,
