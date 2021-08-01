@@ -2,7 +2,6 @@
 
 # import the mailjet wrapper
 from mailjet_rest import Client
-import os
 
 mail_template = {
     'gilde': 2939493,
@@ -11,11 +10,29 @@ mail_template = {
 }
 
 
+i18n = {
+    'de': {
+        'weReceivedYourMsg': 'Wir haben deine Nachricht erhalten.',
+        'thankYouForYourMsg': 'Vielen Dank für deine Nachricht.',
+        'yourMsg': 'Deine Nachricht',
+        'weTryContactYou': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.'
+    },
+    'en': {
+        'weReceivedYourMsg': 'We have received your message.',
+        'thankYouForYourMsg': 'Thank you for your message.',
+        'yourMsg': 'Your message',
+        'weTryContactYou': 'We try replying within 24 hours to your message.'
+    }
+}
+
+
 def config(public_key, private_key, version):
     return Client(auth=(public_key, private_key), version=version)
 
 
-def mail_send(client, message, sender, recipient, template):
+def mail_send(client, message, sender, recipient, template, language='de'):
+    texts = i18n[language]
+
     data = {
         'Messages': [
             {
@@ -27,12 +44,12 @@ def mail_send(client, message, sender, recipient, template):
                 ],
                 'TemplateID': mail_template.get(template),
                 'TemplateLanguage': True,
-                'Subject': 'Wir haben deine Nachricht erhalten.',
+                'Subject': texts['weReceivedYourMsg'],
                 'Variables': {
-                    'title': 'Vielen Dank für deine Nachricht.',
-                    'msgBeforeQuote': 'Deine Nachricht:',
+                    'title': texts['thankYouForYourMsg'],
+                    'msgBeforeQuote': texts['yourMsg'] + ':',
                     'quote': message,
-                    'msgAfterQuote': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.'
+                    'msgAfterQuote': texts['weTryContactYou']
                 }
             },
             {

@@ -144,10 +144,12 @@ def form(resource_uid):
     PRIVATE_PREFIX = 'private-'
     IDENDTIFICATION = 'identification'
     CAPTCHA_SUFFIX = 'captcha'
+    LANGUAGE = 'language'
     public = {}
     private = {}
     identification = ''
     spam = False
+    language = 'de'
     for key, value in request.form.items():
         if key.endswith(CAPTCHA_SUFFIX):
             spam = (value != '')
@@ -157,6 +159,8 @@ def form(resource_uid):
             private[key[len(PRIVATE_PREFIX):]] = value
         elif key == IDENDTIFICATION:
             identification = value
+        elif key == LANGUAGE:
+            language = value
 
     public_body = json.dumps(public)
     private_body = json.dumps(private)
@@ -181,7 +185,7 @@ def form(resource_uid):
     if 'rollenspieltage.ch' in redirect_url:
         recipient = {
             'email': 'mail@rollenspieltage.ch',
-            'name': 'Luzerner Rpllenspieltage'
+            'name': 'Luzerner Rollenspieltage'
         }
         template = 'rollenspieltage'
     elif 'spieltage.ch' in redirect_url:
@@ -198,7 +202,7 @@ def form(resource_uid):
         template = 'gilde'
 
     discord.msg_send(resource_uid, entry, msg, redirect_url, config['discord']['inbox-webhook'])
-    mailjet.mail_send(mailClient, msg, {'email': private['email'], 'name': private['name']}, recipient, template)
+    mailjet.mail_send(mailClient, msg, {'email': private['email'], 'name': private['name']}, recipient, template, language)
 
     return redirect(redirect_url + '?msg=success')
 
