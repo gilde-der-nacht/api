@@ -244,13 +244,17 @@ class Olymp {
         return JSON.parse(text);
     }
 
-    async register(resourceUid, privateBody) {
+    async register(resourceUid, identification, publicBody, privateBody) {
         Olymp._verify(Olymp._verifyUid(resourceUid));
+        Olymp._verify(Olymp._verifyIdentification(identification));
+        Olymp._verify(Olymp._verifyBody(publicBody));
         Olymp._verify(Olymp._verifyBody(privateBody));
 
         const path = `${this.server}/resources/${resourceUid}/register`;
 
         const data = {
+            identification: identification,
+            publicBody: publicBody,
             privateBody: privateBody,
         };
         const [text, status] = await HTTP.post(path, JSON.stringify(data));
