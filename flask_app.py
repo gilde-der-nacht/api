@@ -227,7 +227,7 @@ def register(resource_uid):
     private = json.loads(private_body)
     name = private.get('intro').get('name')
     email = private.get('intro').get('email')
-    language = private.get('intro').get('interfaceLanguage')
+    language = private.get('intro').get('interfaceLanguage') or 'de'
     questions = private.get('outro').get('questions')
     edit_link = 'https://test.rollenspieltage.ch/edit?secret=' + secret
 
