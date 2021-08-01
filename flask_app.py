@@ -231,7 +231,7 @@ def get_registration(resource_uid, secret):
     entry_list = storage.entries_list(resource_uid)
     registration_entry = []
     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
-        if (identification is secret):
+        if (identification == secret):
             entry = {
                 'resourceUid': resource_uid,
                 'entryUid': entry_uid,
