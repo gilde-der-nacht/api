@@ -208,7 +208,7 @@ def form(resource_uid):
 
 # Luzerner Rollenspieltage 2021: Registration
 @app.route('/resources/<resource_uid>/register', methods=['POST'])
-def entries_add(resource_uid):
+def register(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     secret = storage.generate_uid()
