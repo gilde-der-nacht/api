@@ -88,14 +88,13 @@ def resources_list():
 
 
 # TODO according to the API description on top, there should be the API version in front of the URL?
-# TODO make version without filtering, or add a parameter to enable/disable it??
+# TODO make version with filtering, or add a parameter to enable/disable it??
 # TODO add parameter to limit maximum number of rows?
 @app.route('/resources/<resource_uid>/entries', methods=['GET'])
 def entries_list(resource_uid):
     auth = auth_is_valid()
-    all_raw_entries = storage.entries_list(
-        resource_uid)  # storage returns a list sorted by timestamp (this is important for the following loop)
-    all_entries_filtered = collections.OrderedDict()
+    all_raw_entries = storage.entries_list(resource_uid)
+    all_entries_filtered = []
     for (
             resource_uid, entry_uid, timestamp, identification, public_body, private_body, url,
             user_agent) in all_raw_entries:
@@ -109,9 +108,8 @@ def entries_list(resource_uid):
             'url': url if auth else '',
             'userAgent': user_agent if auth else '',
         }
-        all_entries_filtered[
-            identification.lower()] = entry  # because, as mentioned, the list is ordered, only the newest entry, with the same identification, is stored
-    return json.dumps(list(all_entries_filtered.values())), requests.codes.OK
+        all_entries_filtered.append(entry)
+    return json.dumps(all_entries_filtered), requests.codes.OK
 
 
 @app.route('/resources/<resource_uid>/entries', methods=['POST'])
