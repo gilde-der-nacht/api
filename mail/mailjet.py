@@ -42,8 +42,8 @@ i18n = {
             'weReceivedAMsg': 'We received a new message.',
             'newMsg': 'New message.',
             'theMsg': 'The message',
-            'from': 'From'}
-    },
+            'from': 'From'
+        },
         'rollenspieltage2021': {
             'weReceivedYourMsg': 'We have received your registration.',
             'thankYouForYourMsg': 'Thank you for your registration.',
@@ -54,6 +54,7 @@ i18n = {
             'theMsg': 'To the registration',
             'from': 'Von'
         }
+    },
 }
 
 
