@@ -224,7 +224,7 @@ def register(resource_uid):
     entry = storage.entries_add(
         resource_uid, secret, public_body, private_body, url, user_agent)
 
-    return {'entry_uid': entry.get('uid'), 'secret': secret}, requests.codes.CREATED
+    return json.dumps({'entry_uid': entry.get('uid'), 'secret': secret}), requests.codes.CREATED
 
 
 @app.route('/admin')
