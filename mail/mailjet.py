@@ -21,7 +21,18 @@ i18n = {
             'newMsg': 'Neue Nachricht.',
             'theMsg': 'Die Nachricht',
             'from': 'Von'
-        }},
+        },
+        'rollenspieltage2021': {
+            'weReceivedYourMsg': 'Wir haben deine Anmeldung erhalten.',
+            'thankYouForYourMsg': 'Vielen Dank für deine Anmeldung.',
+            'yourMsg': 'Passe deine Anmeldung an',
+            'weTryContactYou': 'Zögere nicht, uns bei Fragen oder Unklarheiten zu kontaktieren.',
+            'weReceivedAMsg': 'Wir haben eine neue Anmeldung erhalten.',
+            'newMsg': 'Neue Anmeldung.',
+            'theMsg': '',
+            'from': 'Von'
+        }
+    },
     'en': {
         'default': {
             'weReceivedYourMsg': 'We have received your message.',
