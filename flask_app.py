@@ -242,7 +242,7 @@ def get_registration(resource_uid, secret):
             }
 
     if (registration_entry is None):
-        return '', requests.codes.UNAUTHORIZED
+        return 'shit', requests.codes.UNAUTHORIZED
     return json.dumps(registration_entry)
 
 
