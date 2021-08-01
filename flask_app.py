@@ -215,8 +215,8 @@ def register(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     body = json.loads(request.data)
-    secret = body['secret'] if len(
-        body['secret']) > 0 else storage.generate_uid()
+    secret = body['identification'] if len(
+        body['identification']) > 0 else storage.generate_uid()
     public_body = json.dumps(body['publicBody'])
     private_body = json.dumps(body['privateBody'])
     url = request.url
