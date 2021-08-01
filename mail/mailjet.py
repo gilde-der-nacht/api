@@ -15,13 +15,21 @@ i18n = {
         'weReceivedYourMsg': 'Wir haben deine Nachricht erhalten.',
         'thankYouForYourMsg': 'Vielen Dank für deine Nachricht.',
         'yourMsg': 'Deine Nachricht',
-        'weTryContactYou': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.'
+        'weTryContactYou': 'Wir versuchen dir innerhalb von 24 Stunden zu antworten.',
+        'weReceivedAMsg': 'Wir haben eine neue Nachricht erhalten.',
+        'newMsg': 'Neue Nachricht.',
+        'theMsg': 'Die Nachricht',
+        'from': 'Von'
     },
     'en': {
         'weReceivedYourMsg': 'We have received your message.',
         'thankYouForYourMsg': 'Thank you for your message.',
         'yourMsg': 'Your message',
-        'weTryContactYou': 'We try replying within 24 hours to your message.'
+        'weTryContactYou': 'We try replying within 24 hours to your message.',
+        'weReceivedAMsg': 'We received a new message.',
+        'newMsg': 'New message.',
+        'theMsg': 'The message',
+        'from': 'From'
     }
 }
 
@@ -65,12 +73,12 @@ def mail_send(client, message, sender, recipient, template, language='de'):
                 },
                 'TemplateID': mail_template.get(template),
                 'TemplateLanguage': True,
-                'Subject': 'Wir haben eine neue Nachricht erhalten.',
+                'Subject': texts['weReceivedAMsg'],
                 'Variables': {
-                    'title': 'Neue Nachricht.',
-                    'msgBeforeQuote': 'Die Nachricht:',
+                    'title': texts['newMsg'],
+                    'msgBeforeQuote': texts['theMsg'] + ':',
                     'quote': message,
-                    'msgAfterQuote': 'Von ' + sender['name'] + ', ' + sender['email']
+                    'msgAfterQuote': texts['from'] + ' ' + sender['name'] + ', ' + sender['email']
                 }
             }
         ]
