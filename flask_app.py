@@ -224,10 +224,12 @@ def register(resource_uid):
     entry = storage.entries_add(
         resource_uid, secret, public_body, private_body, url, user_agent)
 
+    public = json.loads(public_body)
+    language = public.get('interfaceLanguage') or 'de'
+
     private = json.loads(private_body)
     name = private.get('intro').get('name')
     email = private.get('intro').get('email')
-    language = private.get('intro').get('interfaceLanguage') or 'de'
     questions = private.get('outro').get('questions')
 
     langPrefix = ('/' + language) if language == 'en' else ''
