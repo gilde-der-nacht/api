@@ -233,7 +233,7 @@ def register(resource_uid):
     questions = private.get('outro').get('questions')
 
     langPrefix = ('/' + language) if language == 'en' else ''
-    edit_link = 'https://test.rollenspieltage.ch' + \
+    edit_link = 'https://rollenspieltage.ch' + \
         langPrefix + '/edit?secret=' + secret
 
     discord.msg_send(resource_uid, entry, questions, 'Anmeldung Rollenspieltage 2021 (' + language + ')',
