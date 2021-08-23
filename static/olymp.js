@@ -286,6 +286,18 @@ class Olymp {
     }
     return JSON.parse(text);
   }
+
+  async getProgram(resourceUid, secret) {
+    Olymp._verify(Olymp._verifyUid(resourceUid));
+    Olymp._verify(Olymp._verifyIdentification(secret));
+
+    const path = `${this.server}/resources/${resourceUid}/program/${secret}`;
+    const [text, status] = await HTTP.get(path);
+    if (status !== HTTP.CODES.OK_200) {
+      throw "List - Invalid Response";
+    }
+    return JSON.parse(text);
+  }
 }
 
 /*
