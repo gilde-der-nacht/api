@@ -122,8 +122,8 @@ def entries_add(resource_uid):
     private_body = json.dumps(body['privateBody'])
     url = request.url
     user_agent = request.headers.get('User-Agent')
-    mail_send(resource_uid, identification, public_body,
-              private_body, url, user_agent, 'entries_add')
+    # mail_send(resource_uid, identification, public_body,
+    #           private_body, url, user_agent, 'entries_add')
     entry = storage.entries_add(
         resource_uid, identification, public_body, private_body, url, user_agent)
     entry_uid = entry.get('uid')
