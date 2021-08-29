@@ -204,7 +204,7 @@ def form(resource_uid):
     discord.msg_send(resource_uid, entry, msg, redirect_url,
                      config['discord']['inbox-webhook'])
     mailjet.mail_send(mailClient, msg, {
-                      'email': private['email'], 'name': private['name']}, recipient, template, language)
+                      'email': private.get('email'), 'name': private.get('name')}, recipient, template, language)
 
     return redirect(redirect_url + '?msg=success')
 
@@ -269,6 +269,7 @@ def get_registration(resource_uid, secret):
     if (registration_entry is None):
         return '', requests.codes.UNAUTHORIZED
     return json.dumps(registration_entry)
+
 
 @app.route('/resources/<resource_uid>/program/<secret>', methods=['GET'])
 def get_program(resource_uid, secret):

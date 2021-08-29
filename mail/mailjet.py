@@ -64,48 +64,58 @@ def config(public_key, private_key, version):
 
 def mail_send(client, message, sender, recipient, template, language='de', kind='default'):
     texts = i18n[language][kind]
+    senderMail = sender.get('email')
+    senderName = sender.get('name')
+
+    copyToSender = {
+        'To': [
+            {
+                'Email': senderMail,
+                'Name': senderName
+            }
+        ],
+        'TemplateID': mail_template.get(template),
+        'TemplateLanguage': True,
+        'Subject': texts['weReceivedYourMsg'],
+        'Variables': {
+            'title': texts['thankYouForYourMsg'],
+            'msgBeforeQuote': texts['yourMsg'] + ':',
+            'quote': message,
+            'msgAfterQuote': texts['weTryContactYou']
+        }
+    }
+
+    messageToRecipient = {
+        'To': [
+            {
+                'Email': recipient['email'],
+                'Name': recipient['name']
+            }
+        ],
+        'TemplateID': mail_template.get(template),
+        'TemplateLanguage': True,
+        'Subject': texts['weReceivedAMsg'],
+        'Variables': {
+            'title': texts['newMsg'],
+            'msgBeforeQuote': texts['theMsg'] + ':',
+            'quote': message,
+            'msgAfterQuote': texts['from'] + ' ' + senderName + ', ' + senderMail
+        }
+    }
+
+    if (senderMail is not None and senderName is not None):
+        messageToRecipient['ReplyTo'] = {
+            'Email': senderMail,
+            'Name': senderName
+        }
 
     data = {
         'Messages': [
-            {
-                'To': [
-                    {
-                        'Email': sender['email'],
-                        'Name': sender['name']
-                    }
-                ],
-                'TemplateID': mail_template.get(template),
-                'TemplateLanguage': True,
-                'Subject': texts['weReceivedYourMsg'],
-                'Variables': {
-                    'title': texts['thankYouForYourMsg'],
-                    'msgBeforeQuote': texts['yourMsg'] + ':',
-                    'quote': message,
-                    'msgAfterQuote': texts['weTryContactYou']
-                }
-            },
-            {
-                'To': [
-                    {
-                        'Email': recipient['email'],
-                        'Name': recipient['name']
-                    }
-                ],
-                'ReplyTo': {
-                    'Email': sender['email'],
-                    'Name': sender['name']
-                },
-                'TemplateID': mail_template.get(template),
-                'TemplateLanguage': True,
-                'Subject': texts['weReceivedAMsg'],
-                'Variables': {
-                    'title': texts['newMsg'],
-                    'msgBeforeQuote': texts['theMsg'] + ':',
-                    'quote': message,
-                    'msgAfterQuote': texts['from'] + ' ' + sender['name'] + ', ' + sender['email']
-                }
-            }
+            messageToRecipient
         ]
     }
+
+    if (senderMail is not None and senderName is not None):
+        data['Messages'].append(copyToSender)
 
     client.send.create(data=data)
