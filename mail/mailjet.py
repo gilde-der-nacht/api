@@ -99,7 +99,7 @@ def mail_send(client, message, sender, recipient, template, language='de', kind=
             'title': texts['newMsg'],
             'msgBeforeQuote': texts['theMsg'] + ':',
             'quote': message,
-            'msgAfterQuote': texts['from'] + ' ' + senderName + ', ' + senderMail
+            'msgAfterQuote': texts['from'] + ' ' + (senderName if not None else '-name missing-') + ', ' + (senderMail if not None else '-email missing-')
         }
     }
 
