@@ -150,9 +150,7 @@ def form(resource_uid):
     identification = ''
     spam = False
     language = 'de'
-    print(request.args.get("redir") != "false")
     redir = request.args.get("redir") != "false"
-    print(redir)
     for key, value in request.form.items():
         if key.endswith(CAPTCHA_SUFFIX):
             spam = (value != '')
@@ -170,11 +168,6 @@ def form(resource_uid):
     url = request.headers.get('Referer')
     user_agent = request.headers.get('User-Agent')
     redirect_url = request.form.get('redirect', url)
-
-    if redir:
-        print("redir is true: " + str(redir))
-    else:
-        print("redir is false: " + str(redir))
 
     if spam:
         redirect_url = redirect_url + '?msg=spam'
@@ -215,7 +208,8 @@ def form(resource_uid):
     mailjet.mail_send(mailClient, msg, {
                       'email': private.get('email'), 'name': private.get('name')}, recipient, template, language)
 
-    return redirect(redirect_url + '?msg=success')
+    redirect_url = redirect_url + '?msg=success'
+    return redirect(redirect_url) if redir else make_response(redirect_url)
 
 
 # Luzerner Rollenspieltage 2021: Registration
