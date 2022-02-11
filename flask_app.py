@@ -10,7 +10,7 @@ import collections
 from storage import storage
 from mail import mailjet
 from mail import discord
-from flask import Flask, request, json, send_from_directory, Response, redirect
+from flask import Flask, request, json, send_from_directory, Response, redirect, make_response
 
 app = Flask(__name__)
 
@@ -169,7 +169,10 @@ def form(resource_uid):
     redirect_url = request.form.get('redirect', url)
 
     if spam:
-        return redirect(redirect_url + '?msg=spam')
+        redirect_url = redirect_url + '?msg=spam'
+        resp = make_response(redirect_url, requests.codes.FOUND)
+        resp.headers["Location"] = redirect_url
+        return resp
 
     entry = storage.entries_add(
         resource_uid, identification, public_body, private_body, url, user_agent)
