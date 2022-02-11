@@ -150,6 +150,9 @@ def form(resource_uid):
     identification = ''
     spam = False
     language = 'de'
+    print(request.args.get("redir"))
+    redir = request.args.get("redir") or True
+    print(redir)
     for key, value in request.form.items():
         if key.endswith(CAPTCHA_SUFFIX):
             spam = (value != '')
@@ -170,9 +173,7 @@ def form(resource_uid):
 
     if spam:
         redirect_url = redirect_url + '?msg=spam'
-        resp = make_response(redirect_url, requests.codes.FOUND)
-        resp.headers["Location"] = redirect_url
-        return resp
+        return redirect(redirect_url) if redir else make_response(redirect_url)
 
     entry = storage.entries_add(
         resource_uid, identification, public_body, private_body, url, user_agent)
