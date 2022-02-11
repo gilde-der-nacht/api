@@ -171,6 +171,11 @@ def form(resource_uid):
     user_agent = request.headers.get('User-Agent')
     redirect_url = request.form.get('redirect', url)
 
+    if redir:
+        print("redir is true: " + str(redir))
+    else:
+        print("redir is false: " + str(redir))
+
     if spam:
         redirect_url = redirect_url + '?msg=spam'
         return redirect(redirect_url) if redir else make_response(redirect_url)
