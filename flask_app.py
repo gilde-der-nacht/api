@@ -169,7 +169,7 @@ def form(resource_uid):
     redirect_url = request.form.get('redirect', url)
 
     if spam:
-        return redirect(redirect_url + '?msg=spam')
+        return redirect(redirect_url + '?msg=spam', Response=Response(redirect_url + '?msg=spam'))
 
     entry = storage.entries_add(
         resource_uid, identification, public_body, private_body, url, user_agent)
@@ -206,7 +206,7 @@ def form(resource_uid):
     mailjet.mail_send(mailClient, msg, {
                       'email': private.get('email'), 'name': private.get('name')}, recipient, template, language)
 
-    return redirect(redirect_url + '?msg=success')
+    return redirect(redirect_url + '?msg=success', Response=Response(redirect_url + '?msg=success'))
 
 
 # Luzerner Rollenspieltage 2021: Registration
