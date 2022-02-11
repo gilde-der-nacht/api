@@ -150,8 +150,8 @@ def form(resource_uid):
     identification = ''
     spam = False
     language = 'de'
-    print(request.args.get("redir") == "false")
-    redir = request.args.get("redir") == "false"
+    print(request.args.get("redir") != "false")
+    redir = request.args.get("redir") != "false"
     print(redir)
     for key, value in request.form.items():
         if key.endswith(CAPTCHA_SUFFIX):
