@@ -6,7 +6,8 @@ from mailjet_rest import Client
 mail_template = {
     'gilde': 2939493,
     'spieltage': 2939553,
-    'rollenspieltage': 2939557
+    'rollenspieltage': 2939557,
+    'tabletoptage': 3811255
 }
 
 

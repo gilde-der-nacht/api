@@ -196,6 +196,12 @@ def form(resource_uid):
             'name': 'Luzerner Spieltage'
         }
         template = 'spieltage'
+    elif 'tabletoptage.ch' in redirect_url:
+        recipient = {
+            'email': 'mail@tabletoptage.ch',
+            'name': 'Luzerner Tabletoptage'
+        }
+        template = 'tabletoptage'
     else:
         recipient = {
             'email': 'mail@gildedernacht.ch',
