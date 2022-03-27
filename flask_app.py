@@ -142,6 +142,7 @@ def form(resource_uid):
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
     PUBLIC_PREFIX = 'public-'
     PRIVATE_PREFIX = 'private-'
+    PRINT_PREFIX = 'print-'
     IDENDTIFICATION = 'identification'
     CAPTCHA_SUFFIX = 'captcha'
     LANGUAGE = 'language'
@@ -183,6 +184,10 @@ def form(resource_uid):
         msg = f'\'{message}\''
     else:
         msg = 'Nachricht war leer.'
+
+    for key, value in private.items():
+        if key.startswith(PRINT_PREFIX):
+            msg = msg + '\n\n' + key[len(PRINT_PREFIX):] + ': ' + value
 
     if 'rollenspieltage.ch' in redirect_url:
         recipient = {
