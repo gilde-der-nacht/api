@@ -290,6 +290,52 @@ def get_registration(resource_uid, secret):
         return '', requests.codes.UNAUTHORIZED
     return json.dumps(registration_entry)
 
+@app.route('/resources/<resource_uid>/registration/<secret>', methods=['POST'])
+def update(resource_uid, secret):
+    if len(request.data) > 100_000:
+        return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
+
+    body = json.loads(request.data)
+    body['privateBody']['secret'] = secret
+
+    public_body = json.dumps(body['publicBody'])
+    private_body = json.dumps(body['privateBody'])
+
+    url = request.url
+    user_agent = request.headers.get('User-Agent')
+    entry = storage.entries_add(
+        resource_uid, secret, public_body, private_body, url, user_agent)
+
+    public = json.loads(public_body)
+    private = json.loads(private_body)
+
+    if public.get('sendMailToApplicant', False) is True:
+        name = private.get('name')
+        email = private.get('email')
+        edit_link = RST_BASE_URL + '?secret=' + secret
+        mailjet.mail_send(mailClient, edit_link, {
+                          'email': email, 'name': name}, {
+            'email': 'mail@rollenspieltage.ch',
+            'name': 'Luzerner Rollenspieltage'
+        }, 'rollenspieltage', 'de', 'rollenspieltage2022')
+    elif public.get('sendMailOnlyToUs', False) is True:
+        name = private.get('name')
+        email = private.get('email')
+        edit_link = RST_BASE_URL + '?secret=' + secret
+        mailjet.mail_send(mailClient, edit_link, {
+                          'email': email, 'name': name}, {
+            'email': 'mail@rollenspieltage.ch',
+            'name': 'Luzerner Rollenspieltage'
+        }, 'rollenspieltage', 'de', 'rollenspieltage2022', True)
+
+    if public.get('sendDiscordMsg', False) is True:
+        edit_link = 'Editieren (ACHTUNG: Mit diesem Link kann die Anmeldung angepasst werden): ' + RST_BASE_URL + '?secret=' + secret
+        discord.msg_send(resource_uid, entry, edit_link, 'Anmeldung Rollenspieltage 2022 (Update)', config['discord']['inbox-webhook'])
+
+    return json.dumps({'entry_uid': entry.get('uid'), 'secret': secret}), requests.codes.CREATED
+
+
+
 
 # @app.route('/resources/<resource_uid>/program/<secret>', methods=['GET'])
 # def get_program(resource_uid, secret):
