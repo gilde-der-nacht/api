@@ -266,7 +266,7 @@ def register(resource_uid):
 
     if public.get('sendDiscordMsg', False) is True:
         edit_link = 'Editieren (ACHTUNG: Mit diesem Link kann die Anmeldung angepasst werden): ' + RST_BASE_URL + '?secret=' + secret
-        discord.msg_send(resource_uid, entry, edit_link, 'Anmeldung Rollenspieltage 2022', config['discord']['inbox-webhook'])
+        discord.msg_send(resource_uid, entry, edit_link, 'Anmeldung Rollenspieltage 2022 (Initiale Registration)', config['discord']['inbox-webhook'])
 
     return json.dumps({'entry_uid': entry.get('uid'), 'secret': secret}), requests.codes.CREATED
 
