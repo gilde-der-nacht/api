@@ -245,18 +245,18 @@ def register(resource_uid):
     public = json.loads(public_body)
     private = json.loads(private_body)
 
-    if public['sendMailToApplicant'] is True:
-        name = private.get('intro').get('name')
-        email = private.get('intro').get('email')
+    if public.get('sendMailToApplicant', False) is True:
+        name = private.get('name')
+        email = private.get('email')
         edit_link = RST_BASE_URL + '?secret=' + secret
         mailjet.mail_send(mailClient, edit_link, {
                           'email': email, 'name': name}, {
             'email': 'mail@rollenspieltage.ch',
             'name': 'Luzerner Rollenspieltage'
         }, 'rollenspieltage', language, 'rollenspieltage2022')
-    elif public['sendMailOnlyToUs'] is True:
-        name = private.get('intro').get('name')
-        email = private.get('intro').get('email')
+    elif public.get('sendMailOnlyToUs', False) is True:
+        name = private.get('name')
+        email = private.get('email')
         edit_link = RST_BASE_URL + '?secret=' + secret
         mailjet.mail_send(mailClient, edit_link, {
                           'email': email, 'name': name}, {
@@ -264,7 +264,7 @@ def register(resource_uid):
             'name': 'Luzerner Rollenspieltage'
         }, 'rollenspieltage', language, 'rollenspieltage2022', True)
 
-    if public['sendDiscordMsg'] is True:
+    if public.get('sendDiscordMsg', False) is True:
         edit_link = 'Editieren: ' + RST_BASE_URL + '?secret=' + secret
         discord.msg_send(resource_uid, entry, edit_link, 'Anmeldung Rollenspieltage 2022', config['discord']['inbox-webhook'])
 
