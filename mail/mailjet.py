@@ -23,7 +23,7 @@ i18n = {
             'theMsg': 'Die Nachricht',
             'from': 'Von'
         },
-        'rollenspieltage2021': {
+        'rollenspieltage2022': {
             'weReceivedYourMsg': 'Wir haben deine Anmeldung erhalten.',
             'thankYouForYourMsg': 'Vielen Dank für deine Anmeldung.',
             'yourMsg': 'Passe deine Anmeldung an',
@@ -45,7 +45,7 @@ i18n = {
             'theMsg': 'The message',
             'from': 'From'
         },
-        'rollenspieltage2021': {
+        'rollenspieltage2022': {
             'weReceivedYourMsg': 'We have received your registration.',
             'thankYouForYourMsg': 'Thank you for your registration.',
             'yourMsg': 'Adapt your registration',
@@ -63,7 +63,7 @@ def config(public_key, private_key, version):
     return Client(auth=(public_key, private_key), version=version)
 
 
-def mail_send(client, message, sender, recipient, template, language='de', kind='default'):
+def mail_send(client, message, sender, recipient, template, language='de', kind='default', sendOnlyToUs=False):
     texts = i18n[language][kind]
     senderMail = sender.get('email')
     senderName = sender.get('name')
@@ -116,7 +116,7 @@ def mail_send(client, message, sender, recipient, template, language='de', kind=
         ]
     }
 
-    if (senderMail is not None and senderName is not None):
+    if (senderMail is not None and senderName is not None and not sendOnlyToUs):
         data['Messages'].append(copyToSender)
 
     client.send.create(data=data)

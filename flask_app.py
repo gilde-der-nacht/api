@@ -222,16 +222,16 @@ def form(resource_uid):
     redirect_url = redirect_url + '?msg=success'
     return redirect(redirect_url) if redir else make_response(redirect_url)
 
+# Luzerner Rollenspieltage 2022: Registration
+RST_BASE_URL = "https://anmeldung.rollenspieltage.ch/"
 
-# Luzerner Rollenspieltage 2021: Registration
 @app.route('/resources/<resource_uid>/register', methods=['POST'])
 def register(resource_uid):
     if len(request.data) > 100_000:
         return '', requests.codes.REQUEST_ENTITY_TOO_LARGE
-    body = json.loads(request.data)
 
-    secret = body['identification'] if len(
-        body['identification']) > 0 else storage.generate_uid()
+    body = json.loads(request.data)
+    secret = storage.generate_uid()
     body['privateBody']['secret'] = secret
 
     public_body = json.dumps(body['publicBody'])
@@ -243,24 +243,30 @@ def register(resource_uid):
         resource_uid, secret, public_body, private_body, url, user_agent)
 
     public = json.loads(public_body)
-    language = public.get('interfaceLanguage') or 'de'
-
     private = json.loads(private_body)
-    name = private.get('intro').get('name')
-    email = private.get('intro').get('email')
-    questions = private.get('outro').get('questions')
 
-    langPrefix = ('/' + language) if language == 'en' else ''
-    edit_link = 'https://rollenspieltage.ch' + \
-        langPrefix + '/edit?secret=' + secret
+    if public['sendMailToApplicant'] is True:
+        name = private.get('intro').get('name')
+        email = private.get('intro').get('email')
+        edit_link = RST_BASE_URL + '?secret=' + secret
+        mailjet.mail_send(mailClient, edit_link, {
+                          'email': email, 'name': name}, {
+            'email': 'mail@rollenspieltage.ch',
+            'name': 'Luzerner Rollenspieltage'
+        }, 'rollenspieltage', language, 'rollenspieltage2022')
+    elif public['sendMailOnlyToUs'] is True:
+        name = private.get('intro').get('name')
+        email = private.get('intro').get('email')
+        edit_link = RST_BASE_URL + '?secret=' + secret
+        mailjet.mail_send(mailClient, edit_link, {
+                          'email': email, 'name': name}, {
+            'email': 'mail@rollenspieltage.ch',
+            'name': 'Luzerner Rollenspieltage'
+        }, 'rollenspieltage', language, 'rollenspieltage2022', True)
 
-    discord.msg_send(resource_uid, entry, questions, 'Anmeldung Rollenspieltage 2021 (' + language + ')',
-                     config['discord']['inbox-webhook'])
-    mailjet.mail_send(mailClient, edit_link, {
-                      'email': email, 'name': name}, {
-        'email': 'mail@rollenspieltage.ch',
-        'name': 'Luzerner Rollenspieltage'
-    }, 'rollenspieltage', language, 'rollenspieltage2021')
+    if public['sendDiscordMsg'] is True:
+        edit_link = 'Editieren: ' + RST_BASE_URL + '?secret=' + secret
+        discord.msg_send(resource_uid, entry, edit_link, 'Anmeldung Rollenspieltage 2022', config['discord']['inbox-webhook'])
 
     return json.dumps({'entry_uid': entry.get('uid'), 'secret': secret}), requests.codes.CREATED
 
@@ -285,24 +291,24 @@ def get_registration(resource_uid, secret):
     return json.dumps(registration_entry)
 
 
-@app.route('/resources/<resource_uid>/program/<secret>', methods=['GET'])
-def get_program(resource_uid, secret):
-    entry_list = storage.entries_list(resource_uid)
-    registration_entry = None
-    for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
-        if (identification == secret):
-            registration_entry = {
-                'resourceUid': resource_uid,
-                'entryUid': entry_uid,
-                'timestamp': timestamp,
-                'secret': identification,
-                'publicBody': json.loads(public_body),
-                'privateBody': json.loads(private_body),
-            }
+# @app.route('/resources/<resource_uid>/program/<secret>', methods=['GET'])
+# def get_program(resource_uid, secret):
+#     entry_list = storage.entries_list(resource_uid)
+#     registration_entry = None
+#     for (resource_uid, entry_uid, timestamp, identification, public_body, private_body, _url, _user_agent) in entry_list:
+#         if (identification == secret):
+#             registration_entry = {
+#                 'resourceUid': resource_uid,
+#                 'entryUid': entry_uid,
+#                 'timestamp': timestamp,
+#                 'secret': identification,
+#                 'publicBody': json.loads(public_body),
+#                 'privateBody': json.loads(private_body),
+#             }
 
-    if (registration_entry is None):
-        return '', requests.codes.UNAUTHORIZED
-    return json.dumps(registration_entry)
+#     if (registration_entry is None):
+#         return '', requests.codes.UNAUTHORIZED
+#     return json.dumps(registration_entry)
 
 
 @app.route('/admin')
