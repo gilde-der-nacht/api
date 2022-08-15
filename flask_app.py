@@ -11,8 +11,10 @@ from storage import storage
 from mail import mailjet
 from mail import discord
 from flask import Flask, request, json, send_from_directory, Response, redirect, make_response
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
 def load_config():
